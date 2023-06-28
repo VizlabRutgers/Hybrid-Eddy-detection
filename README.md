@@ -1,16 +1,16 @@
 # Hybrid-Eddy-detection
 This is the hyrbrid eddy detection project for "A Hybrid 3D Eddy Detection Technique Based on Sea Surface Height and Velocity Field" in EnvirVis 2023 by Vizlab at Rutgers University.
 
-See our previous [feature tracking](https://github.com/VizlabRutgers/Feature_Tracking) for a more general usage.
+See our previous [feature tracking](https://github.com/VizlabRutgers/Feature_Tracking) project for a more general usage.
 
-This program is used to detect the eddy in the oceangeography dataset. Our paper is accepted by EnvirVis 2023. If you use our code, please refer to our paper:  
+Our paper is accepted by EnvirVis 2023. If you use our code, please cite our paper:  
 
 >Hua, Weiping, et al. "A Hybrid 3D Eddy Detection Technique Based on Sea Surface Height and Velocity Field." arXiv preprint arXiv:2305.08229 (2023).
 
 We've used it in SciViz Contest 2020 with Red Sea data https://kaust-vislab.github.io/SciVis2020/.
 
-Please contact Rutgers Vizlab if you has any problem
-https://vizlab.rutgers.edu/
+Please contact Rutgers Vizlab or the author if you have any problem.
+https://vizlab.rutgers.edu/ or huaweiping0@gmail.com
 
 # Installation
 This program is a C++ program developed in linux system. We strongly recommend you to compile the code in linux system to avoid some problems.
