@@ -45,31 +45,31 @@ Here's the detail of the configuration file (FeatureTrack.conf) for our hybrid d
 
 
 `# This is the data file path for splitted nc file (each nc file includes only 1 frame). Ignored when STACKED_NC_DATA_PATH exist.
-DATA_FILES_PATH:  /home/weiping/data/ft_changes/sixty_frame/source/
+DATA_FILES_PATH:  /home/weiping/data/ft_changes/sixty_frame/source/`
 
 `# This is the path for generated file after detection.
-GENERATED_FILES_PATH:  /home/weiping/data/ft_changes/FT_result/10/
+GENERATED_FILES_PATH:  /home/weiping/data/ft_changes/FT_result/10/`
 
 `# This is the data file path for merged nc file (only one nc file for whole dataset).
-STACKED_NC_DATA_PATH:  /home/weiping/data/SciViz/SciVisContest2020/ensembles/0010/COMBINED_2011013100.nc
+STACKED_NC_DATA_PATH:  /home/weiping/data/SciViz/SciVisContest2020/ensembles/0010/COMBINED_2011013100.nc`
 
 `# This is the base name for the input and output data .
-FILE_BASE_NAME: red_sea_
+FILE_BASE_NAME: red_sea_`
 
 `# This is the file extension for the input data. Support .nc/.nc4/.vtk/.hd5 file. Only verified by .nc file.
-FILE_EXTENSION: .nc
+FILE_EXTENSION: .nc`
 
 `# This is initial time frame.
-INITIAL_TIME_STEP: 1
+INITIAL_TIME_STEP: 1`
 
 `# This is final time frame.
-FINAL_TIME_STEP: 60
+FINAL_TIME_STEP: 60`
 
 `# This is time frame increment.
-TIME_STEP_INCREMENT: 1
+TIME_STEP_INCREMENT: 1`
 
 `# This is time frame precision.
-TIME_STEP_PRECISION: 1
+TIME_STEP_PRECISION: 1`
 
 `# Used for value-based detection approach (such as OW). Ignored in hybrid detection
 VARIABLE_NAMES: omega
@@ -77,17 +77,17 @@ THRESHOLD1: -1.0
 STARTRADIUS: 3
 DELTA_X_THRESHOLD: 0.01
 DELTA_Y_THRESHOLD: 0.01
-DELTA_Z_THRESHOLD: 0.01
+DELTA_Z_THRESHOLD: 0.01`
 
 `# This is the volume filter threshold. Will filter out small objects below this volumn.
-SMALLEST_OBJECT_VOLUME_TO_TRACK: 20
+SMALLEST_OBJECT_VOLUME_TO_TRACK: 20`
 
 `# Dimension information for the dataset.
 X_Dim: 500
 Y_Dim: 500
-Z_Dim: 50
+Z_Dim: 50`
 
-#Start/end voxel coordinate.
+`#Start/end voxel coordinate.
 X1_Dim: 499
 Y1_Dim: 499
 Z1_Dim: 49
