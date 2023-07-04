@@ -40,4 +40,36 @@ Installation Steps:
 2. Put the FeatureTrack.Conf to folder where you compile the code to.
 3. Run the executable file
 
+# Configuration File
+Here's the detail of the configuration file (FeatureTrack.conf) for our hybrid detection approach.
+
+
+`DATA_FILES_PATH:  /home/weiping/data/ft_changes/sixty_frame/source/
+GENERATED_FILES_PATH:  /home/weiping/data/ft_changes/FT_result/10/
+STACKED_NC_DATA_PATH:  /home/weiping/data/SciViz/SciVisContest2020/ensembles/0010/COMBINED_2011013100.nc
+FILE_BASE_NAME: red_sea_
+FILE_EXTENSION: .nc
+INITIAL_TIME_STEP: 1
+FINAL_TIME_STEP: 60
+TIME_STEP_INCREMENT: 1
+TIME_STEP_PRECISION: 1
+VARIABLE_NAMES: omega
+THRESHOLD1: -1.0
+STARTRADIUS: 3
+DELTA_X_THRESHOLD: 0.01
+DELTA_Y_THRESHOLD: 0.01
+DELTA_Z_THRESHOLD: 0.01
+SMALLEST_OBJECT_VOLUME_TO_TRACK: 20
+X_Dim: 500
+Y_Dim: 500
+Z_Dim: 50
+X1_Dim: 499
+Y1_Dim: 499
+Z1_Dim: 49
+X0_Dim: 0
+Y0_Dim: 0
+Z0_Dim: 0`
+
+
+
 
