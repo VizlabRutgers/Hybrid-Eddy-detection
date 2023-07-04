@@ -47,7 +47,7 @@ Here's the detail of the configuration file (FeatureTrack.conf) for our hybrid d
 `# This is the data file path for splitted nc file (each nc file includes only 1 frame). Ignored when STACKED_NC_DATA_PATH exist.
 DATA_FILES_PATH:  /home/weiping/data/ft_changes/sixty_frame/source/`
 
-`# This is the path for generated file after detection. 
+`# This is the path for generated file after detection.    
 GENERATED_FILES_PATH:  /home/weiping/data/ft_changes/FT_result/10/`
 
 `# This is the data file path for merged nc file (only one nc file for whole dataset).
