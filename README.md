@@ -44,7 +44,7 @@ Installation Steps:
 Here's the detail of the configuration file (FeatureTrack.conf) for our hybrid detection approach.
 
 
-`DATA_FILES_PATH:  /home/weiping/data/ft_changes/sixty_frame/source/
+`DATA_FILES_PATH:  /home/weiping/data/ft_changes/sixty_frame/source/`
 GENERATED_FILES_PATH:  /home/weiping/data/ft_changes/FT_result/10/
 STACKED_NC_DATA_PATH:  /home/weiping/data/SciViz/SciVisContest2020/ensembles/0010/COMBINED_2011013100.nc
 FILE_BASE_NAME: red_sea_
