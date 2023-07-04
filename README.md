@@ -41,8 +41,8 @@ Installation Steps:
 3. Run the executable file
 
 # Configuration File
+The program support 2D and 3D dataset with variables including temperature and salinity.
 Here's the detail of the configuration file (FeatureTrack.conf) for our hybrid detection approach.
-
 
 ```
 # This is the data file path for splitted nc file (each nc file includes only 1 frame). Ignored when STACKED_NC_DATA_PATH exist.
@@ -95,7 +95,27 @@ Z1_Dim: 49
 X0_Dim: 0
 Y0_Dim: 0
 Z0_Dim: 0
+```
+Except the configuration file. You may also need to change the variable name in the code depending on different dataset. The names of the value are located in Line 2575-2588 in mainFeatureTracki.cpp (if you're using 3D volumn data in stacked data file). This problem will be replaced by variable name in configuration file.
 
 
+# Output
+The program will automatically generate the ./Seperated Structure, ./Seperated Structure/clockwise and ./Seperated Structure/counterclockwise folder under the root path of the assigned GENERATED_FILES_PATH.
+
+## root directory
+.uocd file and BASE_FILE_NAME_clean.uocd file under ./(GENERATED_FILES_PATH) directory will include the information of all voxels detected for each frame.
+The prior one will seperate by objects. The latter only includes voxel data without any other information, which benefits the file read in visualization program.
+Both file output same information as follow:
+
+`Voxel_ID Voxel_xCoord Voxel_yCoord Voxel_zCoord Voxel_Data1(OW value by default) Voxel_Data1(u_velocity by default) Voxel_Data1(v_velocity by default) Voxel_Data1(w_velocity by default) Voxel_Data1(salinity by default) Voxel_Data1(temperature by default)
+
+## Seperated Structures folder
+The information for each seperated structures will be generated here with one structure per file.
+The BASE_FILE_NAME_center.uocd file output the center coordinates from sea surface to bottom for each structure as follow:
+
+`center_xCoord center_yCoord center_zCoord radius_at_this_depth velocity_minimum_xCoord velocity_minimum_yCoord
+
+The ./Seperated Structure/clockwise and ./Seperated Structure/counterclockwise folder includes the information of every voxels for each structures as follow:
+`eddy_center_on_surface_xCoord eddy_center_on_surface_yCoord voxel_xCoord voxel_yCoord voxel_zCoord Voxel_Data1(OW value by default) Voxel_Data1(u_velocity by default) Voxel_Data1(v_velocity by default) Voxel_Data1(w_velocity by default) Voxel_Data1(salinity by default) Voxel_Data1(temperature by default) 0 radius_of_this_voxel clockwiseFlag(clockwise=1 counterclockwise=0) timeFrame Object_ID
 
 
