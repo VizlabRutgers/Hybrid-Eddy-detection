@@ -96,6 +96,8 @@
 #include <ctime>
 #include <netcdf.h>
 #include <float.h>
+#include <iostream>
+
 
 #include <vtkNew.h>
 #include <vtkSmartPointer.h>
@@ -9517,7 +9519,20 @@ void closestCostalPosition(const cv::Point2d& centerPoint, const int& ncid, cv::
 
 }
 
+int dirExists(const char* const path)
+{
+    struct stat info;
 
+    int statRC = stat( path, &info );
+    if( statRC != 0 )
+    {
+        if (errno == ENOENT)  { return 0; } // something along the path does not exist
+        if (errno == ENOTDIR) { return 0; } // something in path prefix is not a dir
+        return -1;
+    }
+
+    return ( info.st_mode & S_IFDIR ) ? 1 : 0;
+}
 
 //-------------------MAIN FUNCTION----------------------
 //
@@ -9554,6 +9569,46 @@ int main(void)
 
     cout<<"After parseconfigfile.. x_dim=["<<x_dim<<"] and y_dim=["<<y_dim<<"] and z_dim=["<< z_dim<<"]"  <<endl;  
     
+    string targetPath = base_GeneratedTrackFileNameOriginal+"Seperated Structures/";
+    if(!dirExists(targetPath.c_str())){
+        int fileCreateError = 0;
+        #if defined(_WIN32)
+          fileCreateError = _mkdir(targetPath.c_str()); // can be used on Windows
+        #else
+          fileCreateError = mkdir(targetPath.c_str(),0777); // can be used on non-Windows
+        #endif
+
+        targetPath = base_GeneratedTrackFileNameOriginal+"Seperated Structures/";
+
+        #if defined(_WIN32)
+          fileCreateError = _mkdir(targetPath.c_str()); // can be used on Windows
+        #else
+          fileCreateError = mkdir(targetPath.c_str(),0777); // can be used on non-Windows
+        #endif
+
+        targetPath = base_GeneratedTrackFileNameOriginal+"Seperated Structures/clockwise";
+
+        #if defined(_WIN32)
+          fileCreateError = _mkdir(targetPath.c_str()); // can be used on Windows
+        #else
+          fileCreateError = mkdir(targetPath.c_str(),0777); // can be used on non-Windows
+        #endif
+
+        targetPath = base_GeneratedTrackFileNameOriginal+"Seperated Structures/counterclockwise";
+
+        #if defined(_WIN32)
+          fileCreateError = _mkdir(targetPath.c_str()); // can be used on Windows
+        #else
+          fileCreateError = mkdir(targetPath.c_str(),0733); // can be used on non-Windows
+        #endif
+
+        if(fileCreateError!=0){
+            cout<<"can't create destination directory"  <<endl;
+            return -1;
+        }
+    }
+
+
 
     int ncid,retval;// pres_varid, temp_varid;
     //int lat_varid, lon_varid, Tcline_varid, h_varid, Cs_r_varid, Cs_w_varid, u_Vals_varid, v_Vals_varid;
