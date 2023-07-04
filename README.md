@@ -36,7 +36,7 @@ Installation Steps:
 5. Compile the source code by Cmake(or Do it in QT)
 
 # Usage 
-1. Modify the FeatureTrack.Conf to match the path of the dataset
+1. Modify the configuration file (FeatureTrack.conf) to match the path of the dataset
 2. Put the FeatureTrack.Conf to folder where you compile the code to.
 3. Run the executable file
 
