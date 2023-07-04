@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 3.8)
+
+
+PROJECT(FT)
+
 if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
 else()
   MESSAGE(FATAL_ERROR "gcc version must bigger than 5.1")
 endif()
 
-PROJECT(FT)
-set(CMAKE_BUILD_TYPE "Debug")
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug")
+endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
