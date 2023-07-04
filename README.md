@@ -44,7 +44,8 @@ Installation Steps:
 Here's the detail of the configuration file (FeatureTrack.conf) for our hybrid detection approach.
 
 
-```# This is the data file path for splitted nc file (each nc file includes only 1 frame). Ignored when STACKED_NC_DATA_PATH exist.
+```
+# This is the data file path for splitted nc file (each nc file includes only 1 frame). Ignored when STACKED_NC_DATA_PATH exist.
 DATA_FILES_PATH:  /home/weiping/data/ft_changes/sixty_frame/source/`
 
 # This is the path for generated file after detection.    
