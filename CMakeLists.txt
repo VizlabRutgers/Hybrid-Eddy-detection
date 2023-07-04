@@ -1,22 +1,22 @@
 cmake_minimum_required(VERSION 2.6)
 
 PROJECT(FT)
-SET(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_STANDARD 17)
-SET(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 
 set (VTK_DIR "~/data/vtk-build")
 set (NETCDF_INCLUDE_DIR "~/usr/include")
-set (HDF5 "~/data/hdf5")
+
 
 
 
 IF(NOT VTK_BINARY_DIR)
 FIND_PACKAGE(VTK COMPONENTS)
 IF(NOT VTK_DIR)
-  MESSAGE(FATAL_ERROR "Please set VTK_DIR.")
+  MESSAGE(FATAL_ERROR "VTK not found. Please provide the path of VTK_DIR.")
 ELSE()
   MESSAGE(STATUS "VTK_DIR is found: ${VTK_DIR}")
 ENDIF(NOT VTK_DIR)
@@ -25,17 +25,22 @@ ENDIF(NOT VTK_BINARY_DIR)
 
 find_package(OpenCV REQUIRED)
 if(NOT OpenCV_FOUND)
-    message(FATAL_ERROR "OpenCV not found. Please provide the path to OpenCV:")
-    set(OPENCV_PATH "" CACHE PATH "Path to OpenCV")
+  message(FATAL_ERROR "OpenCV not found. Please provide the path of OpenCV:")
+  set(OPENCV_PATH "" CACHE PATH "Path to OpenCV")
 endif()
 
 if(OPENCV_PATH)
-    set(OpenCV_DIR ${OPENCV_PATH})
+  set(OpenCV_DIR ${OPENCV_PATH})
 endif()
 
 FIND_PACKAGE (HDF5)
-INCLUDE_DIRECTORIES (${HDF5_INCLUDE_DIR})
-SET (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES})
+if(HDF5_FOUND)
+  include_directories (${HDF5_INCLUDE_DIR})
+  set(LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES})
+else()
+  messgae(FATAL_ERROR "hdf5 not found. Please provide the path of hdf5")
+  set (HDF5_INCLUDE_DIR "~/data/hdf5")
+endif()
 
 
 
@@ -45,7 +50,7 @@ find_path(NETCDF_INCLUDE_DIR netcdf.mod DOC "NetCDF include directory (must cont
 if(NETCDF_INCLUDE_DIR)
   MESSAGE(STATUS "NETCDF module found in " ${NETCDF_INCLUDE_DIR})
 else()
-  MESSAGE(FATAL_ERROR "No NETCDF bindings are found.")
+  MESSAGE(FATAL_ERROR "No NETCDF bindings are found. Must contain netcdf.mod")
 endif(NETCDF_INCLUDE_DIR)
 
 
