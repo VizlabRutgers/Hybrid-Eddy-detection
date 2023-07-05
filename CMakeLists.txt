@@ -66,7 +66,7 @@ find_package(OpenCV)
 if(OpenCV_FOUND)
   message(STATUS "OpenCV is found: ${OpenCV_DIR}")
 else()
-  if(EXISTS ${OpenCV_PATH}
+  if(EXISTS ${OpenCV_PATH})
     set(OpenCV_DIR ${OpenCV_PATH})
     find_package(OpenCV REQUIRED)
     if(NOT OpenCV_FOUND)
