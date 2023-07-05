@@ -92,17 +92,35 @@ find_path(NETCDF_INCLUDE_DIR netcdf.mod DOC "NetCDF include directory (must cont
 if(NETCDF_INCLUDE_DIR)
   MESSAGE(STATUS "NETCDF module found in " ${NETCDF_INCLUDE_DIR})
 else()
-  MESSAGE(FATAL_ERROR "No NETCDF bindings are found. Must contain netcdf.mod")
-endif(NETCDF_INCLUDE_DIR)
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+endif()
 
 
-find_library(NETCDF_C_LIB netcdf DOC "NetCDF C library" PATHS $ENV{NETCDF_LIB} /usr/lib /usr/lib64 /usr/include $ENV{SARA_NETCDF_LIB})
+find_library(NETCDF_C_LIB netcdf DOC "NetCDF C library" PATHS $ENV{NETCDF_LIB} /usr/lib /usr/lib64 $ENV{SARA_NETCDF_LIB})
 
 if(NETCDF_C_LIB)
   set(NETCDF_LIBS ${NETCDF_C_LIB})
-  MESSAGE(STATUS "NETCDF C library found in: " ${NETCDF_C_LIB})
+  MESSAGE(STATUS "NETCDF C library: " ${NETCDF_C_LIB})
 else()
-  MESSAGE(FATAL_ERROR "No NETCDF bindings are found.")
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+endif()
+
+if(NETCDF_INCLUDE_DIR)
+
+else(NETCDF_INCLUDE_DIR)
+
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+
+endif(NETCDF_INCLUDE_DIR)
+
+if(NETCDF_C_LIB)
+
+  set(NETCDF_LIBS ${NETCDF_C_LIB})
+
+else(NETCDF_C_LIB)
+
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+
 endif(NETCDF_C_LIB)
 
 
