@@ -3785,7 +3785,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
     iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
 //        if(input.at<double>((*iter_contour).at(0)) != 0)
-            eta_centorid.push_back(make_pair(cv::Point2d((*iter_contour).at(0)), input.at<double>((*iter_contour).at(0))));
+            eta_centorid.push_back(make_pair((*iter_contour).at(0), input.at<double>((*iter_contour).at(0))));
         iter_contour++;
 
     }
@@ -3971,7 +3971,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
     iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
 //        if(input.at<double>((*iter_contour).at(0)) != 0)
-            eta_centorid.push_back(make_pair(cv::Point2d((*iter_contour).at(0)), input.at<double>((*iter_contour).at(0))));
+            eta_centorid.push_back(make_pair((*iter_contour).at(0), input.at<double>((*iter_contour).at(0))));
         iter_contour++;
 
     }
@@ -4157,7 +4157,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
     iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
 //        if(input.at<double>((*iter_contour).at(0)) != 0)
-            eta_centorid.push_back(make_pair(cv::Point2d((*iter_contour).at(0)), input.at<double>((*iter_contour).at(0))));
+            eta_centorid.push_back(make_pair((*iter_contour).at(0), input.at<double>((*iter_contour).at(0))));
         iter_contour++;
 
     }
