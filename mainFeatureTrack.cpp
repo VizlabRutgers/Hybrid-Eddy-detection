@@ -3785,7 +3785,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
     iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
 //        if(input.at<double>((*iter_contour).at(0)) != 0)
-            eta_centorid.push_back(make_pair((*iter_contour).at(0), input.at<double>((*iter_contour).at(0))));
+            eta_centorid.push_back(make_pair(cv::Point2d((*iter_contour).at(0)), input.at<double>((*iter_contour).at(0))));
         iter_contour++;
 
     }
@@ -3971,7 +3971,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
     iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
 //        if(input.at<double>((*iter_contour).at(0)) != 0)
-            eta_centorid.push_back(make_pair((*iter_contour).at(0), input.at<double>((*iter_contour).at(0))));
+            eta_centorid.push_back(make_pair(cv::Point2d((*iter_contour).at(0)), input.at<double>((*iter_contour).at(0))));
         iter_contour++;
 
     }
@@ -4157,7 +4157,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
     iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
 //        if(input.at<double>((*iter_contour).at(0)) != 0)
-            eta_centorid.push_back(make_pair((*iter_contour).at(0), input.at<double>((*iter_contour).at(0))));
+            eta_centorid.push_back(make_pair(cv::Point2d((*iter_contour).at(0)), input.at<double>((*iter_contour).at(0))));
         iter_contour++;
 
     }
@@ -9067,7 +9067,7 @@ bool velocityMag_LocalMin_onSurface_withoutETA(vtkSmartPointer<vtkDataSet>& in_d
             double boxCenter_inDataset_x = xCoord[boxCenter_x];
             double boxCenter_inDataset_y = yCoord[boxCenter_y];
 
-            velocityMag_centorid.push_back(make_pair(cv::Point(boxCenter_x,boxCenter_y), 0));
+            velocityMag_centorid.push_back(make_pair(cv::Point2d(boxCenter_x,boxCenter_y), 0));
 
 
 
@@ -9244,7 +9244,7 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
             double boxCenter_inDataset_x = xCoord[boxCenter_x];
             double boxCenter_inDataset_y = yCoord[boxCenter_y];
 
-            velocityMag_centorid.push_back(make_pair(cv::Point(boxCenter_x,boxCenter_y), 0));
+            velocityMag_centorid.push_back(make_pair(cv::Point2d(boxCenter_x,boxCenter_y), 0));
 
 
 
