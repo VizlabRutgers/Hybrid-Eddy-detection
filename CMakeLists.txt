@@ -2,59 +2,92 @@ cmake_minimum_required(VERSION 3.8)
 
 
 PROJECT(FT)
-
 if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
 else()
-  MESSAGE(FATAL_ERROR "gcc version must bigger than 5.1")
+  MESSAGE(FATAL_ERROR "gcc version must bigger than 5.1. Current version is ${CMAKE_CXX_COMPILER_VERSION}")
 endif()
 
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
+set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
+# Set default path
+# set (VTK_DIR CACHE PATH "~/data/vtk-build")
+# set (HDF5_INCLUDE_DIR "~/data/hdf5")
+# set (NETCDF_INCLUDE_DIR "~/usr/Netcdf")
+# set(OpenCV_DIR "~/usr/OpenCV")
 
-set (VTK_DIR "~/data/vtk-build")
-set (NETCDF_INCLUDE_DIR "~/usr/include")
-
-
-
-
-IF(NOT VTK_BINARY_DIR)
-FIND_PACKAGE(VTK COMPONENTS)
-IF(NOT VTK_DIR)
-  MESSAGE(FATAL_ERROR "VTK not found. Please provide the path of VTK_DIR.")
-ELSE()
-  MESSAGE(STATUS "VTK_DIR is found: ${VTK_DIR}")
-ENDIF(NOT VTK_DIR)
-INCLUDE(${VTK_USE_FILE})
-ENDIF(NOT VTK_BINARY_DIR)
-
-find_package(OpenCV REQUIRED)
-if(NOT OpenCV_FOUND)
-  message(FATAL_ERROR "OpenCV not found. Please provide the path of OpenCV:")
-  set(OPENCV_PATH "" CACHE PATH "Path to OpenCV")
-endif()
-
-if(OPENCV_PATH)
-  set(OpenCV_DIR ${OPENCV_PATH})
-endif()
-
+# Set hdf5 path
 FIND_PACKAGE (HDF5)
 if(HDF5_FOUND)
   include_directories (${HDF5_INCLUDE_DIR})
   set(LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES})
+  messgae(STATUS "Hdf5 is found: ${HDF5_DIR}")
 else()
-  messgae(FATAL_ERROR "hdf5 not found. Please provide the path of hdf5")
-  set (HDF5_INCLUDE_DIR "~/data/hdf5")
+  if(EXISTS ${HDF5_INCLUDE_PATH})
+    set(HDF5_INCLUDE_DIR ${HDF5_INCLUDE_PATH})
+    FIND_PACKAGE(HDF5 REQUIRED)
+    if(NOT HDF5_FOUND)
+      messgae(FATAL_ERROR "hdf5 not found. Please provide the path of hdf5")
+    else()
+      messgae(STATUS "Hdf5 is found: ${HDF5_DIR}")
+    endif()
+  else()
+    messgae(FATAL_ERROR "hdf5 not found. Please provide the path of hdf5")
+    set (HDF5_INCLUDE_PATH ""  CACHE PATH "Path to hdf5")
+  endif()
 endif()
 
 
 
-set(CMAKE_LIBRARY_PATH /home/ardofski/netcdf_build/CMakeFiles/Export/lib)
-set(CMAKE_INCLUDE_PATH /home/ardofski/netcdf_build/include)
+FIND_PACKAGE (VTK)
+if(VTK_FOUND)
+  MESSAGE(STATUS "VTK_DIR is found: ${VTK_DIR}")
+  INCLUDE(${VTK_USE_FILE})
+else()
+  if(EXISTS ${VTK_PATH})
+    set(VTK_DIR ${VTK_PATH})
+    find_package(VTK REQUIRED)
+    if(NOT VTK_FOUND)
+      message(FATAL_ERROR "VTK not found. P")
+    else()
+      MESSAGE(STATUS "VTK_DIR is found: ${VTK_DIR}")
+    ENDIF()
+  else()
+    MESSAGE(FATAL_ERROR "VTK not found. Please provide the path of VTK_DIR.")
+    set (VTK_PATH "" CACHE PATH "Path to vtk library")
+  endif() 
+endif()
+INCLUDE(${VTK_USE_FILE})
+
+
+find_package(OpenCV)
+if(OpenCV_FOUND)
+  message(STATUS "OpenCV is found: ${OpenCV_DIR}")
+else()
+  if(EXISTS ${OpenCV_PATH}
+    set(OpenCV_DIR ${OpenCV_PATH})
+    find_package(OpenCV REQUIRED)
+    if(NOT OpenCV_FOUND)
+      message(FATAL_ERROR FATAL_ERROR "OpenCV not found. Please provide the path of OpenCV.")
+    else()
+      messsage(STATUS "OpenCV is found: ${OpenCV_DIR}")
+    endif()
+  else()   
+    message(FATAL_ERROR "OpenCV not found. Please provide the path of OpenCV.")
+    set(OPENCV_PATH "" CACHE PATH "Path to OpenCV")
+  endif()
+endif()
+
+
+
+
+
+# set(CMAKE_LIBRARY_PATH /home/ardofski/netcdf_build/CMakeFiles/Export/lib)
+# set(CMAKE_INCLUDE_PATH /home/ardofski/netcdf_build/include)
+
+
 find_path(NETCDF_INCLUDE_DIR netcdf.mod DOC "NetCDF include directory (must contain netcdf.mod)")
 if(NETCDF_INCLUDE_DIR)
   MESSAGE(STATUS "NETCDF module found in " ${NETCDF_INCLUDE_DIR})
