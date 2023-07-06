@@ -7,10 +7,13 @@ else()
   MESSAGE(FATAL_ERROR "gcc version must bigger than 5.1. Current version is ${CMAKE_CXX_COMPILER_VERSION}")
 endif()
 
-set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
+            "Default build type: Debug" FORCE)
+endif()
 
 # Set default path
 # set (VTK_DIR CACHE PATH "~/data/vtk-build")
@@ -173,7 +176,7 @@ TARGET_LINK_LIBRARIES( FT
   #vtkViews
   #vtkHybrid
   ${HDF5_LIBRARIES}
-  ${NETCDF_LIBS}/libnetcdf.a
+  ${NETCDF_LIBS}
   ${OpenCV_LIBS}
 )
 

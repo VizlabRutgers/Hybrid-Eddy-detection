@@ -95,7 +95,7 @@ InpObject<T> :: ~InpObject()
 	 objPtr=nextPtr;  	
     }
     stCellIndex *list, *nextlist; // freePos
-    register int i;
+    int i;
     for(i=0;i<numNodes;i++)
     {
          delete pnode[i].adjPosList;

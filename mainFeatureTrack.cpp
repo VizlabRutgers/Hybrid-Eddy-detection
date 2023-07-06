@@ -97,6 +97,7 @@
 #include <netcdf.h>
 #include <float.h>
 #include <iostream>
+#include <stdexcept>
 
 
 #include <vtkNew.h>
@@ -3677,11 +3678,11 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
     cv::compare(input,input_erode,erode_result,CMP_EQ);
     morphologyEx(dilate_result, dilate_result, cv::MORPH_CLOSE,morph_kernal2);
     morphologyEx(erode_result, erode_result, cv::MORPH_CLOSE,morph_kernal2);
-    vector<vector<cv::Point>> dilate_contours;
-    vector<vector<cv::Point>> erode_contours;
+    vector<vector<cv::Point2d>> dilate_contours;
+    vector<vector<cv::Point2d>> erode_contours;
     cv::findContours(dilate_result,dilate_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
     cv::findContours(erode_result,erode_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
-    vector<vector<cv::Point>>::iterator iter_contour = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
         if((*iter_contour).size()>100)
             iter_contour = erode_contours.erase(iter_contour);
@@ -3694,7 +3695,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -3705,12 +3706,12 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                 }
                 iter_contour = erode_contours.erase(iter_contour);
 
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 erode_contours.push_back(temp_point);
             }
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = erode_contours.erase(iter_contour);
                 erode_contours.push_back(temp_point);
@@ -3732,7 +3733,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -3742,13 +3743,13 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                     centerPoint.y = ySum/contourSizeCounter;
                 }
                 iter_contour = dilate_contours.erase(iter_contour);
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 dilate_contours.push_back(temp_point);
             }
 
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = dilate_contours.erase(iter_contour);
                 dilate_contours.push_back(temp_point);
@@ -3763,7 +3764,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
 //    cv::drawContours(dilate_result2,dilate_contours,-1,cv::Scalar(255), cv::FILLED);
 
     cv::Point2i centerCoord;
-    vector<vector<cv::Point>>::iterator iter_contourMin = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMin = erode_contours.begin();
     while(iter_contourMin != erode_contours.end()){
         centerCoord = (*iter_contourMin).at(0);
         fprintf(fpoutETAMin,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMin).at(0)));
@@ -3771,7 +3772,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
     }
     fclose(fpoutETAMin);
 
-    vector<vector<cv::Point>>::iterator iter_contourMax = dilate_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMax = dilate_contours.begin();
     while(iter_contourMax != dilate_contours.end()){
         centerCoord = (*iter_contourMax).at(0);
         fprintf(fpoutETAMax,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMax).at(0)));
@@ -3863,11 +3864,11 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
     cv::compare(input,input_erode,erode_result,CMP_EQ);
     morphologyEx(dilate_result, dilate_result, cv::MORPH_CLOSE,morph_kernal2);
     morphologyEx(erode_result, erode_result, cv::MORPH_CLOSE,morph_kernal2);
-    vector<vector<cv::Point>> dilate_contours;
-    vector<vector<cv::Point>> erode_contours;
+    vector<vector<cv::Point2d>> dilate_contours;
+    vector<vector<cv::Point2d>> erode_contours;
     cv::findContours(dilate_result,dilate_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
     cv::findContours(erode_result,erode_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
-    vector<vector<cv::Point>>::iterator iter_contour = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
         if((*iter_contour).size()>100)
             iter_contour = erode_contours.erase(iter_contour);
@@ -3880,7 +3881,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -3891,12 +3892,12 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                 }
                 iter_contour = erode_contours.erase(iter_contour);
 
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 erode_contours.push_back(temp_point);
             }
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = erode_contours.erase(iter_contour);
                 erode_contours.push_back(temp_point);
@@ -3918,7 +3919,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -3928,13 +3929,13 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                     centerPoint.y = ySum/contourSizeCounter;
                 }
                 iter_contour = dilate_contours.erase(iter_contour);
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 dilate_contours.push_back(temp_point);
             }
 
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = dilate_contours.erase(iter_contour);
                 dilate_contours.push_back(temp_point);
@@ -3949,7 +3950,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 //    cv::drawContours(dilate_result2,dilate_contours,-1,cv::Scalar(255), cv::FILLED);
 
     cv::Point2i centerCoord;
-    vector<vector<cv::Point>>::iterator iter_contourMin = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMin = erode_contours.begin();
     while(iter_contourMin != erode_contours.end()){
         centerCoord = (*iter_contourMin).at(0);
         fprintf(fpoutETAMin,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMin).at(0)));
@@ -3957,7 +3958,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
     }
     fclose(fpoutETAMin);
 
-    vector<vector<cv::Point>>::iterator iter_contourMax = dilate_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMax = dilate_contours.begin();
     while(iter_contourMax != dilate_contours.end()){
         centerCoord = (*iter_contourMax).at(0);
         fprintf(fpoutETAMax,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMax).at(0)));
@@ -4049,11 +4050,11 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
     cv::compare(input,input_erode,erode_result,CMP_EQ);
     morphologyEx(dilate_result, dilate_result, cv::MORPH_CLOSE,morph_kernal2);
     morphologyEx(erode_result, erode_result, cv::MORPH_CLOSE,morph_kernal2);
-    vector<vector<cv::Point>> dilate_contours;
-    vector<vector<cv::Point>> erode_contours;
+    vector<vector<cv::Point2d>> dilate_contours;
+    vector<vector<cv::Point2d>> erode_contours;
     cv::findContours(dilate_result,dilate_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
     cv::findContours(erode_result,erode_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
-    vector<vector<cv::Point>>::iterator iter_contour = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
         if((*iter_contour).size()>100)
             iter_contour = erode_contours.erase(iter_contour);
@@ -4066,7 +4067,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -4077,12 +4078,12 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                 }
                 iter_contour = erode_contours.erase(iter_contour);
 
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 erode_contours.push_back(temp_point);
             }
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = erode_contours.erase(iter_contour);
                 erode_contours.push_back(temp_point);
@@ -4104,7 +4105,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -4114,13 +4115,13 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                     centerPoint.y = ySum/contourSizeCounter;
                 }
                 iter_contour = dilate_contours.erase(iter_contour);
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 dilate_contours.push_back(temp_point);
             }
 
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = dilate_contours.erase(iter_contour);
                 dilate_contours.push_back(temp_point);
@@ -4135,7 +4136,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
 //    cv::drawContours(dilate_result2,dilate_contours,-1,cv::Scalar(255), cv::FILLED);
 
     cv::Point2i centerCoord;
-    vector<vector<cv::Point>>::iterator iter_contourMin = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMin = erode_contours.begin();
     while(iter_contourMin != erode_contours.end()){
         centerCoord = (*iter_contourMin).at(0);
         fprintf(fpoutETAMin,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMin).at(0)));
@@ -4143,7 +4144,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
     }
     fclose(fpoutETAMin);
 
-    vector<vector<cv::Point>>::iterator iter_contourMax = dilate_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMax = dilate_contours.begin();
     while(iter_contourMax != dilate_contours.end()){
         centerCoord = (*iter_contourMax).at(0);
         fprintf(fpoutETAMax,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMax).at(0)));
@@ -5006,7 +5007,7 @@ int BeginObjSegment(vtkDataSet *in_ds,vtkDataSet **outDS,int celltype,int curren
 //
 //------------------------------------------------------
 
-void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string& ncFilePath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
+int parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string& ncFilePath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
                      float &deltaxval, float &deltayval, float &deltazval,int &SmallestObjVol,
                      int &TimePrecision, int &TimeIncrement, float &thresh1, float &thresh2,long & x_dim, long &y_dim, long &z_dim,long & x0_dim, long &y0_dim, long &z0_dim,  long & x1_dim, long &y1_dim, long &z1_dim, int& CircleStartRadius )
 {
@@ -5213,6 +5214,7 @@ void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, stri
     else
     {
         cout<< "Cannot open the FeatureTrack.Conf File.!!!"<<endl;
+        return -1;
     }
     cout<<" Data Path: "<< Datapath <<endl;
     cout<<" GeneratedFilePath: "<< base_GeneratedTrackFileName <<endl;
@@ -5230,6 +5232,7 @@ void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, stri
     cout<<" SmallestObjVol: "<< SmallestObjVol <<endl;
     for(int i=0;i<variableNamesvect.size();i++)
         cout<<" variableNamesvect[ "<<i<<"]"<< variableNamesvect[i]<<endl;
+    return 0;
     
 }
 //------------------------------------
@@ -9560,7 +9563,9 @@ int main(void)
 
     
     //,&x_dim,&y_dim,&z_dim
-    parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,file_name, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius);
+    if(parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,file_name, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius)==-1){
+        return -1;
+    }
 
     //Inital global variables
     dataset_xLength = x_dim;
@@ -9712,7 +9717,15 @@ int main(void)
         vector<pair<cv::Point2d,double>> eta_centroid;
 //        shared_ptr<double[]>zLevelData(new double[dataset_zLength]);
         double* zLevelData = new double[dataset_zLength];
-        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,zLevelData,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,x1_dim,y1_dim,z1_dim,currentTime);
+        vtkSmartPointer<vtkDataSet>in_ds;
+        try {
+            in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,zLevelData,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,x1_dim,y1_dim,z1_dim,currentTime);
+        } catch (invalid_argument& e) {
+            cerr << e.what() << endl;
+            cout<<"Can't create vtk dataset"<<endl;
+            return -1;
+        }
+
         bool etaFlag=0;
         if(ncFilePath == "None")
             etaFlag = ReadNcData_SSH_SingleFrame(eta_centroid,file_name, x_dim,y_dim,OutputOcdfile);
@@ -9867,7 +9880,7 @@ int main(void)
         std::vector<int>successSet2;
         std::vector<int>successSet3;
 
-        for(unsigned long i  = 0; i < eddyCenter_onSurface.size(); i++) // go for each center
+        for(int i  = 0; i < eddyCenter_onSurface.size(); i++) // go for each center
         {
 
 
