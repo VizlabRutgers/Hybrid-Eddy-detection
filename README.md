@@ -13,7 +13,7 @@ Please contact Rutgers Vizlab or the author if you have any problem.
 https://vizlab.rutgers.edu/ or huaweiping0@gmail.com
 
 # Installation
-This program is a C++ program developed in linux system. We strongly recommend you to compile the code in linux system to avoid some problems.
+This program is a C++ program developed in linux system. We strongly recommend you to compile the code in linux system. You may need to change the CMakelist file if you're using other platforms.
 
 Validated environment:  
 Ubuntu-18.04  
@@ -26,14 +26,16 @@ QT-5.14.2
 OpenCV-3.4.13  
 
 Installation Steps:
-1. Install Cmake/CMake-gui.(not use the latest one as qt may not support that currently. Version 3.14 verified)
+1. Install Cmake/CMake-gui.(not use the latest one as qt may not support that currently. Version 3.14 verified).
 2. Install qt5.
 3. Install Hdf5 and Netcdf first, which should not be a problem
-4. Install VTK library, I use vtk 8.1/8,2 here
+4. Install VTK library, I use vtk 8,2 here.
     a)You may meet some problem because of the incompatible version of cmake or VTK library.
     b)You need to change the library path in CMakeList file.
-    b)You may need to use apt-file command to find necessary file (for QT)
-5. Compile the source code by Cmake(or Do it in QT)
+    b)You may need to use apt-file command to find necessary file (for QT).
+5. Compile the source code by Cmake(or Do it in QT).
+6. Make file.
+7. You could see the excutable file "FT" in your folder. 
 
 # Usage 
 1. Modify the configuration file (FeatureTrack.conf) to match the path of the dataset
