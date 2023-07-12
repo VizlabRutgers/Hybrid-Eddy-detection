@@ -24,7 +24,7 @@ NetCDF-4.3.1
 VTK-8.2.0  
 OpenCV-3.4.13  
 
-IDE:
+IDE:  
 QT-5.14.2   
 (Working on Visual Studio 2019 community)
 
