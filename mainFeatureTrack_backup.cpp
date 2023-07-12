@@ -97,6 +97,7 @@
 #include <netcdf.h>
 #include <float.h>
 #include <iostream>
+#include <stdexcept>
 
 
 #include <vtkNew.h>
@@ -316,44 +317,6 @@ public:
         else
             return 1;
     }
-};
-
-
-class dataVariableName{
-private:
-    string xCoord;
-    string yCoord;
-    string zCoord;
-    string Temp;
-    string Salt;
-    string U;
-    string V;
-    string W;
-    string SSH;
-
-public:
-    void setxCoord(string& xName){xCoord = xName;}
-    void setyCoord(string& yName){yCoord = yName;}
-    void setzCoord(string& zName){zCoord = zName;}
-    void setTemp(string& tempName){Temp = tempName;}
-    void setSalt(string& saltName){Salt = saltName;}
-    void setU(string& uName){U = uName;}
-    void setV(string& vName){V = vName;}
-    void setW(string& wName){W = wName;}
-    void setSSH(string& sshName){SSH = sshName;}
-
-
-    const string getX(){return xCoord;}
-    const string getY(){return yCoord;}
-    const string getZ(){return zCoord;}
-    const string getU(){return U;}
-    const string getV(){return V;}
-    const string getW(){return W;}
-    const string getTemp(){return Temp;}
-    const string getSalt(){return Salt;}
-    const string getSSH(){return SSH;}
-
-
 };
 
 
@@ -1094,7 +1057,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Backup(float ** Data_out,string FileN
     return returnVal; 
 }
 
-vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  double* zLevels,int numberofComponents,dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  double* zLevels,int numberofComponents)
 {
 
     //this function first reads a specific netCDF file and creates a (curvilinear) vtkDataSet from the read data.
@@ -1153,19 +1116,19 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string 
     if ((retval = nc_open(FileName.c_str(), NC_NOWRITE, &ncid)))
         cout<<"couldnt open the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
 
-    if ((retval = nc_inq_varid(ncid, variableName.getZ().c_str(), &z_varid)))
+    if ((retval = nc_inq_varid(ncid, "Z", &z_varid)))
         cout<<"couldnt open 1 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getY().c_str(), &y_varid)))
+    if ((retval = nc_inq_varid(ncid, "Y", &y_varid)))
         cout<<"couldnt open 2 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getX().c_str(), &x_varid)))
+    if ((retval = nc_inq_varid(ncid, "X", &x_varid)))
         cout<<"couldnt open 2.1 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getTemp().c_str(), &temp_varid)))
+    if ((retval = nc_inq_varid(ncid, "TEMP", &temp_varid)))
         cout<<"couldnt open 2.2 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getSalt().c_str(), &salt_varid)))
+    if ((retval = nc_inq_varid(ncid, "SALT", &salt_varid)))
         cout<<"couldnt open 2.2 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getU().c_str(), &u_varid)))
+    if ((retval = nc_inq_varid(ncid, "U", &u_varid)))
         cout<<"couldnt open 2.3 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getV().c_str(), &v_varid)))
+    if ((retval = nc_inq_varid(ncid, "V", &v_varid)))
         cout<<"couldnt open 2.3.1 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
 
     /* Read the coordinate variable data. */
@@ -1345,7 +1308,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string 
 
     }
 
-
+    /*
     for(long y=0; y < s_r ; y++)
     {
         Cs_r_Vec[y] = Cs_r[y];
@@ -1818,7 +1781,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string 
 }
 
 
-vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  double* zLevels,int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  double* zLevels,int numberofComponents, unsigned long timeframe)
 {
 
     //this function first reads a specific netCDF file and creates a (curvilinear) vtkDataSet from the read data.
@@ -1886,18 +1849,17 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,strin
         cout<<"couldnt open the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
 
 
-
-    if ((retval = nc_inq_varid(ncid, variableName.getY().c_str(), &y_varid)))
+    if ((retval = nc_inq_varid(ncid, "yh", &y_varid)))
         cout<<"couldnt open 2 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getX().c_str(), &x_varid)))
+    if ((retval = nc_inq_varid(ncid, "xh", &x_varid)))
         cout<<"couldnt open 2.1 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getTemp().c_str(), &temp_varid)))
+    if ((retval = nc_inq_varid(ncid, "tos", &temp_varid)))
         cout<<"couldnt open 2.2 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getSalt().c_str(), &salt_varid)))
+    if ((retval = nc_inq_varid(ncid, "sos", &salt_varid)))
         cout<<"couldnt open 2.2 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getU().c_str(), &u_varid)))
+    if ((retval = nc_inq_varid(ncid, "ssu", &u_varid)))
         cout<<"couldnt open 2.3 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getV().c_str(), &v_varid)))
+    if ((retval = nc_inq_varid(ncid, "ssv", &v_varid)))
         cout<<"couldnt open 2.3.1 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
 
     /* Read the coordinate variable data. */
@@ -2546,7 +2508,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,strin
     return returnVal;
 }
 
-vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  double* zLevels,int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  double* zLevels,int numberofComponents, unsigned long timeframe)
 {
 
     //this function first reads a specific netCDF file and creates a (curvilinear) vtkDataSet from the read data.
@@ -2613,19 +2575,19 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(float ** Data_out,string F
     if ((retval = nc_open(FileName.c_str(), NC_NOWRITE, &ncid)))
         cout<<"couldnt open the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
 
-    if ((retval = nc_inq_varid(ncid, variableName.getZ().c_str(), &z_varid)))
+    if ((retval = nc_inq_varid(ncid, "Z_MIT40", &z_varid)))
         cout<<"couldnt open 1 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getY().c_str(), &y_varid)))
+    if ((retval = nc_inq_varid(ncid, "YC", &y_varid)))
         cout<<"couldnt open 2 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getX().c_str(), &x_varid)))
+    if ((retval = nc_inq_varid(ncid, "XC", &x_varid)))
         cout<<"couldnt open 2.1 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getTemp().c_str(), &temp_varid)))
+    if ((retval = nc_inq_varid(ncid, "TEMP", &temp_varid)))
         cout<<"couldnt open 2.2 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getSalt().c_str(), &salt_varid)))
+    if ((retval = nc_inq_varid(ncid, "SALT", &salt_varid)))
         cout<<"couldnt open 2.2 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getU().c_str(), &u_varid)))
+    if ((retval = nc_inq_varid(ncid, "U", &u_varid)))
         cout<<"couldnt open 2.3 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
-    if ((retval = nc_inq_varid(ncid, variableName.getV().c_str(), &v_varid)))
+    if ((retval = nc_inq_varid(ncid, "V", &v_varid)))
         cout<<"couldnt open 2.3.1 the file :[ "<<GRID_FILE_NAME.c_str()<<" ---- !!!"<<endl;
 
     /* Read the coordinate variable data. */
@@ -3716,11 +3678,11 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
     cv::compare(input,input_erode,erode_result,CMP_EQ);
     morphologyEx(dilate_result, dilate_result, cv::MORPH_CLOSE,morph_kernal2);
     morphologyEx(erode_result, erode_result, cv::MORPH_CLOSE,morph_kernal2);
-    vector<vector<cv::Point>> dilate_contours;
-    vector<vector<cv::Point>> erode_contours;
+    vector<vector<cv::Point2d>> dilate_contours;
+    vector<vector<cv::Point2d>> erode_contours;
     cv::findContours(dilate_result,dilate_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
     cv::findContours(erode_result,erode_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
-    vector<vector<cv::Point>>::iterator iter_contour = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
         if((*iter_contour).size()>100)
             iter_contour = erode_contours.erase(iter_contour);
@@ -3733,7 +3695,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -3744,12 +3706,12 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                 }
                 iter_contour = erode_contours.erase(iter_contour);
 
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 erode_contours.push_back(temp_point);
             }
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = erode_contours.erase(iter_contour);
                 erode_contours.push_back(temp_point);
@@ -3771,7 +3733,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -3781,13 +3743,13 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                     centerPoint.y = ySum/contourSizeCounter;
                 }
                 iter_contour = dilate_contours.erase(iter_contour);
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 dilate_contours.push_back(temp_point);
             }
 
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = dilate_contours.erase(iter_contour);
                 dilate_contours.push_back(temp_point);
@@ -3802,7 +3764,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
 //    cv::drawContours(dilate_result2,dilate_contours,-1,cv::Scalar(255), cv::FILLED);
 
     cv::Point2i centerCoord;
-    vector<vector<cv::Point>>::iterator iter_contourMin = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMin = erode_contours.begin();
     while(iter_contourMin != erode_contours.end()){
         centerCoord = (*iter_contourMin).at(0);
         fprintf(fpoutETAMin,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMin).at(0)));
@@ -3810,7 +3772,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
     }
     fclose(fpoutETAMin);
 
-    vector<vector<cv::Point>>::iterator iter_contourMax = dilate_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMax = dilate_contours.begin();
     while(iter_contourMax != dilate_contours.end()){
         centerCoord = (*iter_contourMax).at(0);
         fprintf(fpoutETAMax,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMax).at(0)));
@@ -3873,7 +3835,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
     if ((retval = nc_inq_varid(ncid, "ETA", &ETA_varid))){
         cout<<"No ETA Data"<<endl;
-        return 0;
+        return 1;
     }
 
     if ((retval = nc_get_vara_double(ncid, ETA_varid, dataStart, dataCount,ETA_vals)))
@@ -3902,11 +3864,11 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
     cv::compare(input,input_erode,erode_result,CMP_EQ);
     morphologyEx(dilate_result, dilate_result, cv::MORPH_CLOSE,morph_kernal2);
     morphologyEx(erode_result, erode_result, cv::MORPH_CLOSE,morph_kernal2);
-    vector<vector<cv::Point>> dilate_contours;
-    vector<vector<cv::Point>> erode_contours;
+    vector<vector<cv::Point2d>> dilate_contours;
+    vector<vector<cv::Point2d>> erode_contours;
     cv::findContours(dilate_result,dilate_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
     cv::findContours(erode_result,erode_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
-    vector<vector<cv::Point>>::iterator iter_contour = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
         if((*iter_contour).size()>100)
             iter_contour = erode_contours.erase(iter_contour);
@@ -3919,7 +3881,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -3930,12 +3892,12 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                 }
                 iter_contour = erode_contours.erase(iter_contour);
 
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 erode_contours.push_back(temp_point);
             }
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = erode_contours.erase(iter_contour);
                 erode_contours.push_back(temp_point);
@@ -3957,7 +3919,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -3967,13 +3929,13 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                     centerPoint.y = ySum/contourSizeCounter;
                 }
                 iter_contour = dilate_contours.erase(iter_contour);
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 dilate_contours.push_back(temp_point);
             }
 
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = dilate_contours.erase(iter_contour);
                 dilate_contours.push_back(temp_point);
@@ -3988,7 +3950,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 //    cv::drawContours(dilate_result2,dilate_contours,-1,cv::Scalar(255), cv::FILLED);
 
     cv::Point2i centerCoord;
-    vector<vector<cv::Point>>::iterator iter_contourMin = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMin = erode_contours.begin();
     while(iter_contourMin != erode_contours.end()){
         centerCoord = (*iter_contourMin).at(0);
         fprintf(fpoutETAMin,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMin).at(0)));
@@ -3996,7 +3958,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
     }
     fclose(fpoutETAMin);
 
-    vector<vector<cv::Point>>::iterator iter_contourMax = dilate_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMax = dilate_contours.begin();
     while(iter_contourMax != dilate_contours.end()){
         centerCoord = (*iter_contourMax).at(0);
         fprintf(fpoutETAMax,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMax).at(0)));
@@ -4088,11 +4050,11 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
     cv::compare(input,input_erode,erode_result,CMP_EQ);
     morphologyEx(dilate_result, dilate_result, cv::MORPH_CLOSE,morph_kernal2);
     morphologyEx(erode_result, erode_result, cv::MORPH_CLOSE,morph_kernal2);
-    vector<vector<cv::Point>> dilate_contours;
-    vector<vector<cv::Point>> erode_contours;
+    vector<vector<cv::Point2d>> dilate_contours;
+    vector<vector<cv::Point2d>> erode_contours;
     cv::findContours(dilate_result,dilate_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
     cv::findContours(erode_result,erode_contours,cv::RETR_LIST,cv::CHAIN_APPROX_NONE);
-    vector<vector<cv::Point>>::iterator iter_contour = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contour = erode_contours.begin();
     while(iter_contour != erode_contours.end()){
         if((*iter_contour).size()>100)
             iter_contour = erode_contours.erase(iter_contour);
@@ -4105,7 +4067,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -4116,12 +4078,12 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                 }
                 iter_contour = erode_contours.erase(iter_contour);
 
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 erode_contours.push_back(temp_point);
             }
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = erode_contours.erase(iter_contour);
                 erode_contours.push_back(temp_point);
@@ -4143,7 +4105,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                     int contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
-                    vector<cv::Point> isolateContour = (*iter_contour);
+                    vector<cv::Point2d> isolateContour = (*iter_contour);
                     while(contourSizeCounter<isolateContour.size()){
                         xSum+=isolateContour.at(contourSizeCounter).x;
                         ySum+=isolateContour.at(contourSizeCounter).y;
@@ -4153,13 +4115,13 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                     centerPoint.y = ySum/contourSizeCounter;
                 }
                 iter_contour = dilate_contours.erase(iter_contour);
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back(centerPoint);
                 dilate_contours.push_back(temp_point);
             }
 
             else if ((*iter_contour).size()>1) {
-                vector<cv::Point> temp_point;
+                vector<cv::Point2d> temp_point;
                 temp_point.push_back((*iter_contour)[0]);
                 iter_contour = dilate_contours.erase(iter_contour);
                 dilate_contours.push_back(temp_point);
@@ -4174,7 +4136,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
 //    cv::drawContours(dilate_result2,dilate_contours,-1,cv::Scalar(255), cv::FILLED);
 
     cv::Point2i centerCoord;
-    vector<vector<cv::Point>>::iterator iter_contourMin = erode_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMin = erode_contours.begin();
     while(iter_contourMin != erode_contours.end()){
         centerCoord = (*iter_contourMin).at(0);
         fprintf(fpoutETAMin,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMin).at(0)));
@@ -4182,7 +4144,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
     }
     fclose(fpoutETAMin);
 
-    vector<vector<cv::Point>>::iterator iter_contourMax = dilate_contours.begin();
+    vector<vector<cv::Point2d>>::iterator iter_contourMax = dilate_contours.begin();
     while(iter_contourMax != dilate_contours.end()){
         centerCoord = (*iter_contourMax).at(0);
         fprintf(fpoutETAMax,"%d %d %f\n", centerCoord.x,centerCoord.y,input.at<double>((*iter_contourMax).at(0)));
@@ -4485,7 +4447,7 @@ void ReadGridFile(vector<string> DataSetName, const char *FileName,float ** Xcoo
     
 }
 
-vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileName, long x_dim, long y_dim, long z_dim, double* zLevel, string data_path,string stackedNcFilePath,long x0_dim, long y0_dim, long z0_dim, long x1_dim, long y1_dim, long z1_dim, int timeFrame, dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileName, long x_dim, long y_dim, long z_dim, double* zLevel, string data_path,string stackedNcFilePath,long x0_dim, long y0_dim, long z0_dim, long x1_dim, long y1_dim, long z1_dim, int timeFrame)
 {
     //this is the main data read function. This function takes the data file extension and makes a comparison to check if it fits into the known extension types.
     // Currently this function can read netCDF, HDF5, VTK and VTR types).
@@ -4628,12 +4590,12 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
         vtkSmartPointer<vtkDataSet>output;
 
         if(stackedNcFilePath == "None")
-            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, variableName);
+            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents);
         else{
             if(z_dim==1)
-                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame);
             else
-                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame);
         }
 
         unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
@@ -4650,12 +4612,12 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
         vtkSmartPointer<vtkDataSet>output;
 
         if(stackedNcFilePath == "None")
-            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, variableName);
+            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents);
         else{
             if(z_dim==1)
-                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame);
             else
-                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame);
         }
 
 
@@ -4672,6 +4634,9 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
 
         return output;
 
+    }
+    else{
+        return -1;
     }
 
 
@@ -4825,7 +4790,6 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
 //    return mesh;
     
 //    cout<<"---------- Just Created the full VtkDataSet. ntuples[ "<<ntuples <<" ] ----------- " <<endl;
-    
 }
 
 
@@ -5045,9 +5009,9 @@ int BeginObjSegment(vtkDataSet *in_ds,vtkDataSet **outDS,int celltype,int curren
 //
 //------------------------------------------------------
 
-void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string& ncFilePath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
+int parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string& ncFilePath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
                      float &deltaxval, float &deltayval, float &deltazval,int &SmallestObjVol,
-                     int &TimePrecision, int &TimeIncrement, float &thresh1, float &thresh2,long & x_dim, long &y_dim, long &z_dim,long & x0_dim, long &y0_dim, long &z0_dim,  long & x1_dim, long &y1_dim, long &z1_dim, int& CircleStartRadius, dataVariableName& datavariableName)
+                     int &TimePrecision, int &TimeIncrement, float &thresh1, float &thresh2,long & x_dim, long &y_dim, long &z_dim,long & x0_dim, long &y0_dim, long &z0_dim,  long & x1_dim, long &y1_dim, long &z1_dim, int& CircleStartRadius )
 {
     // this function reads each individual variable indicated within the Config file and returns them....
     
@@ -5083,17 +5047,6 @@ void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, stri
     zdim =string("Z_Dim:").c_str();
     FileGeneratedTrackFileName =string("GENERATED_FILES_PATH:").c_str();
     
-    string xName, yName, zName, uName, vName, wName, tempName, saltName, sshName;
-    xName =string("xCoord_Name:").c_str();
-    yName =string("yCoord_Name:").c_str();
-    zName =string("zCoord_Name:").c_str();
-    tempName =string("Temp_Name:").c_str();
-    saltName =string("Salinity_Name:").c_str();
-    uName =string("Velocity_U_Name:").c_str();
-    vName =string("Velocity_V_Name:").c_str();
-    wName =string("Welocity_W_Name:").c_str();
-    sshName =string("SSH_Name:").c_str();
-
     ifstream myreadfile;
     myreadfile.open(Configfilename.c_str(),ios_base::out);
     if (myreadfile.is_open())
@@ -5256,51 +5209,6 @@ void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, stri
                 //	myreadfile >> output;
                 //	variableNamesvect.push_back(output.c_str());
             }
-            if ( output == xName)
-            {
-                myreadfile >> output;
-                datavariableName.setxCoord(output);
-            }
-            if ( output == yName)
-            {
-                myreadfile >> output;
-                datavariableName.setyCoord(output);
-            }
-            if ( output == zName)
-            {
-                myreadfile >> output;
-                datavariableName.setzCoord(output);
-            }
-            if ( output == uName)
-            {
-                myreadfile >> output;
-                datavariableName.setU(output);
-            }
-            if ( output == vName)
-            {
-                myreadfile >> output;
-                datavariableName.setV(output);
-            }
-            if ( output == wName)
-            {
-                myreadfile >> output;
-                datavariableName.setW(output);
-            }
-            if ( output == tempName)
-            {
-                myreadfile >> output;
-                datavariableName.setTemp(output);
-            }
-            if ( output == saltName)
-            {
-                myreadfile >> output;
-                datavariableName.setSalt(output);
-            }
-            if ( output == sshName)
-            {
-                myreadfile >> output;
-                datavariableName.setSSH(output);
-            }
         }
         myreadfile.close();
         //   cout<<j<<" "<<i<<" :<<j & i value"<<endl;
@@ -5308,6 +5216,7 @@ void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, stri
     else
     {
         cout<< "Cannot open the FeatureTrack.Conf File.!!!"<<endl;
+        return -1;
     }
     cout<<" Data Path: "<< Datapath <<endl;
     cout<<" GeneratedFilePath: "<< base_GeneratedTrackFileName <<endl;
@@ -5325,13 +5234,11 @@ void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, stri
     cout<<" SmallestObjVol: "<< SmallestObjVol <<endl;
     for(int i=0;i<variableNamesvect.size();i++)
         cout<<" variableNamesvect[ "<<i<<"]"<< variableNamesvect[i]<<endl;
+    return 0;
     
 }
 //------------------------------------
 //   int a = CreateListFile(datapath,listfile,InitialtimeStep,FinaltimeStep,TimeIncrement,TimePrecision );
-
-
-
 
 int CreateListFile(string trk_dir, string infile,string &listfile,int InitialtimeStep, int FinaltimeStep,int TimeIncrement,int TimePrecision )
 {
@@ -6256,6 +6163,221 @@ TrakPackets(string base_GeneratedTrackFileName, int cycle,string label, vector<s
     //-----------------------------colormap creation ends here-----------------------
     return 1;
 }
+
+
+void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
+                              float &deltaxval, float &deltayval, float &deltazval,int &SmallestObjVol,
+                              int &TimePrecision, int &TimeIncrement, float &thresh1, float &thresh2,long & x_dim, long &y_dim, long &z_dim,long & x0_dim, long &y0_dim, long &z0_dim,  long & x1_dim, long &y1_dim, long &z1_dim )
+         {
+             // this function reads each individual variable indicated within the Config file and returns them....
+
+             string output, datapath, base_filename, initialTimeStep, finalTimeStep,timestepIncrement,fileExtention,
+             Threshold1, Threshold2, timestepPrecision, deltaxthreshold,deltaythreshold,deltazthreshold,
+             smallestObjVolToTrack, variableNames, xdim, ydim, zdim, x0dim, y0dim, z0dim, x1dim, y1dim, z1dim, FileGeneratedTrackFileName;
+             //vector<string> variableNamesvect;
+             cout<<" -----------  Reading the "<<Configfilename<< " Config file ---------"<<endl;
+             datapath = string("DATA_FILES_PATH:").c_str();
+             base_filename = string("FILE_BASE_NAME:").c_str();
+             initialTimeStep = string("INITIAL_TIME_STEP:").c_str();
+             finalTimeStep = string("FINAL_TIME_STEP:").c_str();
+             timestepIncrement = string("TIME_STEP_INCREMENT:").c_str();
+             Threshold1 = string("THRESHOLD1:").c_str();
+             Threshold2 = string("THRESHOLD2:").c_str();
+             timestepPrecision = string("TIME_STEP_PRECISION:").c_str();
+             deltaxthreshold = string("DELTA_X_THRESHOLD:").c_str();
+             deltaythreshold = string("DELTA_Y_THRESHOLD:").c_str();
+             deltazthreshold = string("DELTA_Z_THRESHOLD:").c_str();
+             smallestObjVolToTrack = string("SMALLEST_OBJECT_VOLUME_TO_TRACK:").c_str();
+             variableNames = string("VARIABLE_NAMES:").c_str();
+             fileExtention = string("FILE_EXTENSION:").c_str();
+             x1dim =string("X1_Dim:").c_str();
+             y1dim =string("Y1_Dim:").c_str();
+             z1dim =string("Z1_Dim:").c_str();
+             x0dim =string("X0_Dim:").c_str();
+             y0dim =string("Y0_Dim:").c_str();
+             z0dim =string("Z0_Dim:").c_str();
+             xdim =string("X_Dim:").c_str();
+             ydim =string("Y_Dim:").c_str();
+             zdim =string("Z_Dim:").c_str();
+             FileGeneratedTrackFileName =string("GENERATED_FILES_PATH:").c_str();
+
+             ifstream myreadfile;
+             myreadfile.open(Configfilename.c_str(),ios_base::out);
+             if (myreadfile.is_open())
+             {
+
+                 while (!myreadfile.eof())
+                 {
+                     myreadfile >> output;
+
+                     if ( output == datapath)
+                     {
+                         myreadfile >> output;
+                         Datapath = output;
+                     }
+
+                     if ( output == FileGeneratedTrackFileName)
+                     {
+                         myreadfile >> output;
+                         base_GeneratedTrackFileName = output;
+                     }
+
+
+                     if ( output == fileExtention)
+                     {
+                         myreadfile >> output;
+                         FileExtention = output;
+                     }
+
+                     if ( output == base_filename)
+                     {
+                         myreadfile >> output;
+                         FileBaseName = output;
+                     }
+                     if ( output == initialTimeStep)
+                     {
+                         myreadfile >> output;
+                         InitialtimeStep = atoi(output.c_str());
+                     }
+                     if ( output == finalTimeStep)
+                     {
+                         myreadfile >> output;
+                         FinaltimeStep = atoi(output.c_str());
+                     }
+                     if ( output == timestepIncrement)
+                     {
+                         myreadfile >> output;
+                         TimeIncrement = atoi(output.c_str());
+                     }
+                     if ( output == Threshold1)
+                     {
+                         myreadfile >> output;
+                         thresh1 = atof(output.c_str());
+                     }
+                     if ( output == Threshold2)
+                     {
+                         myreadfile >> output;
+                         thresh2 = atof(output.c_str());
+                     }
+
+                     if ( output == timestepPrecision)
+                     {
+                         myreadfile >> output;
+                         TimePrecision = atoi(output.c_str());
+                     }
+
+
+
+                     if ( output == xdim)
+                     {
+                         myreadfile >> output;
+                         x_dim = atoi(output.c_str());
+                     }
+
+                     if ( output == ydim)
+                     {
+                         myreadfile >> output;
+                         y_dim = atoi(output.c_str());
+                     }
+                     if ( output == zdim)
+                     {
+                         myreadfile >> output;
+                         z_dim = atoi(output.c_str());
+                     }
+
+
+                     if ( output == x1dim)
+                     {
+                         myreadfile >> output;
+                         x1_dim = atoi(output.c_str());
+                     }
+
+                     if ( output == y1dim)
+                     {
+                         myreadfile >> output;
+                         y1_dim = atoi(output.c_str());
+                     }
+                     if ( output == z1dim)
+                     {
+                         myreadfile >> output;
+                         z1_dim = atoi(output.c_str());
+                     }
+
+
+
+
+                     if ( output == x0dim)
+                     {
+                         myreadfile >> output;
+                         x0_dim = atoi(output.c_str());
+                     }
+
+                     if ( output == y0dim)
+                     {
+                         myreadfile >> output;
+                         y0_dim = atoi(output.c_str());
+                     }
+                     if ( output == z0dim)
+                     {
+                         myreadfile >> output;
+                         z0_dim = atoi(output.c_str());
+                     }
+
+
+
+                     if ( output == deltaxthreshold)
+                     {
+                         myreadfile >> output;
+                         deltaxval = atof(output.c_str());
+                     }
+                     if ( output == deltaythreshold)
+                     {
+                         myreadfile >> output;
+                         deltayval = atof(output.c_str());
+                     }
+                     if ( output == deltazthreshold)
+                     {
+                         myreadfile >> output;
+                         deltazval = atof(output.c_str());
+                     }
+                     if ( output == smallestObjVolToTrack)
+                     {
+                         myreadfile >> output;
+                         SmallestObjVol = atoi(output.c_str());
+                     }
+                     if ( output == variableNames)
+                     {
+                         myreadfile >> output;
+                         variableNamesvect.push_back(output.c_str());
+                         //	myreadfile >> output;
+                         //	variableNamesvect.push_back(output.c_str());
+                     }
+                 }
+                 myreadfile.close();
+                 //   cout<<j<<" "<<i<<" :<<j & i value"<<endl;
+             }
+             else
+             {
+                 cout<< "Cannot open the FeatureTrack.Conf File.!!!"<<endl;
+             }
+             cout<<" Data Path: "<< Datapath <<endl;
+             cout<<" GeneratedFilePath: "<< base_GeneratedTrackFileName <<endl;
+             cout<<" base_filename: "<< FileBaseName <<endl;
+             cout<<" file_extension: "<< FileExtention<<endl;
+             cout<<" initialTimeStep: "<< InitialtimeStep <<endl;
+             cout<<" FinaltimeStep: "<< FinaltimeStep <<endl;
+             cout<<" TimeIncrement: "<< TimeIncrement <<endl;
+             cout<<" thresh1: "<< thresh1 <<endl;
+             cout<<" thresh2: "<< thresh2<<endl;
+             cout<<" TimePrecision: "<< TimePrecision <<endl;
+             cout<<" deltaxval: "<< deltaxval <<endl;
+             cout<<" deltayval: "<< deltayval <<endl;
+             cout<<" deltazval: "<< deltazval <<endl;
+             cout<<" SmallestObjVol: "<< SmallestObjVol <<endl;
+             for(int i=0;i<variableNamesvect.size();i++)
+                 cout<<" variableNamesvect[ "<<i<<"]"<< variableNamesvect[i]<<endl;
+
+         }
 
 
 
@@ -8950,7 +9072,7 @@ bool velocityMag_LocalMin_onSurface_withoutETA(vtkSmartPointer<vtkDataSet>& in_d
             double boxCenter_inDataset_x = xCoord[boxCenter_x];
             double boxCenter_inDataset_y = yCoord[boxCenter_y];
 
-            velocityMag_centorid.push_back(make_pair(cv::Point(boxCenter_x,boxCenter_y), 0));
+            velocityMag_centorid.push_back(make_pair(cv::Point2d(boxCenter_x,boxCenter_y), 0));
 
 
 
@@ -9127,7 +9249,7 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
             double boxCenter_inDataset_x = xCoord[boxCenter_x];
             double boxCenter_inDataset_y = yCoord[boxCenter_y];
 
-            velocityMag_centorid.push_back(make_pair(cv::Point(boxCenter_x,boxCenter_y), 0));
+            velocityMag_centorid.push_back(make_pair(cv::Point2d(boxCenter_x,boxCenter_y), 0));
 
 
 
@@ -9440,10 +9562,12 @@ int main(void)
     float thresh1, thresh2, deltaxval, deltayval, deltazval;
     shared_ptr<double[]> temp_iso_val(new double[9]);
     file_name = string("FeatureTrack.Conf").c_str();
-    dataVariableName variableName;
+
     
     //,&x_dim,&y_dim,&z_dim
-    parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,file_name, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius,variableName);
+    if(parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,file_name, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius)==-1){
+        return -1;
+    }
 
     //Inital global variables
     dataset_xLength = x_dim;
@@ -9595,7 +9719,15 @@ int main(void)
         vector<pair<cv::Point2d,double>> eta_centroid;
 //        shared_ptr<double[]>zLevelData(new double[dataset_zLength]);
         double* zLevelData = new double[dataset_zLength];
-        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,zLevelData,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,x1_dim,y1_dim,z1_dim,currentTime,variableName);
+        vtkSmartPointer<vtkDataSet>in_ds;
+        try {
+            in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,zLevelData,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,x1_dim,y1_dim,z1_dim,currentTime);
+        } catch (invalid_argument& e) {
+            cerr << e.what() << endl;
+            cout<<"Can't create vtk dataset"<<endl;
+            return -1;
+        }
+
         bool etaFlag=0;
         if(ncFilePath == "None")
             etaFlag = ReadNcData_SSH_SingleFrame(eta_centroid,file_name, x_dim,y_dim,OutputOcdfile);
@@ -9750,7 +9882,7 @@ int main(void)
         std::vector<int>successSet2;
         std::vector<int>successSet3;
 
-        for(unsigned long i  = 0; i < eddyCenter_onSurface.size(); i++) // go for each center
+        for(int i  = 0; i < eddyCenter_onSurface.size(); i++) // go for each center
         {
 
 
@@ -10642,10 +10774,9 @@ int main(void)
 
         cout<<"Segmentation is completed.. Total number of extracted objects in this time step is: [" <<firstobj+1<<"]" <<endl;
         
-        if(firstobj+1 == 0){
+        if(firstobj+1 == 0)
             cout<<"---- WARNING:  No Object is found with the given parameters!  --- "<<endl;
-            return 1;
-        }
+        
         /********************** Find Clusters ***********************/
         
         int n = 3;
