@@ -90,13 +90,24 @@ X_Dim: 500
 Y_Dim: 500
 Z_Dim: 50
 
-#Start/end voxel coordinate.
+# Start/end voxel coordinate.
 X1_Dim: 499
 Y1_Dim: 499
 Z1_Dim: 49
 X0_Dim: 0
 Y0_Dim: 0
 Z0_Dim: 0
+
+# The name of variables in the dataset (Netcdf dataset in this example)
+xCoord_Name: XC
+yCoord_Name: YC
+zCoord_Name: Z_MIT40
+Temp_Name: TEMP
+Salinity_Name: SALT
+Velocity_U_Name: U
+Velocity_V_Name: V
+Welocity_W_Name: V
+SSH_Name: ETA
 ```
 Except the configuration file. You may also need to change the variable name in the code depending on different dataset. The names of the value are located in Line 2575-2588 in mainFeatureTracki.cpp (if you're using 3D volumn data in stacked data file). This problem will be replaced by variable name in configuration file.
 
