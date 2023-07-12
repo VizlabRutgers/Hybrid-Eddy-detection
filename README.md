@@ -25,7 +25,7 @@ VTK-8.2.0
 OpenCV-3.4.13  
 
 IDE:
-QT-5.14.2 
+QT-5.14.2   
 (Working on Visual Studio 2019 community)
 
 Installation Steps:
