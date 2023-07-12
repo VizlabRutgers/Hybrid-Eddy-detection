@@ -30,20 +30,21 @@ QT-5.14.2
 
 Installation Steps:
 1. Install Cmake/CMake-gui.(not use the latest one as qt may not support that currently. Version 3.14 verified).
-2. Install qt5.
-3. Install Hdf5 and Netcdf first, which should not be a problem
-4. Install VTK library, I use vtk 8,2 here.
+2. (optional)Install qt5.
+3. Install Hdf5 and Netcdf first.
+4. Install VTK library, I use vtk 8.2 here.
     a)You may meet some problem because of the incompatible version of cmake or VTK library.
     b)You need to change the library path in CMakeList file.
-    b)You may need to use apt-file command to find necessary file (for QT).
-5. Compile the source code by Cmake(or Do it in QT).
-6. Make file.
-7. You could see the excutable file "FT" in your folder. 
+    c)You may need to use apt-file command to find necessary file (for QT).
+    d)If you are working in QT, you may need to compile VTK with QT.
+6. Compile the source code by Cmake(or Do it in QT).
+7. Make file.
+8. You could see the excutable file "FT" in your folder. 
 
 # Usage 
 1. Modify the configuration file (FeatureTrack.conf) to match the path of the dataset
-2. Put the FeatureTrack.Conf to folder where you compile the code to.
-3. Run the executable file
+2. Copy the FeatureTrack.Conf to folder where you compile the code to.
+3. Run the executable file "FT"
 
 # Configuration File
 The program support 2D and 3D dataset with variables including temperature and salinity.
