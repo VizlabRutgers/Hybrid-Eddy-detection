@@ -177,7 +177,7 @@ TARGET_LINK_LIBRARIES( FT
   #vtkHybrid
   ${HDF5_LIBRARIES}
   ${NETCDF_LIBRARIES}
-  ${OpenCV_LIB}
+  ${OpenCV_LIBS}
 )
 
 
