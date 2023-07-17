@@ -92,24 +92,41 @@ endif()
 # set(CMAKE_LIBRARY_PATH /home/ardofski/netcdf_build/CMakeFiles/Export/lib)
 # set(CMAKE_INCLUDE_PATH /home/ardofski/netcdf_build/include)
 
-find_package(netCDF)
-if(netCDF_FOUND)
-  message(STATUS "netCDF is found: ${netCDF_DIR}")
+
+find_path(NETCDF_INCLUDE_DIR netcdf.mod DOC "NetCDF include directory (must contain netcdf.mod)")
+if(NETCDF_INCLUDE_DIR)
+  MESSAGE(STATUS "NETCDF module found in " ${NETCDF_INCLUDE_DIR})
 else()
-  if(EXISTS ${netCDF_PATH})
-    set(OpenCV_DIR ${netCDF_PATH})
-    find_package(netCDF REQUIRED)
-    if(NOT netCDF_FOUND)
-      message(FATAL_ERROR FATAL_ERROR "netCDF not found. Please provide the path of netCDF.")
-    else()
-      messsage(STATUS "netCDF is found: ${netCDF_DIR}")
-    endif()
-  else()   
-    message(FATAL_ERROR "netCDF not found. Please provide the path of netCDF.")
-    set(netCDF_PATH "" CACHE PATH "Path to netCDF")
-  endif()
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
 endif()
 
+
+find_library(NETCDF_C_LIB netcdf DOC "NetCDF C library" PATHS $ENV{NETCDF_LIB} /usr/lib /usr/lib64 $ENV{SARA_NETCDF_LIB})
+
+if(NETCDF_C_LIB)
+  set(NETCDF_LIBS ${NETCDF_C_LIB})
+  MESSAGE(STATUS "NETCDF C library: " ${NETCDF_C_LIB})
+else()
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+endif()
+
+if(NETCDF_INCLUDE_DIR)
+
+else(NETCDF_INCLUDE_DIR)
+
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+
+endif(NETCDF_INCLUDE_DIR)
+
+if(NETCDF_C_LIB)
+
+  set(NETCDF_LIBS ${NETCDF_C_LIB})
+
+else(NETCDF_C_LIB)
+
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+
+endif(NETCDF_C_LIB)
 
 
 
@@ -160,7 +177,7 @@ TARGET_LINK_LIBRARIES( FT
   #vtkHybrid
   ${HDF5_LIBRARIES}
   ${NETCDF_LIBRARIES}
-  ${OpenCV_LIBRARIES}
+  ${OpenCV_LIB}
 )
 
 
