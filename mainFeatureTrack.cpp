@@ -4825,7 +4825,7 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
 //    return mesh;
     
 //    cout<<"---------- Just Created the full VtkDataSet. ntuples[ "<<ntuples <<" ] ----------- " <<endl;
-    
+    return NULL;
 }
 
 
