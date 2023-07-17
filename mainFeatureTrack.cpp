@@ -5045,7 +5045,7 @@ int BeginObjSegment(vtkDataSet *in_ds,vtkDataSet **outDS,int celltype,int curren
 //
 //------------------------------------------------------
 
-void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string& ncFilePath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
+int parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string& ncFilePath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
                      float &deltaxval, float &deltayval, float &deltazval,int &SmallestObjVol,
                      int &TimePrecision, int &TimeIncrement, float &thresh1, float &thresh2,long & x_dim, long &y_dim, long &z_dim,long & x0_dim, long &y0_dim, long &z0_dim,  long & x1_dim, long &y1_dim, long &z1_dim, int& CircleStartRadius, dataVariableName& datavariableName)
 {
@@ -5308,6 +5308,7 @@ void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, stri
     else
     {
         cout<< "Cannot open the FeatureTrack.Conf File.!!!"<<endl;
+	return 1;
     }
     cout<<" Data Path: "<< Datapath <<endl;
     cout<<" GeneratedFilePath: "<< base_GeneratedTrackFileName <<endl;
@@ -5325,6 +5326,7 @@ void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, stri
     cout<<" SmallestObjVol: "<< SmallestObjVol <<endl;
     for(int i=0;i<variableNamesvect.size();i++)
         cout<<" variableNamesvect[ "<<i<<"]"<< variableNamesvect[i]<<endl;
+    return 0;
     
 }
 //------------------------------------
@@ -9443,7 +9445,7 @@ int main(void)
     dataVariableName variableName;
     
     //,&x_dim,&y_dim,&z_dim
-    parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,file_name, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius,variableName);
+    if(parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,file_name, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius,variableName)) return 1;
 
     //Inital global variables
     dataset_xLength = x_dim;
@@ -10801,7 +10803,7 @@ int main(void)
     } // end of currenttime loop
 
     nc_close(ncid);
-    
+    return 0;
 }//end of main
 
 
