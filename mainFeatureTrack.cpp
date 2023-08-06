@@ -3653,7 +3653,7 @@ vtkDataSet * ReadNcDataFile_optical(float ** Data_out,string FileName,float ** X
     return returnVal;
 }
 
-bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, string FileName, int x_dim, int y_dim,const string OutputOcdfile)
+bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, string FileName, int x_dim, int y_dim,const string OutputOcdfile,dataVariableName& variableName)
 {
 
     FILE *fpoutETAMax;
@@ -3685,7 +3685,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
         cout<<"couldnt open the file :[ "<<FileName.c_str()<<" ---- !!!"<<endl;
 
 
-    if ((retval = nc_inq_varid(ncid, "ETA", &ETA_varid))){
+    if ((retval = nc_inq_varid(ncid, variableName.getSSH(), &ETA_varid))){
         cout<<"No ETA Data"<<endl;
         return 1;
     }
@@ -3834,7 +3834,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
 
 }
 
-bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, string ncFileName, int x_dim, int y_dim,const string OutputOcdfile, const size_t timeFrame)
+bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, string ncFileName, int x_dim, int y_dim,const string OutputOcdfile, const size_t timeFrame,dataVariableName& variableName)
 {
 
     FILE *fpoutETAMax;
@@ -3871,7 +3871,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
         cout<<"couldnt open the file :[ "<<ncFileName.c_str()<<" ---- !!!"<<endl;
 
 
-    if ((retval = nc_inq_varid(ncid, "ETA", &ETA_varid))){
+    if ((retval = nc_inq_varid(ncid, variableName.getSSH(), &ETA_varid))){
         cout<<"No ETA Data"<<endl;
         return 0;
     }
@@ -4008,7 +4008,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
 
     iter_contour = erode_contours.begin();
-    while(iter_contour != erode_contours.end()){
+    while(iter_contour != erode_contours.end()){dataVariableName& variableName
 //        if(input.at<double>((*iter_contour).at(0)) != 0)
             eta_centorid.push_back(make_pair((*iter_contour).at(0), input.at<double>((*iter_contour).at(0))));
         iter_contour++;
@@ -4020,7 +4020,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
 }
 
-bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid, string ncFileName, int x_dim, int y_dim,const string OutputOcdfile, const size_t timeFrame)
+bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid, string ncFileName, int x_dim, int y_dim,const string OutputOcdfile, const size_t timeFrame, dataVariableName& variableName)
 {
 
     FILE *fpoutETAMax;
@@ -4057,7 +4057,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
         cout<<"couldnt open the file :[ "<<ncFileName.c_str()<<" ---- !!!"<<endl;
 
 
-    if ((retval = nc_inq_varid(ncid, "zos", &ETA_varid))){
+    if ((retval = nc_inq_varid(ncid, variableName.getSSH(), &ETA_varid))){
         cout<<"No ETA Data"<<endl;
         return 1;
     }
@@ -9600,12 +9600,12 @@ int main(void)
         vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,zLevelData,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,x1_dim,y1_dim,z1_dim,currentTime,variableName);
         bool etaFlag=0;
         if(ncFilePath == "None")
-            etaFlag = ReadNcData_SSH_SingleFrame(eta_centroid,file_name, x_dim,y_dim,OutputOcdfile);
+            etaFlag = ReadNcData_SSH_SingleFrame(eta_centroid,file_name, x_dim,y_dim,OutputOcdfile,variableName);
         else{
             if(z_dim==1)
-                etaFlag = ReadNcData_SSH_MultiFrame_2D(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,currentTime);
+                etaFlag = ReadNcData_SSH_MultiFrame_2D(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,currentTime,variableName);
             else
-                etaFlag = ReadNcData_SSH_MultiFrame(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,currentTime);
+                etaFlag = ReadNcData_SSH_MultiFrame(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,currentTime,variableName);
         }
         eta_centroid.erase(remove_if(eta_centroid.begin(),eta_centroid.end(),[](pair<cv::Point2d,double> x){return x.second == 0;}),eta_centroid.end());
 
