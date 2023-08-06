@@ -3873,7 +3873,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
     if ((retval = nc_inq_varid(ncid, variableName.getSSH(), &ETA_varid))){
         cout<<"No ETA Data"<<endl;
-        return 0;
+        return 1;
     }
 
     if ((retval = nc_get_vara_double(ncid, ETA_varid, dataStart, dataCount,ETA_vals)))
