@@ -95,7 +95,7 @@ InpObject<T> :: ~InpObject()
 	 objPtr=nextPtr;  	
     }
     stCellIndex *list, *nextlist; // freePos
-    register int i;
+    int i;
     for(i=0;i<numNodes;i++)
     {
          delete pnode[i].adjPosList;
@@ -110,7 +110,7 @@ InpObject<T> :: ~InpObject()
     delete [] pnode;
 /*/--------------------------
     ObjIndex *ObjList, *nextlist1; // freePos
-    //register int i;
+    //int i;
     for(i=0;i<MaxPacketnumber;i++)
     {
          ObjList=packets[i].ObjList;

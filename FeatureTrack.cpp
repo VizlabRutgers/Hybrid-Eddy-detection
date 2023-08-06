@@ -247,14 +247,14 @@ obj1  2  504    56      7
      int numObjs1=t1.objVols.size();
      int numObjs2=t2.objVols.size();
      int numObjs=(direct==_FORWARD_) ? numObjs1:numObjs2;
-     for (register int obj1 = 0; obj1<numObjs; obj1++) 
+     for (int obj1 = 0; obj1<numObjs; obj1++)
      {
           Overlaps.clear();
           FindOverlap(obj1, Overlaps, direct,t1,t2,OverlapTable); // store the overlapping object indexes into Overlaps vector
           int NumOvlp(Overlaps.size()); 
           int NumCom( (int) pow(2.0, NumOvlp) );
           Comb.resize(NumOvlp);
-          for (register int i=1; i<NumCom; i++)
+          for (int i=1; i<NumCom; i++)
           {
               // By Weiping Hua
               // This combination is to calculate all possible combination (00/01/10/11) and pick up the biggest score. I guess it is because the previous
@@ -263,7 +263,7 @@ obj1  2  504    56      7
                GenCombination(Comb, i); 
                float cost(  (float) Intersect(Comb, NumOvlp, Overlaps, obj1, direct,OverlapTable)/GeomMean(Comb, NumOvlp, Overlaps, obj1, direct,t1,t2) );
                int Score((int)(1000*cost));
-               for (register int j=0; j<NumOvlp; j++)
+               for (int j=0; j<NumOvlp; j++)
                {
 	            if (Comb.at(j))
                     {
@@ -361,7 +361,7 @@ void FindOverlap(int const obj,vector<int>& Overlaps, DIRECTION const direct,Fra
           numObjs=t2.objVols.size();
      else
           numObjs=t1.objVols.size();
-     for (register int i(0); i<numObjs; i++)
+     for (int i(0); i<numObjs; i++)
      {
           if(direct==_FORWARD_)
           {
@@ -438,7 +438,7 @@ float Intersect2(int objectIndex,vector<int> const & Overlaps,int const obj, DIR
 float GeomMean(vector<int> const & Comb,int const NumOvlp,vector<int> const & Overlaps,int const obj, DIRECTION const direct, Frame& t1, Frame& t2)
 {
      long vol(0);
-     for (register int i=0; i<NumOvlp; i++)
+     for (int i=0; i<NumOvlp; i++)
      {
           if (Comb.at(i))
           {
@@ -670,7 +670,7 @@ void CopyTmpFrToList(int const which,TMPFR &tmpfr,vector<FRAME>& FrameList)
 {  // which = 0, copy tmpfr0;  1 copy tmpfr1;
      int t(tmpfr.getnumObjs());
      FrameList.back().NodeArray.resize(t);
-     register int i = 0;
+     int i = 0;
      for(i=0; i<t; i++)
      {
           FrameList.back().NodeArray.at(i).FrameInd = FrameList.back().index;
@@ -708,7 +708,7 @@ void CopyTmpFrToList(int const which,TMPFR &tmpfr,vector<FRAME>& FrameList)
 */
 bool ReadNumNodes(vector<FRAME>& FrameList,int step,vector<string>& time_polyfile)
 {
-     register int i(0);
+     int i(0);
      int dummy1 = 0, dummy2 = 0, nNode = 0;
      ifstream fp;
      string attributefile, tmpstr, buffer;
@@ -819,7 +819,7 @@ void Colorize(vector<FRAME>& FrameList)
      //Pinakin :: Check if frame-to-be-tracked has complete color information 
      //#cout<<"\nDisplaying just filled color info for frame 2:";
      FRAME tempo=FrameList.back();
-     register int ll=0;
+     int ll=0;
      while(ll < tempo.NodeArray.size())
      {
           //#cout<<"\nOBject No:"<<ll<<endl;
@@ -833,7 +833,7 @@ void Colorize(vector<FRAME>& FrameList)
 */
 bool UniformColorPoly(int const step,vector<FRAME>& FrameList,vector<string>& time_polyfile)
 { // PROBLEM!!
-     register int i =0, j =0,k=0;
+     int i =0, j =0,k=0;
      char buffer[255];
      char tmpfile[100];
      FILE *fp1=NULL, *fp2=NULL;
@@ -991,7 +991,7 @@ void TrackSplit_Merge(int const step, SPLIT_MERGE const sm,Frame& t1,Frame &t2, 
      // ------------------------------------------------------------------	
 
 
-     for (register int obj=0; obj<numObjs; obj++)
+     for (int obj=0; obj<numObjs; obj++)
      {
           vector<int> list; //ext+seq_wr+no_init
           if(sm==_MERGE_ && tag2.at(obj))
@@ -1004,7 +1004,7 @@ void TrackSplit_Merge(int const step, SPLIT_MERGE const sm,Frame& t1,Frame &t2, 
           //#cout<<funcname<<":obj"<<obj<<" has "<<nzero<<" overlapping objs in the other frame\n";
           if (nzero>1)
           {
-               for (register int i=0; i<nzero; i++)
+               for (int i=0; i<nzero; i++)
                {
 	            vector<int>::iterator mytag1;
 	            vector<int>::iterator mytag2;
@@ -1036,7 +1036,7 @@ void TrackSplit_Merge(int const step, SPLIT_MERGE const sm,Frame& t1,Frame &t2, 
 	                           objs_bcheck(step,obj,objs);
 	                           objs.at(step).at(obj).ismerge=Consts::YES;
 	                      }
-	                      for(register int j=0; j<nSM; j++)
+                          for(int j=0; j<nSM; j++)
                               {
 	                           int obj2(SMList.at(j));
 	                           *(mytag2+obj2)=1;
@@ -1105,8 +1105,8 @@ void TrackSplit_Merge2(int const step, SPLIT_MERGE const sm,Frame& t1,Frame &t2,
      // Thus I simplify the code to check if the Score is bigger than the score.
      */
 
-     int max = __DBL_MIN__;
-     int min = __DBL_MAX__;
+     double max = __DBL_MIN__;
+     double min = __DBL_MAX__;
 
 //     for(int i = 0; i< ScoreBoard.size() ; i++)
 //     {
@@ -1307,7 +1307,7 @@ void NumNonZeros(int const row,vector<int> & list, ROW_COL const rc,Frame& t1,Fr
           numObjs=t2.objVols.size();
     else
           numObjs=t1.objVols.size();
-    for (register int i(0); i<numObjs; i++)
+    for (int i(0); i<numObjs; i++)
     {
          if(rc==_ROW_)
          {
@@ -1331,7 +1331,7 @@ nlist is an input which is the number of elements used to find the same scores.
 int GetSameScore(int const row,int const ind,int const nlist,vector<int> & list,vector<int> & split, ROW_COL const rc,vector<vector<int> >& ScoreBoard,vector<int>& tag1,vector<int>& tag2, double &tolerance)
 {
      split.push_back(list.at(ind));
-     for (register int i=ind+1; i<nlist; i++)
+     for (int i=ind+1; i<nlist; i++)
      {
           if(rc==_ROW_)
           {
@@ -1379,7 +1379,7 @@ bool IsMax(int const row,int const col, ROW_COL const rc,vector<vector<int> >& S
           numObjs=t2.objVols.size();    
      else 
           numObjs=t1.objVols.size();
-     for (register int i=0; i<numObjs; i++)
+     for (int i=0; i<numObjs; i++)
      {
           if(rc==_ROW_)
           {
@@ -1434,7 +1434,7 @@ void GetInts(string const buffer, vector<int> & line)
         pos = buffer.find_first_of(delimiters, lastPos);
     }
     // now add the integers to line vector
-    for(int i = 0; i < tokens.size();i++)
+    for(ulong i = 0; i < tokens.size();i++)
     {
          line.push_back(StoT<int>(tokens[i]));
     }

@@ -4482,7 +4482,7 @@ void ReadGridFile(vector<string> DataSetName, const char *FileName,float ** Xcoo
     
 }
 
-vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileName, long x_dim, long y_dim, long z_dim, string data_path,string stackedNcFilePath,long x0_dim, long y0_dim, long z0_dim, long x1_dim, long y1_dim, long z1_dim, int timeFrame, dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileName, long x_dim, long y_dim, long z_dim, string data_path,string stackedNcFilePath,long x0_dim, long y0_dim, long z0_dim, int timeFrame, dataVariableName& variableName)
 {
     //this is the main data read function. This function takes the data file extension and makes a comparison to check if it fits into the known extension types.
     // Currently this function can read netCDF, HDF5, VTK and VTR types).
@@ -4595,7 +4595,7 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
 //        int testtt;
 //        int testtt2 = 0;
 
-        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
+//        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
 //        cout<<" data_out[0] & [end] : "<<data_out[0]<<" & "<<data_out[nnodes-1]<<endl;
 //        cout<<" Xcoord[0] & [end] : "<<" "<<Xcoord[0]<<" & "<<Xcoord[x_dim-1]<<endl;
 //        cout<<" Ycoord[0] & [end] : "<<" "<<Ycoord[0]<<" & "<<Ycoord[y_dim-1]<<endl;
@@ -4633,7 +4633,7 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
                 output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
         }
 
-        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
+//        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
         
         return output;
         
@@ -4665,7 +4665,7 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
         file_Buff.close();
 
 
-        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
+//        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
 
         return output;
 
@@ -4713,7 +4713,7 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
 //            }
             
 //        }
-        
+
 //    }
     
 //    for(long z = z0_dim; z<=z1_dim; z++)
@@ -4822,7 +4822,7 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
 //    return mesh;
     
 //    cout<<"---------- Just Created the full VtkDataSet. ntuples[ "<<ntuples <<" ] ----------- " <<endl;
-    
+    return NULL;
 }
 
 
@@ -9595,7 +9595,7 @@ int main(void)
         vector<pair<cv::Point2d,double>> eta_centroid;
 
 //        double* zLevelData = new double[dataset_zLength];
-        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,x1_dim,y1_dim,z1_dim,currentTime,variableName);
+        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,currentTime,variableName);
         bool etaFlag=0;
         if(ncFilePath == "None")
             etaFlag = ReadNcData_SSH_SingleFrame(eta_centroid,file_name, x_dim,y_dim,OutputOcdfile,variableName);

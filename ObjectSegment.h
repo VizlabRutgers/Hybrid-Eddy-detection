@@ -102,7 +102,7 @@ string getlabel(std::string listfile)
 //int PopulateInputData(InpObject<T> *inPtr, unsigned long *node_conn_array, float *coord_array, float *node_data)
 //{
 //    //#cout << "Now in PopulateInputData \n";
-//    register unsigned long i=0, j=0;
+//    unsigned long i=0, j=0;
 //    stNodePos    *nodePtr,   *curNode;
 //    stNodeData   *nodeDataPtr,  *curDataPtr;
 //    float max_node_data0=-99999.0, min_node_data0=99999.0;
@@ -182,7 +182,7 @@ string getlabel(std::string listfile)
 int Get_Conn(InpObject<stCellHex> *inPtr, unsigned long *node_conn_array)
 {
     //#cout << "In Get_Conn\n";
-    register long i = 0, j = 0;
+    long i = 0, j = 0;
     stCellHex *cellArrPtr, *curCell;
     cellArrPtr=CreateCellArray<stCellHex>(inPtr->numCell);
     // assert(cellArrPtr);
@@ -221,7 +221,7 @@ int ProcessThresholds(InpObject<T> *inPtr, double threshold_value, int thrValTyp
     cout << "inside processthreshold \n";
     cout<<"inPtr->thrVal:["<<inPtr->thrVal<<"] and inPtr->nncomp:["<<inPtr->nncomp<<"] "<<endl;
     
-    register unsigned long j=0;
+    unsigned long j=0;
     stNodePos *nodeList, *curNodePtr;
     stNodeData *dataList, *curDataPtr;
     static unsigned long  threshCnt = 0;
@@ -279,7 +279,7 @@ int ProcessThresholds(InpObject<T> *inPtr, double threshold_value, int thrValTyp
 template<class T>
 int SegmentObjects(InpObject<T> *inPtr, int minObjSize,char *mergeArray)
 {
-    //register int i =0;//, l=0;
+    //int i =0;//, l=0;
     stCellIndex  *indexPtr = NULL, *nextPtr,  *index1Ptr, *cellPtr, *swapPtr;
     stObject *objPtr;
     stNodeData *dataList;
@@ -390,7 +390,7 @@ stCellIndex* GetMaxDataValue(InpObject<T> *inObj)
     maxretPtr=tmpPtr=0;
     cnt=inObj->numNodes;
     maxVal = LONG_MIN;
-    register unsigned long i = 0;
+    unsigned long i = 0;
     for (i=0;i<cnt;i++)
     {
         if ( nodeList[i].flag == F_UNUSED ) // means this cell is not in the threshold
@@ -425,7 +425,7 @@ stCellIndex* GetMaxDataValue(InpObject<T> *inObj)
 void ResetArray(unsigned long nnodes, char *mergeArray)
 {
     
-    for(register unsigned long i=0;i<nnodes;i++)
+    for(unsigned long i=0;i<nnodes;i++)
         mergeArray[i] = 0;
     
 }
@@ -451,7 +451,7 @@ int SetObjMax( InpObject<T>  *inPtr,int cellpoints )
     nodeList = inPtr->pnode;
     cellList = inPtr->pcell;
     dataList = inPtr->pnodeData;
-    register unsigned long i = 0;
+    unsigned long i = 0;
     for(i=0;i<inPtr->numNodes;i++)
         nodeList[i].flag &= (~F_USED);
     
@@ -609,7 +609,7 @@ int FindCentAndVol( InpObject<T> *inPtr,int cellpoints)
     
     objPtr = inPtr->pobject;
     nodeList = inPtr->pnode;
-    register unsigned long i = 0;
+    unsigned long i = 0;
     for (i=0;i<inPtr->numNodes;i++)       // reset all point's Used flag
         nodeList[i].flag &= (~F_USED);
     nodeList = inPtr->pnode;
@@ -753,7 +753,7 @@ int ExtractSurf(vtkDataSet *in_ds,InpObject<T> *inPtr,vtkDataSet **outDS, char* 
     cellList = inPtr->pcell;
     nodeList = inPtr->pnode;
     dataList = inPtr->pnodeData;
-    register unsigned long i =0,j=0;
+    unsigned long i =0,j=0;
     char *mergeArray;
     for (i=0;i<inPtr->numNodes;i++)
         nodeList[i].flag &= (~F_USED);
@@ -972,7 +972,7 @@ int FindMoment( InpObject<T> *inPtr,int cellpoints )
     float         val =0.0, Ixx=0.0, Iyy=0.0, Izz=0.0, Iyz=0.0, Ixy=0.0, Izx=0.0;
     float         mx = 0.0, my = 0.0, mz = 0.0;
     unsigned long           /*rc =0, */ptNumber=0, objNum=0;
-    register unsigned long i =0, point =0;
+    unsigned long i =0, point =0;
     T             *cell, *cellList;
     
     objPtr = inPtr->pobject;
@@ -1148,7 +1148,7 @@ int OutputOcd( InpObject<T> *inPtr, char *outFile,int timeFrame,bool dovolren,in
      
      vol=(char*)malloc(nnodes*sizeof(char));
      if(!vol) prt_rtn1("readavsdata: allocate error\n");
-     for(register int i=0;i<nnodes;++i) vol[i]=0;
+     for(int i=0;i<nnodes;++i) vol[i]=0;
      
      volfp=fopen(volfile.c_str(),"wb");
      if(!volfp) {
@@ -1236,7 +1236,7 @@ int OutputOcd( InpObject<T> *inPtr, char *outFile,int timeFrame,bool dovolren,in
      volfp=0;
      volfp=fopen(vol_templ_file.c_str(),"wb");
      assert(volfp);
-     for(register int i=0;i<nnodes;++i)
+     for(int i=0;i<nnodes;++i)
      if(vol[i]!=0)
      vol[i]=50;
      if(fwrite(vol,sizeof(char),nnodes,volfp)!=nnodes)
@@ -1773,7 +1773,7 @@ int PopulateInputData(InpObject<T> *inPtr, unsigned long *node_conn_array, float
     cout << "inside PopulateInputData inPtr->nncomp: "<<inPtr->nncomp<<endl;
     
     //#cout << "Now in PopulateInputData \n";
-    register unsigned long i=0, j=0;
+    unsigned long i=0, j=0;
     stNodePos    *nodePtr,   *curNode;
     stNodeData   *nodeDataPtr,  *curDataPtr;
     double max_node_data0=-99999.0, min_node_data0=99999.0;
