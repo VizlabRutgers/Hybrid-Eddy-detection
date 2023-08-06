@@ -28,7 +28,7 @@ void SetCellNodes(unsigned long pos[8],stCellHex *cell)
 
 int ProcessCells(InpObject<stCellHex> *inPtr)
 {
-  unsigned long j = 0;
+  register unsigned long j = 0;
   
   stNodePos    *nodeList, *curNodePtr;
   stCellHex    *cellList, *curCellPtr;

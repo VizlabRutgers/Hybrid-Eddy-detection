@@ -182,7 +182,7 @@ string getlabel(std::string listfile)
 int Get_Conn(InpObject<stCellHex> *inPtr, unsigned long *node_conn_array)
 {
     //#cout << "In Get_Conn\n";
-    long i = 0, j = 0;
+    register long i = 0, j = 0;
     stCellHex *cellArrPtr, *curCell;
     cellArrPtr=CreateCellArray<stCellHex>(inPtr->numCell);
     // assert(cellArrPtr);
@@ -221,7 +221,7 @@ int ProcessThresholds(InpObject<T> *inPtr, double threshold_value, int thrValTyp
     cout << "inside processthreshold \n";
     cout<<"inPtr->thrVal:["<<inPtr->thrVal<<"] and inPtr->nncomp:["<<inPtr->nncomp<<"] "<<endl;
     
-    unsigned long j=0;
+    register unsigned long j=0;
     stNodePos *nodeList, *curNodePtr;
     stNodeData *dataList, *curDataPtr;
     static unsigned long  threshCnt = 0;
@@ -390,7 +390,7 @@ stCellIndex* GetMaxDataValue(InpObject<T> *inObj)
     maxretPtr=tmpPtr=0;
     cnt=inObj->numNodes;
     maxVal = LONG_MIN;
-    unsigned long i = 0;
+    register unsigned long i = 0;
     for (i=0;i<cnt;i++)
     {
         if ( nodeList[i].flag == F_UNUSED ) // means this cell is not in the threshold
@@ -425,7 +425,7 @@ stCellIndex* GetMaxDataValue(InpObject<T> *inObj)
 void ResetArray(unsigned long nnodes, char *mergeArray)
 {
     
-    for(unsigned long i=0;i<nnodes;i++)
+    for(register unsigned long i=0;i<nnodes;i++)
         mergeArray[i] = 0;
     
 }
@@ -451,7 +451,7 @@ int SetObjMax( InpObject<T>  *inPtr,int cellpoints )
     nodeList = inPtr->pnode;
     cellList = inPtr->pcell;
     dataList = inPtr->pnodeData;
-    unsigned long i = 0;
+    register unsigned long i = 0;
     for(i=0;i<inPtr->numNodes;i++)
         nodeList[i].flag &= (~F_USED);
     
@@ -609,7 +609,7 @@ int FindCentAndVol( InpObject<T> *inPtr,int cellpoints)
     
     objPtr = inPtr->pobject;
     nodeList = inPtr->pnode;
-    unsigned long i = 0;
+    register unsigned long i = 0;
     for (i=0;i<inPtr->numNodes;i++)       // reset all point's Used flag
         nodeList[i].flag &= (~F_USED);
     nodeList = inPtr->pnode;
@@ -972,7 +972,7 @@ int FindMoment( InpObject<T> *inPtr,int cellpoints )
     float         val =0.0, Ixx=0.0, Iyy=0.0, Izz=0.0, Iyz=0.0, Ixy=0.0, Izx=0.0;
     float         mx = 0.0, my = 0.0, mz = 0.0;
     unsigned long           /*rc =0, */ptNumber=0, objNum=0;
-    unsigned long i =0, point =0;
+    register unsigned long i =0, point =0;
     T             *cell, *cellList;
     
     objPtr = inPtr->pobject;
@@ -1773,7 +1773,7 @@ int PopulateInputData(InpObject<T> *inPtr, unsigned long *node_conn_array, float
     cout << "inside PopulateInputData inPtr->nncomp: "<<inPtr->nncomp<<endl;
     
     //#cout << "Now in PopulateInputData \n";
-    unsigned long i=0, j=0;
+    register unsigned long i=0, j=0;
     stNodePos    *nodePtr,   *curNode;
     stNodeData   *nodeDataPtr,  *curDataPtr;
     double max_node_data0=-99999.0, min_node_data0=99999.0;
@@ -1995,7 +1995,7 @@ int Segmentation(vtkDataSet *in_ds,vtkDataSet **outDS, InpObject<T> *inPtr,int n
     SetObjMax(inPtr,  cellpoints);     //#cout << "Post SetObjMax\n";
     FindCentAndVol( inPtr, cellpoints);
     //assert( FindCentAndVol( inPtr, cellpoints ));
-    register
+    
     
     
     float absMin, absMax;

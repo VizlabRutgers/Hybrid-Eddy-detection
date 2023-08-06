@@ -1094,7 +1094,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Backup(float ** Data_out,string FileN
     return returnVal; 
 }
 
-vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  double* zLevels,int numberofComponents,dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  int numberofComponents,dataVariableName& variableName)
 {
 
     //this function first reads a specific netCDF file and creates a (curvilinear) vtkDataSet from the read data.
@@ -1794,7 +1794,6 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string 
 
     returnVal = sgrid;
     int k = returnVal->GetPointData()->GetNumberOfComponents();
-    memcpy(zLevels, z_vals, sizeof(double)*z_rho);
     delete[] x_vals;
     delete[] y_vals;
     delete[] z_vals;
@@ -1818,7 +1817,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string 
 }
 
 
-vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  double* zLevels,int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
 {
 
     //this function first reads a specific netCDF file and creates a (curvilinear) vtkDataSet from the read data.
@@ -2074,7 +2073,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,strin
 
     }
 
-    /*
+
     for(long y=0; y < s_r ; y++)
     {
         Cs_r_Vec[y] = Cs_r[y];
@@ -2523,7 +2522,6 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,strin
 
     returnVal = sgrid;
     int k = returnVal->GetPointData()->GetNumberOfComponents();
-    memcpy(zLevels, z_vals.get(), sizeof(double)*z_rho);
 //    delete[] x_vals;
 //    delete[] y_vals;
 //    delete[] z_vals;
@@ -2546,7 +2544,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,strin
     return returnVal;
 }
 
-vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  double* zLevels,int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
 {
 
     //this function first reads a specific netCDF file and creates a (curvilinear) vtkDataSet from the read data.
@@ -3255,7 +3253,6 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(float ** Data_out,string F
 
     returnVal = sgrid;
     int k = returnVal->GetPointData()->GetNumberOfComponents();
-    memcpy(zLevels, z_vals.get(), sizeof(double)*z_rho);
 //    delete[] x_vals;
 //    delete[] y_vals;
 //    delete[] z_vals;
@@ -3653,7 +3650,7 @@ vtkDataSet * ReadNcDataFile_optical(float ** Data_out,string FileName,float ** X
     return returnVal;
 }
 
-bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, string FileName, int x_dim, int y_dim,const string OutputOcdfile,dataVariableName& variableName)
+bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, string FileName, int x_dim, int y_dim,const string OutputOcdfile, dataVariableName variableName)
 {
 
     FILE *fpoutETAMax;
@@ -3685,7 +3682,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
         cout<<"couldnt open the file :[ "<<FileName.c_str()<<" ---- !!!"<<endl;
 
 
-    if ((retval = nc_inq_varid(ncid, variableName.getSSH(), &ETA_varid))){
+    if ((retval = nc_inq_varid(ncid, variableName.getSSH().c_str(), &ETA_varid))){
         cout<<"No ETA Data"<<endl;
         return 1;
     }
@@ -3834,7 +3831,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
 
 }
 
-bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, string ncFileName, int x_dim, int y_dim,const string OutputOcdfile, const size_t timeFrame,dataVariableName& variableName)
+bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, string ncFileName, int x_dim, int y_dim,const string OutputOcdfile, const size_t timeFrame, dataVariableName variableName)
 {
 
     FILE *fpoutETAMax;
@@ -3871,7 +3868,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
         cout<<"couldnt open the file :[ "<<ncFileName.c_str()<<" ---- !!!"<<endl;
 
 
-    if ((retval = nc_inq_varid(ncid, variableName.getSSH(), &ETA_varid))){
+    if ((retval = nc_inq_varid(ncid, variableName.getSSH().c_str(), &ETA_varid))){
         cout<<"No ETA Data"<<endl;
         return 1;
     }
@@ -4008,7 +4005,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
 
     iter_contour = erode_contours.begin();
-    while(iter_contour != erode_contours.end()){dataVariableName& variableName
+    while(iter_contour != erode_contours.end()){
 //        if(input.at<double>((*iter_contour).at(0)) != 0)
             eta_centorid.push_back(make_pair((*iter_contour).at(0), input.at<double>((*iter_contour).at(0))));
         iter_contour++;
@@ -4020,7 +4017,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
 }
 
-bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid, string ncFileName, int x_dim, int y_dim,const string OutputOcdfile, const size_t timeFrame, dataVariableName& variableName)
+bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid, string ncFileName, int x_dim, int y_dim,const string OutputOcdfile, const size_t timeFrame, dataVariableName variableName)
 {
 
     FILE *fpoutETAMax;
@@ -4057,7 +4054,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
         cout<<"couldnt open the file :[ "<<ncFileName.c_str()<<" ---- !!!"<<endl;
 
 
-    if ((retval = nc_inq_varid(ncid, variableName.getSSH(), &ETA_varid))){
+    if ((retval = nc_inq_varid(ncid, variableName.getSSH().c_str(), &ETA_varid))){
         cout<<"No ETA Data"<<endl;
         return 1;
     }
@@ -4485,7 +4482,7 @@ void ReadGridFile(vector<string> DataSetName, const char *FileName,float ** Xcoo
     
 }
 
-vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileName, long x_dim, long y_dim, long z_dim, double* zLevel, string data_path,string stackedNcFilePath,long x0_dim, long y0_dim, long z0_dim, long x1_dim, long y1_dim, long z1_dim, int timeFrame, dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileName, long x_dim, long y_dim, long z_dim, string data_path,string stackedNcFilePath,long x0_dim, long y0_dim, long z0_dim, long x1_dim, long y1_dim, long z1_dim, int timeFrame, dataVariableName& variableName)
 {
     //this is the main data read function. This function takes the data file extension and makes a comparison to check if it fits into the known extension types.
     // Currently this function can read netCDF, HDF5, VTK and VTR types).
@@ -4628,12 +4625,12 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
         vtkSmartPointer<vtkDataSet>output;
 
         if(stackedNcFilePath == "None")
-            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, variableName);
+            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, variableName);
         else{
             if(z_dim==1)
-                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
             else
-                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
         }
 
         unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
@@ -4650,12 +4647,12 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
         vtkSmartPointer<vtkDataSet>output;
 
         if(stackedNcFilePath == "None")
-            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, variableName);
+            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, variableName);
         else{
             if(z_dim==1)
-                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
             else
-                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, zLevel, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
         }
 
 
@@ -4825,7 +4822,7 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
 //    return mesh;
     
 //    cout<<"---------- Just Created the full VtkDataSet. ntuples[ "<<ntuples <<" ] ----------- " <<endl;
-    return NULL;
+    
 }
 
 
@@ -5045,7 +5042,7 @@ int BeginObjSegment(vtkDataSet *in_ds,vtkDataSet **outDS,int celltype,int curren
 //
 //------------------------------------------------------
 
-int parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string& ncFilePath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
+void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string& ncFilePath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
                      float &deltaxval, float &deltayval, float &deltazval,int &SmallestObjVol,
                      int &TimePrecision, int &TimeIncrement, float &thresh1, float &thresh2,long & x_dim, long &y_dim, long &z_dim,long & x0_dim, long &y0_dim, long &z0_dim,  long & x1_dim, long &y1_dim, long &z1_dim, int& CircleStartRadius, dataVariableName& datavariableName)
 {
@@ -5308,7 +5305,6 @@ int parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, strin
     else
     {
         cout<< "Cannot open the FeatureTrack.Conf File.!!!"<<endl;
-	return 1;
     }
     cout<<" Data Path: "<< Datapath <<endl;
     cout<<" GeneratedFilePath: "<< base_GeneratedTrackFileName <<endl;
@@ -5326,7 +5322,6 @@ int parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, strin
     cout<<" SmallestObjVol: "<< SmallestObjVol <<endl;
     for(int i=0;i<variableNamesvect.size();i++)
         cout<<" variableNamesvect[ "<<i<<"]"<< variableNamesvect[i]<<endl;
-    return 0;
     
 }
 //------------------------------------
@@ -9445,7 +9440,7 @@ int main(void)
     dataVariableName variableName;
     
     //,&x_dim,&y_dim,&z_dim
-    if(parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,file_name, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius,variableName)) return 1;
+    parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,file_name, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius,variableName);
 
     //Inital global variables
     dataset_xLength = x_dim;
@@ -9497,17 +9492,20 @@ int main(void)
 
     int ncid,retval;// pres_varid, temp_varid;
     //int lat_varid, lon_varid, Tcline_varid, h_varid, Cs_r_varid, Cs_w_varid, u_Vals_varid, v_Vals_varid;
-    int y_varid, x_varid;
+    int z_varid, y_varid, x_varid;
 
     const shared_ptr<double[]> xCoordRecord(new double[dataset_xLength]);
     const shared_ptr<double[]> yCoordRecord(new double[dataset_yLength]);
+    const shared_ptr<double[]> zLevelData(new double[dataset_zLength]);
 
 
     retval = nc_open(ncFilePath.c_str(), NC_NOWRITE, &ncid);
-    retval = nc_inq_varid(ncid, "YC", &y_varid);
-    retval = nc_inq_varid(ncid, "XC", &x_varid);
+    retval = nc_inq_varid(ncid, variableName.getY().c_str(), &y_varid);
+    retval = nc_inq_varid(ncid, variableName.getX().c_str(), &x_varid);
+    retval = nc_inq_varid(ncid, variableName.getZ().c_str(), &z_varid);
     retval = nc_get_var_double(ncid, y_varid, yCoordRecord.get());
     retval = nc_get_var_double(ncid, x_varid, xCoordRecord.get());
+    retval = nc_get_var_double(ncid, z_varid, zLevelData.get());
 
 
 
@@ -9595,9 +9593,9 @@ int main(void)
 
         // GET THE SSH EXTREMUM FIRST
         vector<pair<cv::Point2d,double>> eta_centroid;
-//        shared_ptr<double[]>zLevelData(new double[dataset_zLength]);
-        double* zLevelData = new double[dataset_zLength];
-        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,zLevelData,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,x1_dim,y1_dim,z1_dim,currentTime,variableName);
+
+//        double* zLevelData = new double[dataset_zLength];
+        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,x1_dim,y1_dim,z1_dim,currentTime,variableName);
         bool etaFlag=0;
         if(ncFilePath == "None")
             etaFlag = ReadNcData_SSH_SingleFrame(eta_centroid,file_name, x_dim,y_dim,OutputOcdfile,variableName);
@@ -9983,7 +9981,6 @@ int main(void)
                     cout<<" i:["<<i<<"] & ThisObjectsMemberPointIds.size():["<<ThisObjectsMemberPointIds.size()<<"] & ThisObjectsCellIds.size()="<<ThisObjectsCellIds.size()   <<endl;
 
 
-
                     FILE *fpout_statis;
                     char OutOcd_statistic[256];
                     string Output_statistic;
@@ -10226,34 +10223,34 @@ int main(void)
             //cout << "total num of cells in object : " <<  totalnumberofcellsinthisobj << endl;
             //cout << "cell points : " << cellpoints << endl;
                     vtkIdType realpointindex1;
-//                    for(unsigned long i = 0; i < totalnumberofcellsinthisobj;i++)
-//                    {
-//                        in_ds->GetCellPoints(ObjectCellsArray[i], cellPointIds2);
-//                        long type;
-//                        type = in_ds->GetCellType(0);
-//                        for(int j = 0; j < cellpoints;j++)
-//                        {
-//                            vtkIdType j4 = 0;
-//                            realpointindex1 = cellPointIds2->GetId(j);
-//                            int notfound =1;
-//                            while(notfound)
-//                            {
-//                                if(PointIdsArray1[j4] == realpointindex1)
-//                                {
-//                                    notfound  = 0;
-//                                }
-//                                j4++;
+                    for(unsigned long i = 0; i < totalnumberofcellsinthisobj;i++)
+                    {zLevelData,
+                        in_ds->GetCellPoints(ObjectCellsArray[i], cellPointIds2);
+                        long type;
+                        type = in_ds->GetCellType(0);
+                        for(int j = 0; j < cellpoints;j++)
+                        {
+                            vtkIdType j4 = 0;
+                            realpointindex1 = cellPointIds2->GetId(j);
+                            int notfound =1;
+                            while(notfound)
+                            {
+                                if(PointIdsArray1[j4] == realpointindex1)
+                                {
+                                    notfound  = 0;
+                                }
+                                j4++;
 
-//                            }
+                            }
 
 
-//                            connects[j3++] = j4-1;
-//                            //
-////                             if ((j3-1)%10000 ==0)
-////                                 cout<<"realpointindex1["<<realpointindex1   <<"] cursor["<<cursor<<"] totalnumberofcellsinthisobj["<<totalnumberofcellsinthisobj<<"] & "   <<"connects["<<j3-1<<"]="<<connects[j3-1]<<endl;
-//                        }
-//                        // cout<<"after insertnextcell"<<endl;
-//                    }
+                            connects[j3++] = j4-1;
+                            //
+//                             if ((j3-1)%10000 ==0)
+//                                 cout<<"realpointindex1["<<realpointindex1   <<"] cursor["<<cursor<<"] totalnumberofcellsinthisobj["<<totalnumberofcellsinthisobj<<"] & "   <<"connects["<<j3-1<<"]="<<connects[j3-1]<<endl;
+                        }
+                        // cout<<"after insertnextcell"<<endl;
+                    }
 
 
 //                    delete[] ObjectCellsArray;
@@ -10452,63 +10449,63 @@ int main(void)
 
                     //vtkUnstructuredGrid *out_ds1 = vtkUnstructuredGrid::New();
 
-//                    vtkSmartPointer<vtkUnstructuredGrid> out_ds1 = vtkSmartPointer<vtkUnstructuredGrid>::New();
-//                    //--------Below is Setoutfield -----
-//                    vtkSmartPointer<vtkFloatArray> pcoords = vtkSmartPointer<vtkFloatArray>::New();
-//                    pcoords->SetNumberOfComponents(nspace);
-//                    pcoords->SetNumberOfTuples(cursor);
-//                    shared_ptr<float[]>temp_coord1(new float[3]);
-////                    float *temp_coord1 = new float[3];
-//                    unsigned long n_connect = 0;
-//                    unsigned long n_coords = 0;
-//                    for(unsigned long i = 0; i <  cursor; i ++)
-//                    {
-//                        for(int ii = 0 ; ii < nspace;ii++)
-//                        {
-//                            temp_coord1[ii] = coords[n_coords++];
-//                        }
-//                        pcoords->SetTuple3(i,temp_coord1[0],temp_coord1[1],temp_coord1[2]);
-//                    }
+                    vtkSmartPointer<vtkUnstructuredGrid> out_ds1 = vtkSmartPointer<vtkUnstructuredGrid>::New();
+                    //--------Below is Setoutfield -----
+                    vtkSmartPointer<vtkFloatArray> pcoords = vtkSmartPointer<vtkFloatArray>::New();
+                    pcoords->SetNumberOfComponents(nspace);
+                    pcoords->SetNumberOfTuples(cursor);
+                    shared_ptr<float[]>temp_coord1(new float[3]);
+//                    float *temp_coord1 = new float[3];
+                    unsigned long n_connect = 0;
+                    unsigned long n_coords = 0;
+                    for(unsigned long i = 0; i <  cursor; i ++)
+                    {
+                        for(int ii = 0 ; ii < nspace;ii++)
+                        {
+                            temp_coord1[ii] = coords[n_coords++];
+                        }
+                        pcoords->SetTuple3(i,temp_coord1[0],temp_coord1[1],temp_coord1[2]);
+                    }
 
-//                    out_ds1->Allocate(totalnumberofcellsinthisobj*cellpoints);// this step is important
-//                    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-//                    points->SetData(pcoords);
+                    out_ds1->Allocate(totalnumberofcellsinthisobj*cellpoints);// this step is important
+                    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+                    points->SetData(pcoords);
 
-//                    vtkSmartPointer<vtkFloatArray> pdata = vtkSmartPointer<vtkFloatArray>::New();
-//                    pdata->SetNumberOfTuples(cursor);
+                    vtkSmartPointer<vtkFloatArray> pdata = vtkSmartPointer<vtkFloatArray>::New();
+                    pdata->SetNumberOfTuples(cursor);
 
-//                    //Data used to extract isosurface
-//                    double temp_data;
-//                    for(unsigned long i = 0; i < cursor; i++)
-//                    {
-//                        temp_data =nodevals[i];
-//                        pdata->SetTuple1(i,temp_data);
-//                    }
+                    //Data used to extract isosurface
+                    double temp_data;
+                    for(unsigned long i = 0; i < cursor; i++)
+                    {
+                        temp_data =nodevals[i];
+                        pdata->SetTuple1(i,temp_data);
+                    }
 
-//                    shared_ptr<vtkIdType[]> temp_connect(new vtkIdType[cellpoints]);
+                    shared_ptr<vtkIdType[]> temp_connect(new vtkIdType[cellpoints]);
 //                    vtkIdType *temp_connect = new vtkIdType[cellpoints];     //int n_connect = 0;
 
-//                    for(unsigned long i = 0; i < totalnumberofcellsinthisobj;i++)
-//                    {
-//                        for(int j = 0; j < cellpoints;j++)
-//                        {
-//                            temp_connect[j] = connects[n_connect++];
-//                            //cout<<"temp_connect["<<j<<"]="<<temp_connect[j]<<endl;
-//                        }
-//                        out_ds1->InsertNextCell(data_cellType, (vtkIdType) cellpoints,temp_connect.get());
-//                    }
-//                    // cout<<"---------AFter InsertNextCell --------- "<<endl;
+                    for(unsigned long i = 0; i < totalnumberofcellsinthisobj;i++)
+                    {
+                        for(int j = 0; j < cellpoints;j++)
+                        {
+                            temp_connect[j] = connects[n_connect++];
+                            //cout<<"temp_connect["<<j<<"]="<<temp_connect[j]<<endl;zLevelData,
+                        }
+                        out_ds1->InsertNextCell(data_cellType, (vtkIdType) cellpoints,temp_connect.get());
+                    }
+                    // cout<<"---------AFter InsertNextCell --------- "<<endl;
 
-//                    out_ds1->SetPoints(points);
-//                    out_ds1->GetPointData()->SetScalars(pdata);
+                    out_ds1->SetPoints(points);
+                    out_ds1->GetPointData()->SetScalars(pdata);
 
-//                   // points->Delete();
-//                  //  pcoords->Delete();
-//                   // pdata->Delete();
+                   // points->Delete();
+                  //  pcoords->Delete();
+                   // pdata->Delete();
                     vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer0 = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-//                    writer0->SetFileName( "./cell_object.vtu" );
-//                    writer0->SetInputData(out_ds1);
-//                    writer0->Write();
+                    writer0->SetFileName( "./cell_object.vtu" );
+                    writer0->SetInputData(out_ds1);
+                    writer0->Write();
 
 
                     //-------- End of SeetOutfield content
@@ -10518,16 +10515,16 @@ int main(void)
 
                     vtkSmartPointer<vtkPolyData> outpoly2 = vtkPolyData::New();
                     //-------Isosurface
-                    //vtkSmartPointer<vtkDiscreteMarchingCubes> isosurface = vtkSmartPointer<vtkDiscreteMarchingCubes>::New();
-//                    vtkNew<vtkContourFilter> isosurface;
+//                    vtkSmartPointer<vtkDiscreteMarchingCubes> isosurface = vtkSmartPointer<vtkDiscreteMarchingCubes>::New();
+                    vtkNew<vtkContourFilter> isosurface;
 
-//                    //vtkContourFilter *isosurface = vtkContourFilter::New();
-//                    isosurface->SetInputData(out_ds1);
-//                    isosurface->GenerateTrianglesOn();
-//                    isosurface->SetNumberOfContours(1);
-//                    isosurface->SetValue(0,0);//thresh1
-//                    isosurface->Update();
-//                    outpoly2 = isosurface->GetOutput();
+//                    vtkContourFilter *isosurface = vtkContourFilter::New();
+                    isosurface->SetInputData(out_ds1);
+                    isosurface->GenerateTrianglesOn();
+                    isosurface->SetNumberOfContours(1);
+                    isosurface->SetValue(0,0);//thresh1
+                    isosurface->Update();
+                    outpoly2 = isosurface->GetOutput();
                     //-------Just the outer surface
 //                    vtkNew<vtkGeometryFilter> outerSurface;
 
@@ -10539,10 +10536,10 @@ int main(void)
                     //outpoly2->Update();
                     //isosurface->Update();
 
-//                    vtkSmartPointer<vtkPolyDataWriter> writer1 = vtkSmartPointer<vtkPolyDataWriter>::New();
-//                    writer1->SetFileName( "./cell_object_1.vtp" );
-//                    writer1->SetInputData(outpoly2);
-//                    writer1->Write();
+                    vtkSmartPointer<vtkPolyDataWriter> writer1 = vtkSmartPointer<vtkPolyDataWriter>::New();
+                    writer1->SetFileName( "./cell_object_1.vtp" );
+                    writer1->SetInputData(outpoly2);
+                    writer1->Write();
 
 
 
@@ -10796,14 +10793,14 @@ int main(void)
         //cout << "Time elapsed: " << difftime(end, begin) << " seconds in currentTime["<<currentTime<<"]"<< endl;
         cout << "Time elapsed: " << elapsed_secs << " seconds for computing the "<<currentTime<<"th time step!"<< endl;
 //        delete[] ProcessedCell;
-        delete[] zLevelData;
+
 //        ProcessedCell = NULL;
         
 
     } // end of currenttime loop
 
     nc_close(ncid);
-    return 0;
+    
 }//end of main
 
 
