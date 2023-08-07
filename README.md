@@ -24,9 +24,8 @@ NetCDF-4.3.1
 VTK-8.2.0  
 OpenCV-3.4.13  
 
-IDE:  
-QT-5.14.2   
-(Working on Visual Studio 2019 community)
+IDE (if you need):  
+QT-5.14.2 
 
 Installation Steps:
 1. Install Cmake/CMake-gui.(not use the latest one as qt may not support that currently. Version 3.14 verified).
