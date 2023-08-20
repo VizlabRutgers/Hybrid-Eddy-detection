@@ -294,7 +294,7 @@ public:
         pointOnBoundary_inDataset_x.clear();
         pointOnBoundary_inDataset_y.clear();
         centerZ_inDataset.clear();
-        boundaryPoint_current.clear();
+//        boundaryPoint_current.clear();
         searchRadius.clear();
         clockwiseFlag.clear();
     }
@@ -3881,7 +3881,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
 //    Mat dilate_result2 = Mat::zeros(cv::Size(input.rows,input.cols),CV_8U);
 //    Mat erode_result2 = Mat::zeros(cv::Size(input.rows,input.cols),CV_8U);
-//    Mat eta_Peaks = Mat::zeros(cv::Size(input.rows,input.cols),CV_8U);
+
     Mat input_dilate;
     Mat input_erode;
     Mat dilate_result;
@@ -4001,6 +4001,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
     }
     fclose(fpoutETAMax);
     erode_contours.insert(erode_contours.end(),dilate_contours.begin(),dilate_contours.end());
+//    Mat eta_Peaks = Mat::zeros(cv::Size(input.rows,input.cols),CV_8U);
 //    cv::drawContours(eta_Peaks,erode_contours,-1,cv::Scalar(255), cv::FILLED);
 
 
@@ -9025,7 +9026,8 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
     int counter1 = 0;
     while(iter_eta != eta_centroid_pointSet.end()){
 
-
+        if(counter1==49)
+            counter1=49;
 
         searchData.clear();
         cv::Point eta_centroid_point;
@@ -9135,7 +9137,7 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
 
         }
         ++iter_eta;
-
+        counter1++;
     }
 
 
@@ -9183,29 +9185,51 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, double& centerX,dou
 
     searchData.reserve(search_rangeX*search_rangeY);
 
-    for(int i = 0; i<search_rangeX; i++){
-        for(int j=0; j<search_rangeY;j++){
+    bool minVelocitySearchEndFlag = false;
+    cv::Point minVelocity;
 
-            vtkIdType dataPoint_index;
-            velocitySearch_inDataset_x = xCoord[(centerX - (search_rangeX-1)/2 + i)];
-            velocitySearch_inDataset_y = yCoord[(centerY - (search_rangeY-1)/2 + j)];
-//                eta_centroid_inDataset_x = (eta_centroid_point.x - (search_rangeX-1)/2 + i)*1;
-//                eta_centroid_inDataset_y = (eta_centroid_point.y - (search_rangeY-1)/2 + j)*1;
+    Mat input_temp;
+    Mat input_velocity;
+    cv::Point center;
+    cv::Point center_previous = cv::Point(centerX,centerY);
+    double minValue;
 
-            dataPoint_index = in_ds->FindPoint(velocitySearch_inDataset_x, velocitySearch_inDataset_y,centerZ_inDataset);
-            in_ds->GetPointData()->GetTensors()->GetTuple(dataPoint_index, temp_val.get());
-            velocityMag_dataPoint = sqrt(pow(temp_val[1],2)+pow(temp_val[2],2));
-            searchData.push_back(velocityMag_dataPoint);
+    while (!minVelocitySearchEndFlag) {
+        if(centerZ_inDataset!=bounds[4])
+            minVelocitySearchEndFlag=1;
+        searchData.clear();
+        centerX = center_previous.x;
+        centerY = center_previous.y;
+        for(int i = 0; i<search_rangeX; i++){
+            for(int j=0; j<search_rangeY;j++){
+
+                vtkIdType dataPoint_index;
+                velocitySearch_inDataset_x = xCoord[(centerX - (search_rangeX-1)/2 + i)];
+                velocitySearch_inDataset_y = yCoord[(centerY - (search_rangeY-1)/2 + j)];
+    //                eta_centroid_inDataset_x = (eta_centroid_point.x - (search_rangeX-1)/2 + i)*1;
+    //                eta_centroid_inDataset_y = (eta_centroid_point.y - (search_rangeY-1)/2 + j)*1;
+
+                dataPoint_index = in_ds->FindPoint(velocitySearch_inDataset_x, velocitySearch_inDataset_y,centerZ_inDataset);
+                in_ds->GetPointData()->GetTensors()->GetTuple(dataPoint_index, temp_val.get());
+                velocityMag_dataPoint = sqrt(pow(temp_val[1],2)+pow(temp_val[2],2));
+                searchData.push_back(velocityMag_dataPoint);
+            }
         }
+
+        input_temp = Mat(searchData);
+        input_velocity = input_temp.reshape(1, search_rangeX).clone();
+
+
+        cv::minMaxLoc(input_velocity,&minValue,NULL,&minVelocity,NULL);
+        if(minValue == 0)
+            return false;
+        center = cv::Point(cv::Point(centerX - (search_rangeX-1)/2 + minVelocity.y,centerY - (search_rangeX-1)/2 + minVelocity.x));
+        if( center == center_previous)
+            minVelocitySearchEndFlag=1;
+        else
+            center_previous=center;
     }
 
-    Mat input_temp = Mat(searchData);
-    Mat input_velocity = input_temp.reshape(1, search_rangeX).clone();
-    cv::Point minVelocity;
-    double minValue;
-    cv::minMaxLoc(input_velocity,&minValue,NULL,&minVelocity,NULL);
-    if(minValue == 0)
-        return false;
 
 
     // Rotation check on a circle
@@ -9221,8 +9245,8 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, double& centerX,dou
     searchRadius = 3;
     rotationCheckingFailed = false;
 
-    centerX = centerX - (search_rangeX-1)/2 + minVelocity.y;
-    centerY = centerY - (search_rangeX-1)/2 + minVelocity.x;
+    centerX = center.x;
+    centerY = center.y;
 
     boxCenter_x = centerX;
     boxCenter_y = centerY;
@@ -9535,7 +9559,7 @@ int main(void)
 
 
 
-    for (int currentTime = InitialtimeStep-1; currentTime <InitialtimeStep-1+maxCycleNumber; currentTime++ )
+    for (int currentTime = 0; currentTime <InitialtimeStep-1+maxCycleNumber; currentTime++ )
     {
         bool first_time = true;
         long Uocd_objID = 0;
@@ -9767,6 +9791,9 @@ int main(void)
 
                 SingleEddy.clearData();
                 vector<pair<int,double>> failureReason;
+
+                if(i==249)
+                    i=249;
 
                 // Give a origin point
                 eddyCenter_inDepth.clear();
@@ -10223,34 +10250,34 @@ int main(void)
             //cout << "total num of cells in object : " <<  totalnumberofcellsinthisobj << endl;
             //cout << "cell points : " << cellpoints << endl;
                     vtkIdType realpointindex1;
-                    for(unsigned long i = 0; i < totalnumberofcellsinthisobj;i++)
-                    {zLevelData,
-                        in_ds->GetCellPoints(ObjectCellsArray[i], cellPointIds2);
-                        long type;
-                        type = in_ds->GetCellType(0);
-                        for(int j = 0; j < cellpoints;j++)
-                        {
-                            vtkIdType j4 = 0;
-                            realpointindex1 = cellPointIds2->GetId(j);
-                            int notfound =1;
-                            while(notfound)
-                            {
-                                if(PointIdsArray1[j4] == realpointindex1)
-                                {
-                                    notfound  = 0;
-                                }
-                                j4++;
+//                    for(unsigned long i = 0; i < totalnumberofcellsinthisobj;i++)
+//                    {
+//                        in_ds->GetCellPoints(ObjectCellsArray[i], cellPointIds2);
+//                        long type;
+//                        type = in_ds->GetCellType(0);
+//                        for(int j = 0; j < cellpoints;j++)
+//                        {
+//                            vtkIdType j4 = 0;
+//                            realpointindex1 = cellPointIds2->GetId(j);
+//                            int notfound =1;
+//                            while(notfound)
+//                            {
+//                                if(PointIdsArray1[j4] == realpointindex1)
+//                                {
+//                                    notfound  = 0;
+//                                }
+//                                j4++;
 
-                            }
+//                            }
 
 
-                            connects[j3++] = j4-1;
-                            //
-//                             if ((j3-1)%10000 ==0)
-//                                 cout<<"realpointindex1["<<realpointindex1   <<"] cursor["<<cursor<<"] totalnumberofcellsinthisobj["<<totalnumberofcellsinthisobj<<"] & "   <<"connects["<<j3-1<<"]="<<connects[j3-1]<<endl;
-                        }
-                        // cout<<"after insertnextcell"<<endl;
-                    }
+//                            connects[j3++] = j4-1;
+//                            //
+////                             if ((j3-1)%10000 ==0)
+////                                 cout<<"realpointindex1["<<realpointindex1   <<"] cursor["<<cursor<<"] totalnumberofcellsinthisobj["<<totalnumberofcellsinthisobj<<"] & "   <<"connects["<<j3-1<<"]="<<connects[j3-1]<<endl;
+//                        }
+//                        // cout<<"after insertnextcell"<<endl;
+//                    }
 
 
 //                    delete[] ObjectCellsArray;
@@ -10447,99 +10474,99 @@ int main(void)
 
                     //------isosurface related ----------------------------------
 
-                    //vtkUnstructuredGrid *out_ds1 = vtkUnstructuredGrid::New();
+//                    //vtkUnstructuredGrid *out_ds1 = vtkUnstructuredGrid::New();
 
-                    vtkSmartPointer<vtkUnstructuredGrid> out_ds1 = vtkSmartPointer<vtkUnstructuredGrid>::New();
-                    //--------Below is Setoutfield -----
-                    vtkSmartPointer<vtkFloatArray> pcoords = vtkSmartPointer<vtkFloatArray>::New();
-                    pcoords->SetNumberOfComponents(nspace);
-                    pcoords->SetNumberOfTuples(cursor);
-                    shared_ptr<float[]>temp_coord1(new float[3]);
-//                    float *temp_coord1 = new float[3];
-                    unsigned long n_connect = 0;
-                    unsigned long n_coords = 0;
-                    for(unsigned long i = 0; i <  cursor; i ++)
-                    {
-                        for(int ii = 0 ; ii < nspace;ii++)
-                        {
-                            temp_coord1[ii] = coords[n_coords++];
-                        }
-                        pcoords->SetTuple3(i,temp_coord1[0],temp_coord1[1],temp_coord1[2]);
-                    }
+//                    vtkSmartPointer<vtkUnstructuredGrid> out_ds1 = vtkSmartPointer<vtkUnstructuredGrid>::New();
+//                    //--------Below is Setoutfield -----
+//                    vtkSmartPointer<vtkFloatArray> pcoords = vtkSmartPointer<vtkFloatArray>::New();
+//                    pcoords->SetNumberOfComponents(nspace);
+//                    pcoords->SetNumberOfTuples(cursor);
+//                    shared_ptr<float[]>temp_coord1(new float[3]);
+////                    float *temp_coord1 = new float[3];
+//                    unsigned long n_connect = 0;
+//                    unsigned long n_coords = 0;
+//                    for(unsigned long i = 0; i <  cursor; i ++)
+//                    {
+//                        for(int ii = 0 ; ii < nspace;ii++)
+//                        {
+//                            temp_coord1[ii] = coords[n_coords++];
+//                        }
+//                        pcoords->SetTuple3(i,temp_coord1[0],temp_coord1[1],temp_coord1[2]);
+//                    }
 
-                    out_ds1->Allocate(totalnumberofcellsinthisobj*cellpoints);// this step is important
-                    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-                    points->SetData(pcoords);
+//                    out_ds1->Allocate(totalnumberofcellsinthisobj*cellpoints);// this step is important
+//                    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+//                    points->SetData(pcoords);
 
-                    vtkSmartPointer<vtkFloatArray> pdata = vtkSmartPointer<vtkFloatArray>::New();
-                    pdata->SetNumberOfTuples(cursor);
+//                    vtkSmartPointer<vtkFloatArray> pdata = vtkSmartPointer<vtkFloatArray>::New();
+//                    pdata->SetNumberOfTuples(cursor);
 
-                    //Data used to extract isosurface
-                    double temp_data;
-                    for(unsigned long i = 0; i < cursor; i++)
-                    {
-                        temp_data =nodevals[i];
-                        pdata->SetTuple1(i,temp_data);
-                    }
+//                    //Data used to extract isosurface
+//                    double temp_data;
+//                    for(unsigned long i = 0; i < cursor; i++)
+//                    {
+//                        temp_data =nodevals[i];
+//                        pdata->SetTuple1(i,temp_data);
+//                    }
 
-                    shared_ptr<vtkIdType[]> temp_connect(new vtkIdType[cellpoints]);
-//                    vtkIdType *temp_connect = new vtkIdType[cellpoints];     //int n_connect = 0;
+//                    shared_ptr<vtkIdType[]> temp_connect(new vtkIdType[cellpoints]);
+////                    vtkIdType *temp_connect = new vtkIdType[cellpoints];     //int n_connect = 0;
 
-                    for(unsigned long i = 0; i < totalnumberofcellsinthisobj;i++)
-                    {
-                        for(int j = 0; j < cellpoints;j++)
-                        {
-                            temp_connect[j] = connects[n_connect++];
-                            //cout<<"temp_connect["<<j<<"]="<<temp_connect[j]<<endl;zLevelData,
-                        }
-                        out_ds1->InsertNextCell(data_cellType, (vtkIdType) cellpoints,temp_connect.get());
-                    }
-                    // cout<<"---------AFter InsertNextCell --------- "<<endl;
+//                    for(unsigned long i = 0; i < totalnumberofcellsinthisobj;i++)
+//                    {
+//                        for(int j = 0; j < cellpoints;j++)
+//                        {
+//                            temp_connect[j] = connects[n_connect++];
+//                            //cout<<"temp_connect["<<j<<"]="<<temp_connect[j]<<endl;zLevelData,
+//                        }
+//                        out_ds1->InsertNextCell(data_cellType, (vtkIdType) cellpoints,temp_connect.get());
+//                    }
+//                    // cout<<"---------AFter InsertNextCell --------- "<<endl;
 
-                    out_ds1->SetPoints(points);
-                    out_ds1->GetPointData()->SetScalars(pdata);
+//                    out_ds1->SetPoints(points);
+//                    out_ds1->GetPointData()->SetScalars(pdata);
 
-                   // points->Delete();
-                  //  pcoords->Delete();
-                   // pdata->Delete();
-                    vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer0 = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-                    writer0->SetFileName( "./cell_object.vtu" );
-                    writer0->SetInputData(out_ds1);
-                    writer0->Write();
-
-
-                    //-------- End of SeetOutfield content
-
-                    //SetOutField(out_ds1,cursor,totalnumberofcellsinthisobj,nspace,cellpoints,coords,nodevals,connects);
+//                   // points->Delete();
+//                  //  pcoords->Delete();
+//                   // pdata->Delete();
+////                    vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer0 = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
+////                    writer0->SetFileName( "./cell_object.vtu" );
+////                    writer0->SetInputData(out_ds1);
+////                    writer0->Write();
 
 
-                    vtkSmartPointer<vtkPolyData> outpoly2 = vtkPolyData::New();
-                    //-------Isosurface
-//                    vtkSmartPointer<vtkDiscreteMarchingCubes> isosurface = vtkSmartPointer<vtkDiscreteMarchingCubes>::New();
-                    vtkNew<vtkContourFilter> isosurface;
+//                    //-------- End of SeetOutfield content
 
-//                    vtkContourFilter *isosurface = vtkContourFilter::New();
-                    isosurface->SetInputData(out_ds1);
-                    isosurface->GenerateTrianglesOn();
-                    isosurface->SetNumberOfContours(1);
-                    isosurface->SetValue(0,0);//thresh1
-                    isosurface->Update();
-                    outpoly2 = isosurface->GetOutput();
-                    //-------Just the outer surface
-//                    vtkNew<vtkGeometryFilter> outerSurface;
-
-//                    outerSurface->SetInputData(out_ds1);
-//                    outerSurface->Update();
-//                    outpoly2 = outerSurface->GetOutput();
+//                    //SetOutField(out_ds1,cursor,totalnumberofcellsinthisobj,nspace,cellpoints,coords,nodevals,connects);
 
 
-                    //outpoly2->Update();
-                    //isosurface->Update();
+//                    vtkSmartPointer<vtkPolyData> outpoly2 = vtkPolyData::New();
+//                    //-------Isosurface
+////                    vtkSmartPointer<vtkDiscreteMarchingCubes> isosurface = vtkSmartPointer<vtkDiscreteMarchingCubes>::New();
+//                    vtkNew<vtkContourFilter> isosurface;
 
-                    vtkSmartPointer<vtkPolyDataWriter> writer1 = vtkSmartPointer<vtkPolyDataWriter>::New();
-                    writer1->SetFileName( "./cell_object_1.vtp" );
-                    writer1->SetInputData(outpoly2);
-                    writer1->Write();
+////                    vtkContourFilter *isosurface = vtkContourFilter::New();
+//                    isosurface->SetInputData(out_ds1);
+//                    isosurface->GenerateTrianglesOn();
+//                    isosurface->SetNumberOfContours(1);
+//                    isosurface->SetValue(0,0);//thresh1
+//                    isosurface->Update();
+//                    outpoly2 = isosurface->GetOutput();
+//                    //-------Just the outer surface
+////                    vtkNew<vtkGeometryFilter> outerSurface;
+
+////                    outerSurface->SetInputData(out_ds1);
+////                    outerSurface->Update();
+////                    outpoly2 = outerSurface->GetOutput();
+
+
+//                    //outpoly2->Update();
+//                    //isosurface->Update();
+
+//                    vtkSmartPointer<vtkPolyDataWriter> writer1 = vtkSmartPointer<vtkPolyDataWriter>::New();
+//                    writer1->SetFileName( "./cell_object_1.vtp" );
+//                    writer1->SetInputData(outpoly2);
+//                    writer1->Write();
 
 
 
@@ -10566,45 +10593,45 @@ int main(void)
                     vtkSmartPointer<vtkIdList> listconnect = vtkSmartPointer<vtkIdList>::New();
                     //vtkIdList *listconnect = vtkIdList::New();
                     pfile<<155<<" "<<155<<" "<<155<<endl;
-                    pfile<<outpoly2->GetNumberOfPoints()<<endl;
+//                    pfile<<outpoly2->GetNumberOfPoints()<<endl;
 
 
 
 
-                    //Sedat      cout<<" outpoly->GetNumberOfPoints() : "<<outpoly->GetNumberOfPoints()<<endl;
-                    pfile.setf(ios::fixed,ios::floatfield);
-                    pfile<<setprecision(6);
-                    double temp_coord_array[3];
-                    vtkIdType point_index;
+//                    //Sedat      cout<<" outpoly->GetNumberOfPoints() : "<<outpoly->GetNumberOfPoints()<<endl;
+//                    pfile.setf(ios::fixed,ios::floatfield);
+//                    pfile<<setprecision(6);
+//                    double temp_coord_array[3];
+//                    vtkIdType point_index;
 
-                    for(long k3=0; k3<outpoly2->GetNumberOfPoints(); k3++)
-                    {
-                        outpoly2->GetPoint(k3,temp_coord_array);
-                        point_index = in_ds->FindPoint(temp_coord_array[0],temp_coord_array[1],temp_coord_array[2]);
-                        vtk_node_data->GetTuple(point_index,temp_iso_val.get());
-                        for(int k4 = 0; k4 <nspace;k4++)
-                        {
-                            pfile<<temp_coord_array[k4] <<" ";
-                        }
-                        if(dataType == Tensor_data)
-                            pfile<<temp_iso_val[0]<<" "<<temp_iso_val[1]<<" "<<temp_iso_val[2]<<" "<<temp_iso_val[3]<<" "<<temp_iso_val[4]<<" "<<temp_iso_val[5];
-                        else if(dataType == Scalar_data)
-                            pfile<<temp_iso_val[0];
-                        pfile<<endl;
-                    }
+//                    for(long k3=0; k3<outpoly2->GetNumberOfPoints(); k3++)
+//                    {
+//                        outpoly2->GetPoint(k3,temp_coord_array);
+//                        point_index = in_ds->FindPoint(temp_coord_array[0],temp_coord_array[1],temp_coord_array[2]);
+//                        vtk_node_data->GetTuple(point_index,temp_iso_val.get());
+//                        for(int k4 = 0; k4 <nspace;k4++)
+//                        {
+//                            pfile<<temp_coord_array[k4] <<" ";
+//                        }
+//                        if(dataType == Tensor_data)
+//                            pfile<<temp_iso_val[0]<<" "<<temp_iso_val[1]<<" "<<temp_iso_val[2]<<" "<<temp_iso_val[3]<<" "<<temp_iso_val[4]<<" "<<temp_iso_val[5];
+//                        else if(dataType == Scalar_data)
+//                            pfile<<temp_iso_val[0];
+//                        pfile<<endl;
+//                    }
 
-                    pfile<<outpoly2->GetNumberOfCells()<<endl;
-                    for(long i=0;i<outpoly2->GetNumberOfCells();i++)
-                    {
-                        outpoly2->GetCellPoints(i,listconnect);
-                        pfile<<"3 ";
-                        for(long j = 0; j < listconnect->GetNumberOfIds();j++)
-                        {
-                            unsigned long temp_id = (unsigned long)listconnect->GetId((const vtkIdType) j) ;
-                            pfile<< temp_id << " ";
-                        }
-                        pfile << endl;
-                    }
+//                    pfile<<outpoly2->GetNumberOfCells()<<endl;
+//                    for(long i=0;i<outpoly2->GetNumberOfCells();i++)
+//                    {
+//                        outpoly2->GetCellPoints(i,listconnect);
+//                        pfile<<"3 ";
+//                        for(long j = 0; j < listconnect->GetNumberOfIds();j++)
+//                        {
+//                            unsigned long temp_id = (unsigned long)listconnect->GetId((const vtkIdType) j) ;
+//                            pfile<< temp_id << " ";
+//                        }
+//                        pfile << endl;
+//                    }
                     pfile<<0<<endl<<endl;
                     //#cout << "finished writing poly file\n";
                     pfile.close();
