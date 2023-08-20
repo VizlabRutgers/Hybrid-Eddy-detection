@@ -43,7 +43,11 @@ Installation Steps:
 # Usage 
 1. Modify the configuration file (FeatureTrack.conf) to match the path of the dataset
 2. Copy the FeatureTrack.Conf to folder where you compile the code to.
-3. Run the executable file "FT"
+3. Run the executable file with configuration file. E.g.
+```
+weiping@Precision: .\FT .\FeatureTrack.Conf
+```
+
 
 # Configuration File
 The program support 2D and 3D dataset with variables including temperature and salinity.
