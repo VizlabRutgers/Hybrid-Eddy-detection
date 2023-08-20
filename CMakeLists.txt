@@ -92,18 +92,6 @@ endif()
 # set(CMAKE_LIBRARY_PATH /home/ardofski/netcdf_build/CMakeFiles/Export/lib)
 # set(CMAKE_INCLUDE_PATH /home/ardofski/netcdf_build/include)
 
-
-function(FindNetCDF_get_is_parallel_aware include_dir)
-  file(STRINGS "${include_dir}/netcdf_meta.h" _netcdf_lines
-    REGEX "#define[ \t]+NC_HAS_PARALLEL[ \t]")
-  string(REGEX REPLACE ".*NC_HAS_PARALLEL[ \t]*([0-1]+).*" "\\1" _netcdf_has_parallel "${_netcdf_lines}")
-  if (_netcdf_has_parallel)
-    set(NetCDF_HAS_PARALLEL TRUE PARENT_SCOPE)
-  else()
-    set(NetCDF_HAS_PARALLEL FALSE PARENT_SCOPE)
-  endif()
-endfunction()
-
 # Try to find a CMake-built NetCDF.
 find_package(netCDF CONFIG QUIET)
 if (netCDF_FOUND)
@@ -132,10 +120,7 @@ if (netCDF_FOUND)
         INTERFACE_LINK_LIBRARIES "${netCDF_LIBRARIES}")
     endif ()
   endif ()
-
-  FindNetCDF_get_is_parallel_aware("${NetCDF_INCLUDE_DIRS}")
-  # Skip the rest of the logic in this file.
-  return ()
+  
 endif ()
 
 
