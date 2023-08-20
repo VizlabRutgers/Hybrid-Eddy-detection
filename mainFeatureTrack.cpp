@@ -52,7 +52,7 @@
 // visualization step loads the .poly files and ColormapX.txt files.
 //---------------------------------------------
 // Notes to people who would like to use this code:
-//
+//p
 // 1) Please cite one of my papers using this code (either group dynamics or the activity detection paper)
 // 2) Please get in touch with me so that we can help you install this code on your system (computer),
 //
@@ -9442,7 +9442,7 @@ int dirExists(const char* const path)
 //
 //------------------------------------------------------
 
-int main(void)
+int main(int argc, char* argv[])
 {
     //local variables
     unsigned long ncells, nnodes;
@@ -9452,7 +9452,7 @@ int main(void)
     int nspace = 3; //data space dimension
     int numberOfPointsInCell = 8; // assuming that the cell is cube.. same variable as cellpoints
     vector<string> allvariableNames;
-    string file_name, datapath, FileBaseName, fileextension, listfile, base_GeneratedTrackFileNameOriginal;
+    string configFilepath, file_name,datapath, FileBaseName, fileextension, listfile, base_GeneratedTrackFileNameOriginal;
     string ncFilePath = "";
     eddyProperty SingleEddy;
 //    unsigned long *node_conn_array = NULL;
@@ -9460,11 +9460,16 @@ int main(void)
 //    float *node_data = NULL;
     float thresh1, thresh2, deltaxval, deltayval, deltazval;
     shared_ptr<double[]> temp_iso_val(new double[9]);
-    file_name = string("FeatureTrack.Conf").c_str();
     dataVariableName variableName;
     
-    //,&x_dim,&y_dim,&z_dim
-    parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,file_name, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius,variableName);
+    if (argc != 2) {
+        std::cerr << "Parameters incorrect. Please check if use the file and the parameter for the configuration file correctly (E.g. ./FT /home/FeatureTrack.Conf)" << std::endl;
+        return 1;
+    } else {
+        configFilepath = argv[1];
+        std::cerr << "Configure file Path is: "<< configFilepath << std::endl;
+    }
+    parseConfigFile(base_GeneratedTrackFileNameOriginal, datapath, ncFilePath, FileBaseName,fileextension,allvariableNames,configFilepath, InitialtimeStep, FinaltimeStep, deltaxval, deltayval, deltazval, SmallestObjVol, TimePrecision, TimeIncrement, thresh1, thresh2, x_dim, y_dim, z_dim, x0_dim, y0_dim, z0_dim, x1_dim, y1_dim, z1_dim,circleStartRadius,variableName);
 
     //Inital global variables
     dataset_xLength = x_dim;
@@ -9827,7 +9832,7 @@ int main(void)
                             if(eddyDepth==bounds[4]){
                                 for(int failureIndex=0; failureIndex<failureReason.size();failureIndex++){
                                     if(failureReason.at(failureIndex).first!=0 )
-                                        fprintf(fpout_Failure,"%9.6f %9.6f %9.6f %d %d %.4f %d\n", xCoordRecord[velocityCenter_onSurface.x],yCoordRecord[velocityCenter_onSurface.y],eddyDepth,finalRadius,failureReason.at(failureIndex).first,failureReason.at(failureIndex).second,i);
+                                        fprintf(fpout_Failure,"%9.6f %9.6f %9.6f %d %d %.4f %lu\n", xCoordRecord[velocityCenter_onSurface.x],yCoordRecord[velocityCenter_onSurface.y],eddyDepth,finalRadius,failureReason.at(failureIndex).first,failureReason.at(failureIndex).second,i);
                                 }
                             }
                             failureReasonSet.push_back(failureReason);
@@ -10299,7 +10304,7 @@ int main(void)
                         Trakfile.open(trakfile1.c_str(),ofstream::out | ofstream::app);
 
                     }
-                    Trakfile<< mass << "   "<<volume<< "   " << Cx <<  "   " <<Cy << "   "<<Cz << "   "<< LowerLeft_Corner_x <<"   ";
+                    Trakfile<< mass << "   "<<volume<<        "   " << Cx <<  "   " <<Cy << "   "<<Cz << "   "<< LowerLeft_Corner_x <<"   ";
                     Trakfile<<LowerLeft_Corner_y<< "   "   <<LowerLeft_Corner_z<< "   " <<UpperRight_Corner_x << "   " ;
                     Trakfile<< UpperRight_Corner_y<< "   " <<UpperRight_Corner_z << "   "  <<MinValX    <<"   "<<MinValY    <<"   "<<MinValZ    <<"   "<<MaxValX    <<"   "<<MaxValY   <<"   "<<MaxValZ    <<"   "<<MinVal<< "   "   <<MaxVal<<endl;
                     Trakfile.close();
@@ -10798,7 +10803,7 @@ int main(void)
 //        in_ds = NULL;
         
         char mypolyfile1[256];
-        sprintf(mypolyfile1, mypolyfile.c_str());
+        sprintf(mypolyfile1, "%s",mypolyfile.c_str());
         //   BeginObjSegment(in_ds,&outDS,cell_type,currentTime, (double) thresh1, listfile,SmallestObjVol, TimePrecision, /* doVolRender*/1,mypolyfile1,thresh1, thresh2, InitialtimeStep,TimeIncrement, deltaxval, deltayval, deltazval);
         
         
