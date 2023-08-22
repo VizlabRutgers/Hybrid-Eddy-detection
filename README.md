@@ -13,7 +13,7 @@ Please contact Rutgers Vizlab or the author if you have any problem.
 https://vizlab.rutgers.edu/ or huaweiping0@gmail.com
 
 # Installation
-We recommend you to use the Singularity to avoid installation and environments configuration. If so, you could get the image by the command below and jump to the next section.
+We recommend you to use the Singularity to avoid installation and environments configuration (especially in HPC, which might not support OpenGL/VTK). If so, you could get the image by the command below and jump to the next section.
 ```
 singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/basic:latest
 ```
@@ -29,18 +29,18 @@ NetCDF-4.3.1
 VTK-8.2.0  
 OpenCV-3.4.13  
 
-IDE (if you need):  
+IDE (Optional):  
 QT-5.14.2 
 
 Installation Steps:
 1. Install Cmake/CMake-gui.(not use the latest one as qt may not support that currently. Version 3.14 verified).
 2. (optional)Install qt5.
 3. Install Hdf5 and Netcdf first.
-4. Install VTK library, I use vtk 8.2 here.
-    a)You may meet some problem because of the incompatible version of cmake or VTK library.
-    b)You need to change the library path in CMakeList file.
-    c)You may need to use apt-file command to find necessary file (for QT).
-    d)If you are working in QT, you may need to compile VTK with QT.
+4. Install VTK library.  
+    a)You may meet some problem because of the incompatible version of cmake or VTK library.  
+    b)You need to change the library path in CMakeList file.  
+    c)You may need to use apt-file command to find necessary file (for QT).  
+    d)If you are working in QT, you may need to compile VTK with QT.  
 6. Compile the source code by Cmake(or Do it in QT).
 7. Make file.
 8. You could see the excutable file "FT" in your folder. 
