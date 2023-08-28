@@ -9152,7 +9152,7 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
 
 }
 
-bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, double& centerX,double& centerY,double centerZ_inDataset, vector<pair<cv::Point3d,double>>& velocityMag_centorid, vector<pair<cv::Point2d, double>>& filledCirclePointsInLoop, const int startRadius, shared_ptr<double[]> xCoord, shared_ptr<double[]> yCoord,const string baseOutputFile,const vtkNew<vtkKdTreePointLocator>& KDTree, eddyProperty& SingleEddy, vector<pair<int,double>> (&failureReasonReturn), int& finalRadius, bool testEddyFlag){
+bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double centerX, const double centerY,const double centerZ_inDataset, vector<pair<cv::Point3d,double>>& velocityMag_centorid, vector<pair<cv::Point2d, double>>& filledCirclePointsInLoop, const int startRadius, shared_ptr<double[]> xCoord, shared_ptr<double[]> yCoord,const string baseOutputFile,const vtkNew<vtkKdTreePointLocator>& KDTree, eddyProperty& SingleEddy, vector<pair<int,double>> (&failureReasonReturn), int& finalRadius, bool testEddyFlag){
 
 
     // Initialization
@@ -9198,14 +9198,12 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, double& centerX,dou
         if(centerZ_inDataset!=bounds[4])
             minVelocitySearchEndFlag=1;
         searchData.clear();
-        centerX = center_previous.x;
-        centerY = center_previous.y;
         for(int i = 0; i<search_rangeX; i++){
             for(int j=0; j<search_rangeY;j++){
 
                 vtkIdType dataPoint_index;
-                velocitySearch_inDataset_x = xCoord[(centerX - (search_rangeX-1)/2 + i)];
-                velocitySearch_inDataset_y = yCoord[(centerY - (search_rangeY-1)/2 + j)];
+                velocitySearch_inDataset_x = xCoord[(center_previous.x - (search_rangeX-1)/2 + i)];
+                velocitySearch_inDataset_y = yCoord[(center_previous.y - (search_rangeY-1)/2 + j)];
     //                eta_centroid_inDataset_x = (eta_centroid_point.x - (search_rangeX-1)/2 + i)*1;
     //                eta_centroid_inDataset_y = (eta_centroid_point.y - (search_rangeY-1)/2 + j)*1;
 
@@ -9223,12 +9221,15 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, double& centerX,dou
         cv::minMaxLoc(input_velocity,&minValue,NULL,&minVelocity,NULL);
         if(minValue == 0)
             return false;
-        center = cv::Point(cv::Point(centerX - (search_rangeX-1)/2 + minVelocity.y,centerY - (search_rangeX-1)/2 + minVelocity.x));
+        center = cv::Point(center_previous.x - (search_rangeX-1)/2 + minVelocity.y,center_previous.y - (search_rangeX-1)/2 + minVelocity.x);
+        if(center.x<=0 || center.y<=0 || center.x>=dataset_xLength || center.y>=dataset_yLength)
+            return false;
         if( center == center_previous)
             minVelocitySearchEndFlag=1;
         else
             center_previous=center;
     }
+
 
 
 
@@ -9245,11 +9246,8 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, double& centerX,dou
     searchRadius = 3;
     rotationCheckingFailed = false;
 
-    centerX = center.x;
-    centerY = center.y;
-
-    boxCenter_x = centerX;
-    boxCenter_y = centerY;
+    boxCenter_x = center.x;
+    boxCenter_y = center.y;
     // Notice the x and y are changed here
     // I guess that is due to the reshape of the searchData
     double boxCenter_inDataset_x = xCoord[boxCenter_x];
@@ -9644,7 +9642,15 @@ int main(int argc, char* argv[])
 
         nnodes = x_dim * y_dim * z_dim;
 
-        in_ds->GetBounds(bounds);
+//        in_ds->GetBounds(bounds);
+
+
+        bounds[0] = xCoordRecord[0];
+        bounds[1] = xCoordRecord[dataset_xLength-1];
+        bounds[2] = xCoordRecord[0];
+        bounds[3] = xCoordRecord[dataset_yLength-1];
+        bounds[4] = xCoordRecord[0];
+        bounds[5] = xCoordRecord[dataset_zLength-1];
 
 
         vtkNew<vtkKdTreePointLocator> KDTree;
@@ -9797,8 +9803,8 @@ int main(int argc, char* argv[])
                 SingleEddy.clearData();
                 vector<pair<int,double>> failureReason;
 
-                if(i==249)
-                    i=249;
+                if(i==1722)
+                    i=1722;
 
                 // Give a origin point
                 eddyCenter_inDepth.clear();
