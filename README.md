@@ -13,6 +13,11 @@ Please contact Rutgers Vizlab or the author if you have any problem.
 https://vizlab.rutgers.edu/ or huaweiping0@gmail.com
 
 # Installation
+We recommend you to use the Singularity to avoid installation and environments configuration (especially in HPC, which might not support OpenGL/VTK). If so, you could get the image by the command below and jump to the next section.
+```
+singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/basic:latest
+```
+
 This program is a C++ program developed in linux system. We strongly recommend you to compile the code in linux system. You may need to change the CMakelist file if you're using other platforms.
 
 Validated environment:  
@@ -24,26 +29,35 @@ NetCDF-4.3.1
 VTK-8.2.0  
 OpenCV-3.4.13  
 
-IDE (if you need):  
+IDE (Optional):  
 QT-5.14.2 
 
 Installation Steps:
 1. Install Cmake/CMake-gui.(not use the latest one as qt may not support that currently. Version 3.14 verified).
 2. (optional)Install qt5.
 3. Install Hdf5 and Netcdf first.
-4. Install VTK library, I use vtk 8.2 here.
-    a)You may meet some problem because of the incompatible version of cmake or VTK library.
-    b)You need to change the library path in CMakeList file.
-    c)You may need to use apt-file command to find necessary file (for QT).
-    d)If you are working in QT, you may need to compile VTK with QT.
+4. Install VTK library.  
+    a)You may meet some problem because of the incompatible version of cmake or VTK library.  
+    b)You need to change the library path in CMakeList file.  
+    c)You may need to use apt-file command to find necessary file (for QT).  
+    d)If you are working in QT, you may need to compile VTK with QT.  
 6. Compile the source code by Cmake(or Do it in QT).
 7. Make file.
 8. You could see the excutable file "FT" in your folder. 
 
-# Usage 
+# Use our software 
+If you are not using singularity, please follow the instruction below:
 1. Modify the configuration file (FeatureTrack.conf) to match the path of the dataset
 2. Copy the FeatureTrack.Conf to folder where you compile the code to.
-3. Run the executable file "FT"
+3. Run the executable file with configuration file. E.g.
+```
+weiping@Precision: .\FT .\FeatureTrack.Conf
+```
+
+If you are using Singularity, you could run our program in one command:
+```
+singularity exec --bind <The directory of your data and output path> <The path to your Singularity image> /eddy_hybrid_build/FT <The path to your FreatureTrack.Conf file>
+```
 
 # Configuration File
 The program support 2D and 3D dataset with variables including temperature and salinity.
