@@ -5331,7 +5331,7 @@ void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, stri
 
 
 
-int CreateListFile(string trk_dir, string infile,string &listfile,int InitialtimeStep, int FinaltimeStep,int TimeIncrement,int TimePrecision )
+int CreateListFile(string trk_dir, string infile,string &listfile,const string& fileBaseName,int InitialtimeStep, int FinaltimeStep,int TimeIncrement,int TimePrecision )
 {
     // this function creates a txt file including all the datafilenames that are about to be processed.. (This function is used in the tracking related functions).
     // This function can be removed with the appropriate changes in the future. (A future student can consider this change as a starting project).
@@ -5339,18 +5339,7 @@ int CreateListFile(string trk_dir, string infile,string &listfile,int Initialtim
     // string infile(atts.GetInputBaseFilePath());
     //#std::cout << "Now creating list file ....." << std::endl;
     //string trk_dir;
-    int p1,p2;
-    //1.6 check if file path is abs else give err and return 0
-    p1=infile.rfind('/');
-    if (p1==string::npos)
-    {
-        cout<< "Please use an absolute path when specifying the filename.\n"<< std::endl;
-        return 0;
-    }
-    
-    //trk_dir=infile.substr(0,p1+1)+"GENERATED_TRACK_FILES/";
-    p2=infile.rfind('.');
-    string datafile=infile.substr(p1+1,p2-p1-1); // h5file=bvector
+    string datafile=fileBaseName; // h5file=bvector
     struct stat st;
     // if trk_dir doesn't exist
 	cout<<"\n\n trk_dir.c_str() : " << trk_dir.c_str()<<endl;
@@ -6805,8 +6794,8 @@ int BeginFeatureTrack(string base_GeneratedTrackFileName, string currenttimevalu
     
     // I know the current frame number by comparing time_polyfile with PolyFilename_
     // Each pass of avs network, the trakTable and polyfile will be rewritten for adding new tracking info.
-    int i(0);
-    int TrackedFr(-1);
+    int i=0;
+    int TrackedFr=-1;
     for(vector<string>::const_iterator it=time_polyfile.begin(); \
         it!=time_polyfile.end(); ++it,++i)
     {
@@ -8458,7 +8447,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
 
 
-            if(velocityMag_current == 0){
+            if(boxPoint_current.first <= 0 || boxPoint_current.second <= 0 || boxPoint_current.first >=(dataset_xLength-1) || boxPoint_current.second >=(dataset_yLength-1)){
                 box_checkingFailed = true;
                 failureReason_inFunc.push_back(make_pair(0,0));
             }
@@ -8507,7 +8496,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
 
 
-            if(velocityMag_current == 0){
+            if(boxPoint_current.first <= 0 || boxPoint_current.second <= 0 || boxPoint_current.first >=(dataset_xLength-1) || boxPoint_current.second >=(dataset_yLength-1)){
                 box_checkingFailed = true;
                 failureReason_inFunc.push_back(make_pair(0,0));
             }
@@ -8615,7 +8604,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
 
 
-            if(velocityMag_current == 0){
+            if(boxPoint_current.first <= 0 || boxPoint_current.second <= 0 || boxPoint_current.first >=(dataset_xLength-1) || boxPoint_current.second >=(dataset_yLength-1)){
                 box_checkingFailed = true;
                 failureReason_inFunc.push_back(make_pair(0,0));
             }
@@ -9336,7 +9325,7 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
                 return false;
         });
         filledCirclePointsInLoop.erase(std::unique(filledCirclePointsInLoop.begin(),filledCirclePointsInLoop.end()),filledCirclePointsInLoop.end());
-
+        double test0=0;
         iter_boundaryPoint = filledCirclePointsInLoop.begin();
         while(iter_boundaryPoint != filledCirclePointsInLoop.end()){
             boundaryPoint_current = *(iter_boundaryPoint);
@@ -9344,7 +9333,8 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
             pointOnBoundary_inDataset_x = xCoord[boundaryPoint_current.first.x];
             pointOnBoundary_inDataset_y = yCoord[boundaryPoint_current.first.y];
             SingleEddy.setValue(boxCenter_inDataset_x,boxCenter_inDataset_y,pointOnBoundary_inDataset_x, pointOnBoundary_inDataset_y,centerZ_inDataset, boundaryPoint_current,searchRadius-2,(int)clockwiseFlag[0]);
-
+            if(pointOnBoundary_inDataset_y==0)
+                test0=1;
             iter_boundaryPoint++;
         }
 
@@ -9549,9 +9539,9 @@ int main(int argc, char* argv[])
     string polyext = ".poly";
     string nonamecharacter ="+";
     if (strcmp (FileBaseName.c_str(),nonamecharacter.c_str()) == 0 )
-        int a = CreateListFile(base_GeneratedTrackFileNameOriginal,datapath,listfile,InitialtimeStep,FinaltimeStep,TimeIncrement,TimePrecision );
+        int a = CreateListFile(base_GeneratedTrackFileNameOriginal,datapath,listfile,FileBaseName,InitialtimeStep,FinaltimeStep,TimeIncrement,TimePrecision );
     else
-        int a = CreateListFile(base_GeneratedTrackFileNameOriginal, datapath+FileBaseName, listfile, InitialtimeStep, FinaltimeStep, TimeIncrement, TimePrecision );
+        int a = CreateListFile(base_GeneratedTrackFileNameOriginal, datapath+FileBaseName, listfile,FileBaseName,InitialtimeStep, FinaltimeStep, TimeIncrement, TimePrecision );
 
 
     
