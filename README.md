@@ -15,7 +15,7 @@ https://vizlab.rutgers.edu/ or huaweiping0@gmail.com
 # Installation
 We recommend you to use the Singularity to avoid installation and environments configuration (especially in HPC, which might not support OpenGL/VTK). If so, you could get the image by the command below and jump to the next section.
 ```
-singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v1.1:latest
+singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v1.2:latest
 ```
 
 This program is a C++ program developed in linux system. We strongly recommend you to compile the code in linux system. You may need to change the CMakelist file if you're using other platforms.
