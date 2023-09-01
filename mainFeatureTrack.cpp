@@ -9549,7 +9549,7 @@ int main(int argc, char* argv[])
     
 
 
-    int maxCycleNumber = ((FinaltimeStep-InitialtimeStep)/TimeIncrement) +1;
+    int maxCycleNumber = ((FinaltimeStep-InitialtimeStep)/TimeIncrement);
     
 
 
