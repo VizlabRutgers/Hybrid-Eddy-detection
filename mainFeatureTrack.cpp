@@ -8447,7 +8447,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
 
 
-            if(boxPoint_current.first <= 0 || boxPoint_current.second <= 0 || boxPoint_current.first >=(dataset_xLength-1) || boxPoint_current.second >=(dataset_yLength-1)){
+            if(boxPoint_next.first <= 0 || boxPoint_next.second <= 0 || boxPoint_next.first >=(dataset_xLength-1) || boxPoint_next.second >=(dataset_yLength-1)){
                 box_checkingFailed = true;
                 failureReason_inFunc.push_back(make_pair(0,0));
             }
@@ -8496,7 +8496,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
 
 
-            if(boxPoint_current.first <= 0 || boxPoint_current.second <= 0 || boxPoint_current.first >=(dataset_xLength-1) || boxPoint_current.second >=(dataset_yLength-1)){
+            if(boxPoint_next.first <= 0 || boxPoint_next.second <= 0 || boxPoint_next.first >=(dataset_xLength-1) || boxPoint_next.second >=(dataset_yLength-1)){
                 box_checkingFailed = true;
                 failureReason_inFunc.push_back(make_pair(0,0));
             }
@@ -8604,7 +8604,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
 
 
-            if(boxPoint_current.first <= 0 || boxPoint_current.second <= 0 || boxPoint_current.first >=(dataset_xLength-1) || boxPoint_current.second >=(dataset_yLength-1)){
+            if(boxPoint_next.first <= 0 || boxPoint_next.second <= 0 || boxPoint_next.first >=(dataset_xLength-1) || boxPoint_next.second >=(dataset_yLength-1)){
                 box_checkingFailed = true;
                 failureReason_inFunc.push_back(make_pair(0,0));
             }
@@ -9325,16 +9325,18 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
                 return false;
         });
         filledCirclePointsInLoop.erase(std::unique(filledCirclePointsInLoop.begin(),filledCirclePointsInLoop.end()),filledCirclePointsInLoop.end());
-        double test0=0;
         iter_boundaryPoint = filledCirclePointsInLoop.begin();
+
+        double test=0;
         while(iter_boundaryPoint != filledCirclePointsInLoop.end()){
             boundaryPoint_current = *(iter_boundaryPoint);
 
             pointOnBoundary_inDataset_x = xCoord[boundaryPoint_current.first.x];
             pointOnBoundary_inDataset_y = yCoord[boundaryPoint_current.first.y];
+
+            if(pointOnBoundary_inDataset_x==0 || pointOnBoundary_inDataset_y==0)
+                test=1;
             SingleEddy.setValue(boxCenter_inDataset_x,boxCenter_inDataset_y,pointOnBoundary_inDataset_x, pointOnBoundary_inDataset_y,centerZ_inDataset, boundaryPoint_current,searchRadius-2,(int)clockwiseFlag[0]);
-            if(pointOnBoundary_inDataset_y==0)
-                test0=1;
             iter_boundaryPoint++;
         }
 
