@@ -9552,9 +9552,7 @@ int main(int argc, char* argv[])
     int maxCycleNumber = ((FinaltimeStep-InitialtimeStep)/TimeIncrement);
     
 
-
-
-    for (int currentTime = 0; currentTime <InitialtimeStep-1+maxCycleNumber; currentTime++ )
+    for (int currentTime = 0; currentTime <=maxCycleNumber; currentTime++ )
     {
         bool first_time = true;
         long Uocd_objID = 0;
