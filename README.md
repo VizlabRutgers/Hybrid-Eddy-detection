@@ -12,6 +12,8 @@ We've used it in SciViz Contest 2020 with Red Sea data https://kaust-vislab.gith
 Please contact Rutgers Vizlab or the author if you have any problem.
 https://vizlab.rutgers.edu/ or huaweiping0@gmail.com
 
+The visualization program of the eddy is here: https://github.com/VizlabRutgers/Hybrid-Eddy-Visualization-and-Comparison
+
 # Installation
 We recommend you to use the Singularity to avoid installation and environments configuration (especially in HPC, which might not support OpenGL/VTK). If so, you could get the image by the command below and jump to the next section.
 ```
