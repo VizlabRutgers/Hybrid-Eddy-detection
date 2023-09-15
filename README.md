@@ -50,6 +50,13 @@ Installation Steps:
 8. You could see the excutable file "FT" in your folder. 
 
 # Use our software 
+## With Singularity
+If you are using Singularity, you need to modify the path in the configuration file first and then you could run our program in one command:
+```
+singularity exec (--bind <The directory of your data and output path>) <The path to your Singularity image> /eddy_hybrid_build/FT <The path to your FreatureTrack.Conf file>
+```
+
+## Without Singularity
 If you are not using singularity, please follow the instruction below:
 1. Modify the configuration file (FeatureTrack.conf) to match the path of the dataset
 2. Copy the FeatureTrack.Conf to folder where you compile the code to.
@@ -58,13 +65,11 @@ If you are not using singularity, please follow the instruction below:
 weiping@Precision: .\FT .\FeatureTrack.Conf
 ```
 
-If you are using Singularity, you could run our program in one command:
-```
-singularity exec --bind <The directory of your data and output path> <The path to your Singularity image> /eddy_hybrid_build/FT <The path to your FreatureTrack.Conf file>
-```
+
 
 # Configuration File
 The program support 2D and 3D dataset with variables including temperature and salinity.
+Pleases modify at least the first three parameters in the Configuration file to a proper path for the dataset and generated result. 
 Here's the detail of the configuration file (FeatureTrack.conf) for our hybrid detection approach.
 
 ```
