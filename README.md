@@ -12,6 +12,8 @@ We've used it in SciViz Contest 2020 with Red Sea data https://kaust-vislab.gith
 Please contact Rutgers Vizlab or the author if you have any problem.
 https://vizlab.rutgers.edu/ or huaweiping0@gmail.com
 
+# Eddy Visualization
+
 The visualization program of the eddy is here: https://github.com/VizlabRutgers/Hybrid-Eddy-Visualization-and-Comparison
 
 # Installation
@@ -19,7 +21,7 @@ The visualization program of the eddy is here: https://github.com/VizlabRutgers/
 
 We recommend you to use the Singularity to avoid installation and environments configuration (especially in HPC, which might not support OpenGL/VTK). If so, you could get the image by the command below and jump to the next section.
 ```
-singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v1.5:latest
+singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v1.6:latest
 ```
 ## Without Singularity
 This program is a C++ program developed in linux system. We strongly recommend you to compile the code in linux system. You may need to change the CMakelist file if you're using other platforms.
