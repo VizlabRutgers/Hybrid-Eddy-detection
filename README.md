@@ -12,6 +12,8 @@ We've used it in SciViz Contest 2020 with Red Sea data https://kaust-vislab.gith
 Please contact Rutgers Vizlab or the author if you have any problem.
 https://vizlab.rutgers.edu/ or huaweiping0@gmail.com
 
+# Eddy Visualization
+
 The visualization program of the eddy is here: https://github.com/VizlabRutgers/Hybrid-Eddy-Visualization-and-Comparison
 
 # Installation
