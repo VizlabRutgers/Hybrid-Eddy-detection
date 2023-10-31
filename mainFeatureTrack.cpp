@@ -284,7 +284,11 @@ public:
             dataPoint_index = KDTree->FindClosestPoint(pointCoord_onBoundary);
             in_ds->GetPointData()->GetTensors()->GetTuple(dataPoint_index,temp_val.get());
 
-            fprintf(fpout," %9.6f %9.6f %9.6f %9.6f %9.6f %f %f %f %f %f %f %d %d %d %d %d\n", boxCenter_inDataset_x[i],boxCenter_inDataset_y[i],pointOnBoundary_inDataset_x[i], pointOnBoundary_inDataset_y[i],centerZ_inDataset[i], (float) temp_val[0], (float)temp_val[1],(float)temp_val[2],(float)temp_val[3],(float)temp_val[4],(float)temp_val[5], 0,searchRadius[i],clockwiseFlag[i],timeFrame, objIdInSequence);
+            fprintf(fpout," %9.6f %9.6f %9.6f %9.6f %9.6f %f %f %f %f %f %f %d %d %d %d %d\n",
+                    boxCenter_inDataset_x[i],boxCenter_inDataset_y[i],
+                    pointOnBoundary_inDataset_x[i], pointOnBoundary_inDataset_y[i],centerZ_inDataset[i],
+                    (float) temp_val[0], (float)temp_val[1],(float)temp_val[2],(float)temp_val[3],(float)temp_val[4],(float)temp_val[5],
+                    0,searchRadius[i],clockwiseFlag[i],timeFrame, objIdInSequence);
         }
     }
 
@@ -294,7 +298,7 @@ public:
         pointOnBoundary_inDataset_x.clear();
         pointOnBoundary_inDataset_y.clear();
         centerZ_inDataset.clear();
-//        boundaryPoint_current.clear();
+        boundaryPoint_current.clear();
         searchRadius.clear();
         clockwiseFlag.clear();
     }
@@ -3890,7 +3894,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
 
     //Re
-    Mat morph_kernal = getStructuringElement(MORPH_RECT, Size(7,7));
+    Mat morph_kernal = getStructuringElement(MORPH_RECT, Size(11,11));
     Mat morph_kernal2 = getStructuringElement(MORPH_RECT, Size(3,3));
     cv::dilate(input,input_dilate,morph_kernal);
     cv::erode(input,input_erode,morph_kernal);
@@ -4001,8 +4005,8 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
     }
     fclose(fpoutETAMax);
     erode_contours.insert(erode_contours.end(),dilate_contours.begin(),dilate_contours.end());
-//    Mat eta_Peaks = Mat::zeros(cv::Size(input.rows,input.cols),CV_8U);
-//    cv::drawContours(eta_Peaks,erode_contours,-1,cv::Scalar(255), cv::FILLED);
+    Mat eta_Peaks = Mat::zeros(cv::Size(input.rows,input.cols),CV_8U);
+    cv::drawContours(eta_Peaks,erode_contours,-1,cv::Scalar(255), cv::FILLED);
 
 
     iter_contour = erode_contours.begin();
@@ -9015,8 +9019,12 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
     int counter1 = 0;
     while(iter_eta != eta_centroid_pointSet.end()){
 
-        if(counter1==49)
-            counter1=49;
+//        if(counter1==92)
+//            counter1=92;
+//        if(counter1==93)
+//            counter1=93;
+//        if(counter1==95)
+//            counter1=95;
 
         searchData.clear();
         cv::Point eta_centroid_point;
@@ -9618,9 +9626,9 @@ int main(int argc, char* argv[])
             etaFlag = ReadNcData_SSH_SingleFrame(eta_centroid,file_name, x_dim,y_dim,OutputOcdfile,variableName);
         else{
             if(z_dim==1)
-                etaFlag = ReadNcData_SSH_MultiFrame_2D(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,currentTime,variableName);
+                etaFlag = ReadNcData_SSH_MultiFrame_2D(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,stoi(currenttimevalue)-1,variableName);
             else
-                etaFlag = ReadNcData_SSH_MultiFrame(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,currentTime,variableName);
+                etaFlag = ReadNcData_SSH_MultiFrame(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,stoi(currenttimevalue)-1,variableName);
         }
         eta_centroid.erase(remove_if(eta_centroid.begin(),eta_centroid.end(),[](pair<cv::Point2d,double> x){return x.second == 0;}),eta_centroid.end());
 
@@ -9685,7 +9693,7 @@ int main(int argc, char* argv[])
 
         int doVolRender = 1;
         
-        cout<<"-------- Segmentation of the objects in the "<< currentTime << "th file begins now ! ---------------"<<endl;
+        cout<<"-------- Segmentation of the objects in the "<< currenttimevalue << "th file begins now ! ---------------"<<endl;
         
         vtkSmartPointer<vtkCellTypes> types = vtkCellTypes::New();
         in_ds->GetCellTypes(types);
@@ -9793,8 +9801,10 @@ int main(int argc, char* argv[])
                 SingleEddy.clearData();
                 vector<pair<int,double>> failureReason;
 
-                if(i==1722)
-                    i=1722;
+                if(i==25)
+                    i=25;
+                if(i==28)
+                    i=28;
 
                 // Give a origin point
                 eddyCenter_inDepth.clear();
@@ -9808,13 +9818,17 @@ int main(int argc, char* argv[])
 
                 // Find the velocity centers and structure points on each layer
                 while(zCounter<dataset_zLength){
+
                     filledCirclePoints.clear();
                     double eddyDepth = zLevelData[zCounter];
 
 
                     int finalRadius=0;
                     bool testEddyFlag(i==197 && eddyDepth==bounds[4]);
-                    velocityExistFlag = velocityMag_LocalMin(in_ds, velocityCenter_onSurface.x, velocityCenter_onSurface.y, eddyDepth,eddyCenter_inDepth,filledCirclePoints,circleStartRadius,xCoordRecord,yCoordRecord,base_GeneratedTrackFileNameOriginal,KDTree, SingleEddy,failureReason,finalRadius,testEddyFlag);
+                    if(zCounter == 0)
+                        velocityExistFlag = velocityMag_LocalMin(in_ds, velocityCenter_onSurface.x, velocityCenter_onSurface.y, eddyDepth,eddyCenter_inDepth,filledCirclePoints,circleStartRadius,xCoordRecord,yCoordRecord,base_GeneratedTrackFileNameOriginal,KDTree, SingleEddy,failureReason,finalRadius,testEddyFlag);
+                    else
+                        velocityExistFlag = velocityMag_LocalMin(in_ds, eddyCenter_inDepth[zCounter-1].first.x, eddyCenter_inDepth[zCounter-1].first.y, eddyDepth,eddyCenter_inDepth,filledCirclePoints,circleStartRadius,xCoordRecord,yCoordRecord,base_GeneratedTrackFileNameOriginal,KDTree, SingleEddy,failureReason,finalRadius,testEddyFlag);
                     ++zCounter;
                     if(velocityExistFlag == true){
                         filledStructurePoints.insert(filledStructurePoints.end(),filledCirclePoints.begin(),filledCirclePoints.end());
