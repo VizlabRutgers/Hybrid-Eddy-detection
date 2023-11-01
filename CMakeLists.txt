@@ -158,7 +158,8 @@ SET_SOURCE_FILES_PROPERTIES(${FTSrcs} PROPERTIES)
 
 ADD_EXECUTABLE( FT MACOSX_BUNDLE ${FTSrcs} ${FTResources} ${MOCSrcs} ${ResourceSrcs} )
 
-
+target_compile_options(asan-target PRIVATE -fsanitize=address)
+target_link_options(asan-target PRIVATE -fsanitize=address)
 
 
 TARGET_LINK_LIBRARIES( FT
@@ -173,6 +174,7 @@ TARGET_LINK_LIBRARIES( FT
   ${HDF5_LIBRARIES}
   ${netCDF_LIBRARIES}
   ${OpenCV_LIBS}
+  -fsanitize=address
 )
 
 
