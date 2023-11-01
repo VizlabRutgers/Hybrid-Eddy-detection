@@ -4504,6 +4504,7 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
 //    float *Zcoord;
 //    float * data_out;
     
+    cout<<" inside the creating dataset\n"<<endl;
     
     string h5fileextensionname=".h5";
     string vtrfileextensionname=".vtr";
@@ -4629,7 +4630,7 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
     if (strcmp (ncfileextensionname.c_str(),FileExtention.c_str()) == 0 || strcmp (nc4fileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read nc file
     {
         
-        cout<<" inside the nc reading string comparision\n";
+        cout<<" inside the nc reading string comparision\n"<<endl;
 
         vtkSmartPointer<vtkDataSet>output;
 
@@ -9350,7 +9351,7 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
 
 }
 
-void closestCostalPosition(const cv::Point2d& centerPoint, const int& ncid, cv::Point2d& closestPoint, double& distance, shared_ptr<double[]> xCoord,shared_ptr<double[]> yCoord){
+void closestCostalPosition(const cv::Point2d& centerPoint, const int& ncid, cv::Point2d& closestPoint, double& distance, shared_ptr<double[]> xCoord,shared_ptr<double[]> yCoord, dataVariableName variableName){
     int temp_varid;
 
     const size_t x_rho = dataset_xLength;
@@ -9362,7 +9363,7 @@ void closestCostalPosition(const cv::Point2d& centerPoint, const int& ncid, cv::
 
     shared_ptr<double[]> temp_vals(new double [x_rho*y_rho*z_rho]);
 
-    nc_inq_varid(ncid, "tos", &temp_varid);
+    nc_inq_varid(ncid, variableName.getTemp().c_str(), &temp_varid);
     nc_get_vara_double(ncid, temp_varid, dataStart,dataCount,temp_vals.get());
 
     //Find costal map
@@ -9539,7 +9540,6 @@ int main(int argc, char* argv[])
     {
         bool first_time = true;
         long Uocd_objID = 0;
-        cout<<"frame:"<<currentTime<<endl;
         //time(&begin1);
         clock_t begin = clock();
         
@@ -9868,7 +9868,7 @@ int main(int argc, char* argv[])
                         double centerRadius = (*centerIter).second;
 
                         //find the closest costal position
-                        closestCostalPosition(cv::Point2d(centerCoord.x,centerCoord.y),ncid,closestCostalPoint,closestDistance, xCoordRecord, yCoordRecord);
+                        closestCostalPosition(cv::Point2d(centerCoord.x,centerCoord.y),ncid,closestCostalPoint,closestDistance, xCoordRecord, yCoordRecord,variableName);
                         fprintf(fpout3,"%9.6f %9.6f %9.6f %f %f %.3f %f\n", xCoordRecord[centerCoord.x],yCoordRecord[centerCoord.y],centerCoord.z,xCoordRecord[closestCostalPoint.x], yCoordRecord[closestCostalPoint.y], closestDistance, centerRadius);
                         fprintf(fpout5,"%9.6f %9.6f %9.6f %f %f %f\n", centerCoord.x,centerCoord.y,centerCoord.z,closestCostalPoint.x, closestCostalPoint.y,centerRadius);
                         centerIter++;
