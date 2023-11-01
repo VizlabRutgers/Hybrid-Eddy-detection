@@ -10,6 +10,11 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
             "Default build type: Debug" FORCE)
@@ -158,10 +163,6 @@ SET_SOURCE_FILES_PROPERTIES(${FTSrcs} PROPERTIES)
 
 ADD_EXECUTABLE( FT MACOSX_BUNDLE ${FTSrcs} ${FTResources} ${MOCSrcs} ${ResourceSrcs} )
 
-target_compile_options(FT PRIVATE -fsanitize=address)
-target_link_options(FT PRIVATE -fsanitize=address)
-
-
 TARGET_LINK_LIBRARIES( FT
   ${VTK_LIBRARIES}
   #vtkRendering
@@ -174,7 +175,6 @@ TARGET_LINK_LIBRARIES( FT
   ${HDF5_LIBRARIES}
   ${netCDF_LIBRARIES}
   ${OpenCV_LIBS}
-  -fsanitize=address
 )
 
 
