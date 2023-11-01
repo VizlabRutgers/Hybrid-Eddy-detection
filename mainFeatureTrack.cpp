@@ -1098,7 +1098,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Backup(float ** Data_out,string FileN
     return returnVal; 
 }
 
-vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  int numberofComponents,dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(string FileName,int numberofComponents,dataVariableName& variableName)
 {
 
     //this function first reads a specific netCDF file and creates a (curvilinear) vtkDataSet from the read data.
@@ -1821,7 +1821,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(float ** Data_out,string 
 }
 
 
-vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(string FileName,int x_dim, int y_dim, int z_dim,  int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
 {
 
     //this function first reads a specific netCDF file and creates a (curvilinear) vtkDataSet from the read data.
@@ -2548,7 +2548,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(float ** Data_out,strin
     return returnVal;
 }
 
-vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(float ** Data_out,string FileName,float ** Xcoord, float**Ycoord, float **Zcoord, int x_dim, int y_dim, int z_dim,  int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
+vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(string FileName,int x_dim, int y_dim, int z_dim,  int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
 {
 
     //this function first reads a specific netCDF file and creates a (curvilinear) vtkDataSet from the read data.
@@ -4495,10 +4495,14 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
     // the inputs are file extension, data dimensions (x,y,z), the user specificed data size lower index (x0,y0,z0) and its upper index (x1,y1,z1)
     // the output of this function is vtkDataSet. The file content is converted and saved in vtkDataSet format.
     
-    float *Xcoord;
-    float *Ycoord;
-    float *Zcoord;
-    float * data_out;
+
+    // The reading of vtk file and hdf5 file should be re-written later due to the memory leak problem on the pointer.
+    // Recommend not to use the raw pointer but the global smart pointer in the main function.
+
+//    float *Xcoord;
+//    float *Ycoord;
+//    float *Zcoord;
+//    float * data_out;
     
     
     string h5fileextensionname=".h5";
@@ -4511,118 +4515,118 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
         numberofComponents = 1;
     else if(dataType == Tensor_data)
         numberofComponents = 9;
-    if (strcmp (h5fileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read h5 file
-    {
-        cout<<" inside the h5 reading string comparision\n";
+//    if (strcmp (h5fileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read h5 file
+//    {
+//        cout<<" inside the h5 reading string comparision\n";
         
         
-        string grid_fileName = data_path + "grid.h5";
-        data_out = new float[x_dim*y_dim*z_dim];
-        Xcoord = new float[x_dim];
-        Ycoord = new float[y_dim];
-        Zcoord = new float[z_dim];
+//        string grid_fileName = data_path + "grid.h5";
+//        data_out = new float[x_dim*y_dim*z_dim];
+//        Xcoord = new float[x_dim];
+//        Ycoord = new float[y_dim];
+//        Zcoord = new float[z_dim];
         
-        vector<string> dimensionVariables;
-        dimensionVariables.push_back(DATASET_NAME_x);
-        dimensionVariables.push_back(DATASET_NAME_y);
-        dimensionVariables.push_back(DATASET_NAME_z);
-        cout<<" inside the h5 reading before ReadGridFile\n";
-        ReadGridFile(dimensionVariables,grid_fileName.c_str(), &Xcoord, &Ycoord, &Zcoord,x_dim, y_dim, z_dim,x0_dim,y0_dim,z0_dim);
-        cout<<" inside the h5 reading after ReadGridFile\n";
+//        vector<string> dimensionVariables;
+//        dimensionVariables.push_back(DATASET_NAME_x);
+//        dimensionVariables.push_back(DATASET_NAME_y);
+//        dimensionVariables.push_back(DATASET_NAME_z);
+//        cout<<" inside the h5 reading before ReadGridFile\n";
+//        ReadGridFile(dimensionVariables,grid_fileName.c_str(), &Xcoord, &Ycoord, &Zcoord,x_dim, y_dim, z_dim,x0_dim,y0_dim,z0_dim);
+//        cout<<" inside the h5 reading after ReadGridFile\n";
 
-        hid_t       file;
-        hid_t       dataset;
-        hid_t       filespace;
-        hid_t       memspace;
+//        hid_t       file;
+//        hid_t       dataset;
+//        hid_t       filespace;
+//        hid_t       memspace;
         
-        hsize_t     dims[3];
-        herr_t      status, status_n;
+//        hsize_t     dims[3];
+//        herr_t      status, status_n;
 
-        dims[0]=(int) x_dim;
-        dims[1]=(int) y_dim;
-        dims[2]=(int) z_dim;
-        const char *filename = FileName.c_str();
-        cout<<" before open, FileName is:["<< FileName.c_str()   <<endl;
-        file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-        cout<<" after open\n";
+//        dims[0]=(int) x_dim;
+//        dims[1]=(int) y_dim;
+//        dims[2]=(int) z_dim;
+//        const char *filename = FileName.c_str();
+//        cout<<" before open, FileName is:["<< FileName.c_str()   <<endl;
+//        file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
+//        cout<<" after open\n";
         
         
-        dataset = H5Dopen2(file,DATASET_NAME_swirl, H5P_DEFAULT);
-        cout<<" after open 2\n";
-        filespace = H5Dget_space(dataset);
-        int rank = H5Sget_simple_extent_ndims(filespace);
-        status_n  = H5Sget_simple_extent_dims(filespace, dims, NULL);
-        memspace = H5Screate_simple(rank,dims,NULL);
-        cout<<" after open 3\n";
-        status = H5Dread(dataset, H5T_NATIVE_FLOAT, memspace, filespace,H5P_DEFAULT, data_out);
-        cout<<" after open 4\n";
+//        dataset = H5Dopen2(file,DATASET_NAME_swirl, H5P_DEFAULT);
+//        cout<<" after open 2\n";
+//        filespace = H5Dget_space(dataset);
+//        int rank = H5Sget_simple_extent_ndims(filespace);
+//        status_n  = H5Sget_simple_extent_dims(filespace, dims, NULL);
+//        memspace = H5Screate_simple(rank,dims,NULL);
+//        cout<<" after open 3\n";
+//        status = H5Dread(dataset, H5T_NATIVE_FLOAT, memspace, filespace,H5P_DEFAULT, data_out);
+//        cout<<" after open 4\n";
     
         
-        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
+//        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
         
-        cout<<endl<<" data_out[0] & [end] : "<<data_out[0]<<" & "<<data_out[nnodes-1]<<endl;
-        cout<<" Xcoord[0] & [end] : "<<" "<<Xcoord[0]<<" & "<<Xcoord[x_dim-1]<<endl;
-        cout<<" Ycoord[0] & [end] : "<<" "<<Ycoord[0]<<" & "<<Ycoord[y_dim-1]<<endl;
-        cout<<" Zcoord[0] & [end] : "<<" "<<Zcoord[0]<<" & "<<Zcoord[z_dim-1]<<endl;
+//        cout<<endl<<" data_out[0] & [end] : "<<data_out[0]<<" & "<<data_out[nnodes-1]<<endl;
+//        cout<<" Xcoord[0] & [end] : "<<" "<<Xcoord[0]<<" & "<<Xcoord[x_dim-1]<<endl;
+//        cout<<" Ycoord[0] & [end] : "<<" "<<Ycoord[0]<<" & "<<Ycoord[y_dim-1]<<endl;
+//        cout<<" Zcoord[0] & [end] : "<<" "<<Zcoord[0]<<" & "<<Zcoord[z_dim-1]<<endl;
         
         
-    }
-    else if (strcmp (vtrfileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read vtr file
-    {
+//    }
+//    else if (strcmp (vtrfileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read vtr file
+//    {
         
-        cout<<" inside the vtr reading string comparision\n";
-//        ReadVtrDataFile(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim);
+//        cout<<" inside the vtr reading string comparision\n";
+////        ReadVtrDataFile(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim);
 
-        vtkNew<vtkXMLRectilinearGridReader> vtr_reader;
-        vtr_reader->SetFileName(FileName.c_str());
-        vtr_reader->Update();
-        vtr_reader->GetOutput()->Register(vtr_reader);
-        vtkSmartPointer<vtkDataSet> vtr_data = vtr_reader->GetOutput();
-        vtr_data->GetPointData()->SetScalars(vtr_data->GetPointData()->GetArray(0));
+//        vtkNew<vtkXMLRectilinearGridReader> vtr_reader;
+//        vtr_reader->SetFileName(FileName.c_str());
+//        vtr_reader->Update();
+//        vtr_reader->GetOutput()->Register(vtr_reader);
+//        vtkSmartPointer<vtkDataSet> vtr_data = vtr_reader->GetOutput();
+//        vtr_data->GetPointData()->SetScalars(vtr_data->GetPointData()->GetArray(0));
 
 
-//        vtkSmartPointer<vtkIdList> cellPointIds_test = vtkSmartPointer<vtkIdList>::New();
+////        vtkSmartPointer<vtkIdList> cellPointIds_test = vtkSmartPointer<vtkIdList>::New();
 
-//        vtr_data->GetCellPoints(0, cellPointIds_test);
-//        vtkIdType test;
-//        for(int i=0;; i++){
-//            test = cellPointIds_test->GetId(i);
-//        }
+////        vtr_data->GetCellPoints(0, cellPointIds_test);
+////        vtkIdType test;
+////        for(int i=0;; i++){
+////            test = cellPointIds_test->GetId(i);
+////        }
 
-//        std::filebuf file_Buff;
-//        file_Buff.open("./test.txt", std::ios::out);
-//        std::ostream os(&file_Buff);
+////        std::filebuf file_Buff;
+////        file_Buff.open("./test.txt", std::ios::out);
+////        std::ostream os(&file_Buff);
 
-//        vtr_data->Print(os);
+////        vtr_data->Print(os);
 
-//        file_Buff.close();
+////        file_Buff.close();
 
-//        int testtt;
-//        int testtt2 = 0;
+////        int testtt;
+////        int testtt2 = 0;
 
+////        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
+////        cout<<" data_out[0] & [end] : "<<data_out[0]<<" & "<<data_out[nnodes-1]<<endl;
+////        cout<<" Xcoord[0] & [end] : "<<" "<<Xcoord[0]<<" & "<<Xcoord[x_dim-1]<<endl;
+////        cout<<" Ycoord[0] & [end] : "<<" "<<Ycoord[0]<<" & "<<Ycoord[y_dim-1]<<endl;
+////        cout<<" Zcoord[0] & [end] : "<<" "<<Zcoord[0]<<" & "<<Zcoord[z_dim-1]<<endl;
+
+//        return vtr_data;
+        
+//    }
+//    else if (strcmp (vtkfileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read vtk file
+//    {
+        
+//        cout<<" inside the vtk reading string comparision\n";
+//        ReadVtkDataFile(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim);
 //        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
 //        cout<<" data_out[0] & [end] : "<<data_out[0]<<" & "<<data_out[nnodes-1]<<endl;
 //        cout<<" Xcoord[0] & [end] : "<<" "<<Xcoord[0]<<" & "<<Xcoord[x_dim-1]<<endl;
 //        cout<<" Ycoord[0] & [end] : "<<" "<<Ycoord[0]<<" & "<<Ycoord[y_dim-1]<<endl;
 //        cout<<" Zcoord[0] & [end] : "<<" "<<Zcoord[0]<<" & "<<Zcoord[z_dim-1]<<endl;
 
-        return vtr_data;
         
-    }
-    else if (strcmp (vtkfileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read vtk file
-    {
-        
-        cout<<" inside the vtk reading string comparision\n";
-        ReadVtkDataFile(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim);
-        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
-        cout<<" data_out[0] & [end] : "<<data_out[0]<<" & "<<data_out[nnodes-1]<<endl;
-        cout<<" Xcoord[0] & [end] : "<<" "<<Xcoord[0]<<" & "<<Xcoord[x_dim-1]<<endl;
-        cout<<" Ycoord[0] & [end] : "<<" "<<Ycoord[0]<<" & "<<Ycoord[y_dim-1]<<endl;
-        cout<<" Zcoord[0] & [end] : "<<" "<<Zcoord[0]<<" & "<<Zcoord[z_dim-1]<<endl;
-
-        
-    }
-    else if (strcmp (ncfileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read nc file
+//    }
+    if (strcmp (ncfileextensionname.c_str(),FileExtention.c_str()) == 0 || strcmp (nc4fileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read nc file
     {
         
         cout<<" inside the nc reading string comparision\n";
@@ -4630,12 +4634,12 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
         vtkSmartPointer<vtkDataSet>output;
 
         if(stackedNcFilePath == "None")
-            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, variableName);
+            output = ReadNcDataFile_Singleframe(FileName,numberofComponents, variableName);
         else{
             if(z_dim==1)
-                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe_2D(stackedNcFilePath,x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
             else
-                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
+                output = ReadNcDataFile_Multiframe(stackedNcFilePath,x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
         }
 
 //        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
@@ -4643,39 +4647,10 @@ vtkSmartPointer<vtkDataSet> CreateVtkDataSet(string &FileExtention, string FileN
         return output;
         
     }
-
-    else if (strcmp (nc4fileextensionname.c_str(),FileExtention.c_str()) == 0 ) //read nc4 file
-    {
-
-        cout<<" inside the nc reading string comparision\n";
-
-        vtkSmartPointer<vtkDataSet>output;
-
-        if(stackedNcFilePath == "None")
-            output = ReadNcDataFile_Singleframe(&data_out,FileName,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, variableName);
-        else{
-            if(z_dim==1)
-                output = ReadNcDataFile_Multiframe_2D(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
-            else
-                output = ReadNcDataFile_Multiframe(&data_out,stackedNcFilePath,&Xcoord, &Ycoord, &Zcoord, x_dim, y_dim, z_dim, numberofComponents, timeFrame, variableName);
-        }
-
-
-        std::filebuf file_Buff;
-        file_Buff.open("./test.txt", std::ios::out);
-        std::ostream os(&file_Buff);
-
-        output->Print(os);
-
-        file_Buff.close();
-
-
-//        unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
-
-        return output;
-
+    else{
+        cout<<"unable to identify the format of the dataset. Modify the code if you want to use the hdf5 or vtk format."<<endl;
+        return NULL;
     }
-
 
         //        cout<<"unsupported data file format!!"<<endl;
 
