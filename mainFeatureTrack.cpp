@@ -7606,7 +7606,7 @@ int BeginFeatureTrack(string base_GeneratedTrackFileName, string currenttimevalu
 
 
 //    min_x = local_min_X;
-//    min_y = local_min_heap-buffeY;
+//    min_y = local_min_Y;
 //    min_z = local_min_Z;
 
 //    fclose(fpout3);
@@ -8241,7 +8241,7 @@ bool circleRotationCheck_onSurface(vtkDataSet *in_ds,const int boxCenter_x, cons
         if(box_checkingFailed == true){
             rotationCheckingFailed = true;
             break;
-        }heap-buffe
+        }
         iter_BoxPoint++;
     }
 
@@ -8370,7 +8370,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
 //            box_points.push_back(make_pair(boxCenter_x-1, boxCenter_y+3));
 //            box_points.push_back(make_pair(boxCenter_x-2, boxCenter_y+2));
 //            box_points.push_back(make_pair(boxCenter_x-3, boxCenter_y+1));
-//            box_points.pheap-buffeush_back(make_pair(boxCenter_x-3, boxCenter_y));
+//            box_points.push_back(make_pair(boxCenter_x-3, boxCenter_y));
 //            box_points.push_back(make_pair(boxCenter_x-3, boxCenter_y-1));
 //            box_points.push_back(make_pair(boxCenter_x-2, boxCenter_y-2));
 //            box_points.push_back(make_pair(boxCenter_x-1, boxCenter_y-3));
@@ -8943,7 +8943,7 @@ bool velocityMag_LocalMin_onSurface_withoutETA(vtkSmartPointer<vtkDataSet>& in_d
 
 
 //    delete[] temp_coord3D;
-//    delete[] temp_val;heap-buffe
+//    delete[] temp_val;
 //    temp_coord3D = NULL;
 //    temp_val = NULL;
 
