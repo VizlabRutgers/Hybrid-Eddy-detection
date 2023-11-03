@@ -9511,7 +9511,12 @@ int main(int argc, char* argv[])
     retval = nc_get_var_double(ncid, x_varid, xCoordRecord.get());
     retval = nc_get_var_double(ncid, z_varid, zLevelData.get());
 
-
+    bounds[0] = xCoordRecord[0];
+    bounds[1] = xCoordRecord[dataset_xLength-1];
+    bounds[2] = yCoordRecord[0];
+    bounds[3] = yCoordRecord[dataset_yLength-1];
+    bounds[4] = zLevelData[0];
+    bounds[5] = zLevelData[dataset_zLength-1];
 
     cout<<"After parseconfigfile.. x_dim=["<<x_dim<<"] and y_dim=["<<y_dim<<"] and z_dim=["<< z_dim<<"]"  <<endl;
 
@@ -9619,12 +9624,7 @@ int main(int argc, char* argv[])
 //        in_ds->GetBounds(bounds);
 
 
-        bounds[0] = xCoordRecord[0];
-        bounds[1] = xCoordRecord[dataset_xLength-1];
-        bounds[2] = yCoordRecord[0];
-        bounds[3] = yCoordRecord[dataset_yLength-1];
-        bounds[4] = zLevelData[0];
-        bounds[5] = zLevelData[dataset_zLength-1];
+
 
 
         vtkNew<vtkKdTreePointLocator> KDTree;
