@@ -173,9 +173,9 @@ Data_type dataType = Tensor_data;
 enum Track_type {naiveTrack, eddyTrack, eddyTrack_SSH};
 Track_type trackType  = eddyTrack;
 auto data_cellType = VTK_HEXAHEDRON;
-int dataset_xLength;
-int dataset_yLength;
-int dataset_zLength;
+int dataset_xLength = 0;
+int dataset_yLength = 0;
+int dataset_zLength = 0;
 double bounds[6];
 
 
@@ -3731,7 +3731,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                 cv::Point centerPoint = cv::Point(eta_moment.m10/eta_moment.m00, eta_moment.m01/eta_moment.m00);
 
                 if(centerPoint.x<0){
-                    int contourSizeCounter = 0;
+                    ulong contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
                     vector<cv::Point> isolateContour = (*iter_contour);
@@ -3769,7 +3769,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
                 cv::Moments eta_moment = cv::moments(cv::Mat(*iter_contour));
                 cv::Point centerPoint = cv::Point(eta_moment.m10/eta_moment.m00, eta_moment.m01/eta_moment.m00);
                 if(centerPoint.x<0){
-                    int contourSizeCounter = 0;
+                    ulong contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
                     vector<cv::Point> isolateContour = (*iter_contour);
@@ -3917,7 +3917,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                 cv::Point centerPoint = cv::Point(eta_moment.m10/eta_moment.m00, eta_moment.m01/eta_moment.m00);
 
                 if(centerPoint.x<0){
-                    int contourSizeCounter = 0;
+                    ulong contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
                     vector<cv::Point> isolateContour = (*iter_contour);
@@ -3955,7 +3955,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
                 cv::Moments eta_moment = cv::moments(cv::Mat(*iter_contour));
                 cv::Point centerPoint = cv::Point(eta_moment.m10/eta_moment.m00, eta_moment.m01/eta_moment.m00);
                 if(centerPoint.x<0){
-                    int contourSizeCounter = 0;
+                    ulong contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
                     vector<cv::Point> isolateContour = (*iter_contour);
@@ -4104,7 +4104,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                 cv::Point centerPoint = cv::Point(eta_moment.m10/eta_moment.m00, eta_moment.m01/eta_moment.m00);
 
                 if(centerPoint.x<0){
-                    int contourSizeCounter = 0;
+                    ulong contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
                     vector<cv::Point> isolateContour = (*iter_contour);
@@ -4142,7 +4142,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
                 cv::Moments eta_moment = cv::moments(cv::Mat(*iter_contour));
                 cv::Point centerPoint = cv::Point(eta_moment.m10/eta_moment.m00, eta_moment.m01/eta_moment.m00);
                 if(centerPoint.x<0){
-                    int contourSizeCounter = 0;
+                    ulong contourSizeCounter = 0;
                     int xSum = 0;
                     int ySum = 0;
                     vector<cv::Point> isolateContour = (*iter_contour);
@@ -4216,7 +4216,7 @@ void ReadVtkDataFile(float ** Data_out,string FileName,float ** Xcoord, float**Y
     
     vector<string> variableNamesvect;
     variableNamesvect.push_back("swirl");
-    unsigned long nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
+    int nnodes = ((long)x_dim) * ((long)y_dim) * ((long)z_dim);
     float * temp_Data_out = new float[nnodes];
     float * temp_Xcoord = new float[x_dim];
     float * temp_Ycoord = new float[y_dim];
@@ -4225,7 +4225,8 @@ void ReadVtkDataFile(float ** Data_out,string FileName,float ** Xcoord, float**Y
     cout<<" -----------  Reading the data file: "<<FileName<<endl;
     
     string output,variable_name, dummy,x_name,y_name,z_name,dim_label;
-    unsigned long i(0),ncells,cellpoints,nncomp,count,count1(0),count2(0),found(0);
+    unsigned long i(0),ncells,cellpoints,nncomp,count,count2(0),found(0);
+    int count1(0);
     long mindummy2(9999999);
     
     x_name= string("X_COORDINATES").c_str();
@@ -4408,7 +4409,7 @@ void ReadVtrDataFile(float ** Data_out,string FileName,float ** Xcoord, float**Y
                 }
             }
             
-            for(int i=0;i<variableNamesvect.size();i++)  // compare the variable name to the ones that are entered..
+            for(ulong i=0;i<variableNamesvect.size();i++)  // compare the variable name to the ones that are entered..
             {
                 dummy = string(variableNamesvect[i]).c_str();
                 //cout<<"DUMMY : "<<dummy<<endl;
@@ -5025,7 +5026,7 @@ int BeginObjSegment(vtkDataSet *in_ds,vtkDataSet **outDS,int celltype,int curren
 
 void parseConfigFile(string &base_GeneratedTrackFileName, string &Datapath, string& ncFilePath, string &FileBaseName, string &FileExtention,vector<string> &variableNamesvect, string Configfilename, int &InitialtimeStep, int &FinaltimeStep,
                      float &deltaxval, float &deltayval, float &deltazval,int &SmallestObjVol,
-                     int &TimePrecision, int &TimeIncrement, float &thresh1, float &thresh2,long & x_dim, long &y_dim, long &z_dim,long & x0_dim, long &y0_dim, long &z0_dim,  long & x1_dim, long &y1_dim, long &z1_dim, int& CircleStartRadius, dataVariableName& datavariableName)
+                     int &TimePrecision, int &TimeIncrement, float &thresh1, float &thresh2,int & x_dim, int &y_dim, int &z_dim,int & x0_dim, int &y0_dim, int &z0_dim,  int & x1_dim, int &y1_dim, int &z1_dim, int& CircleStartRadius, dataVariableName& datavariableName)
 {
     // this function reads each individual variable indicated within the Config file and returns them....
     
@@ -7605,7 +7606,7 @@ int BeginFeatureTrack(string base_GeneratedTrackFileName, string currenttimevalu
 
 
 //    min_x = local_min_X;
-//    min_y = local_min_Y;
+//    min_y = local_min_heap-buffeY;
 //    min_z = local_min_Z;
 
 //    fclose(fpout3);
@@ -8240,7 +8241,7 @@ bool circleRotationCheck_onSurface(vtkDataSet *in_ds,const int boxCenter_x, cons
         if(box_checkingFailed == true){
             rotationCheckingFailed = true;
             break;
-        }
+        }heap-buffe
         iter_BoxPoint++;
     }
 
@@ -8369,7 +8370,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
 //            box_points.push_back(make_pair(boxCenter_x-1, boxCenter_y+3));
 //            box_points.push_back(make_pair(boxCenter_x-2, boxCenter_y+2));
 //            box_points.push_back(make_pair(boxCenter_x-3, boxCenter_y+1));
-//            box_points.push_back(make_pair(boxCenter_x-3, boxCenter_y));
+//            box_points.pheap-buffeush_back(make_pair(boxCenter_x-3, boxCenter_y));
 //            box_points.push_back(make_pair(boxCenter_x-3, boxCenter_y-1));
 //            box_points.push_back(make_pair(boxCenter_x-2, boxCenter_y-2));
 //            box_points.push_back(make_pair(boxCenter_x-1, boxCenter_y-3));
@@ -8942,7 +8943,7 @@ bool velocityMag_LocalMin_onSurface_withoutETA(vtkSmartPointer<vtkDataSet>& in_d
 
 
 //    delete[] temp_coord3D;
-//    delete[] temp_val;
+//    delete[] temp_val;heap-buffe
 //    temp_coord3D = NULL;
 //    temp_val = NULL;
 
@@ -9422,7 +9423,7 @@ int main(int argc, char* argv[])
     unsigned long ncells, nnodes;
     int cellpoints, nncomp, count, count1(0), count2(0), found,
     InitialtimeStep, FinaltimeStep, SmallestObjVol, TimePrecision, TimeIncrement, currentTime, circleStartRadius;
-    long x_dim(0), y_dim(0), z_dim(0), x0_dim(0), y0_dim(0), z0_dim(0),  x1_dim(0), y1_dim(0), z1_dim(0);
+    int x_dim(0), y_dim(0), z_dim(0), x0_dim(0), y0_dim(0), z0_dim(0),  x1_dim(0), y1_dim(0), z1_dim(0);
     int nspace = 3; //data space dimension
     int numberOfPointsInCell = 8; // assuming that the cell is cube.. same variable as cellpoints
     vector<string> allvariableNames;
@@ -9620,10 +9621,10 @@ int main(int argc, char* argv[])
 
         bounds[0] = xCoordRecord[0];
         bounds[1] = xCoordRecord[dataset_xLength-1];
-        bounds[2] = xCoordRecord[0];
-        bounds[3] = xCoordRecord[dataset_yLength-1];
-        bounds[4] = xCoordRecord[0];
-        bounds[5] = xCoordRecord[dataset_zLength-1];
+        bounds[2] = yCoordRecord[0];
+        bounds[3] = yCoordRecord[dataset_yLength-1];
+        bounds[4] = zLevelData[0];
+        bounds[5] = zLevelData[dataset_zLength-1];
 
 
         vtkNew<vtkKdTreePointLocator> KDTree;
