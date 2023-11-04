@@ -8792,7 +8792,6 @@ bool velocityMag_LocalMin_onSurface_withoutETA(vtkSmartPointer<vtkDataSet>& in_d
 
     shared_ptr <double[]> temp_coord3D(new double[3]);
     shared_ptr <double[]> temp_val(new double[9]);
-    bool rotationCheckingFailed = false;
     double data_xLength = dataset_xLength;
     double data_yLength = dataset_yLength;
     double search_rangeX = data_xLength;
@@ -8802,7 +8801,7 @@ bool velocityMag_LocalMin_onSurface_withoutETA(vtkSmartPointer<vtkDataSet>& in_d
     int boxCenter_x;
     int boxCenter_y;
 
-    int searchRadius;
+
 
 
 
@@ -8902,21 +8901,21 @@ bool velocityMag_LocalMin_onSurface_withoutETA(vtkSmartPointer<vtkDataSet>& in_d
         iter_contour = erode_contours.begin();
 
 
-        double maxVelocityMagDiff = 0;
-        double maxVelocityAngleDiff = 0;
-        short numPositiveDirectPoints = 0;
-        short firstFailSymmetry = -1;
-        short firstFailDeadZone = -1;
-        short failureReason = -1;
-        double symmetryFailValue = 0;
-        double deadzoneFailValue = 0;
+//        double maxVelocityMagDiff = 0;
+//        double maxVelocityAngleDiff = 0;
+//        short numPositiveDirectPoints = 0;
+//        short firstFailSymmetry = -1;
+//        short firstFailDeadZone = -1;
+//        short failureReason = -1;
+//        double symmetryFailValue = 0;
+//        double deadzoneFailValue = 0;
 
         while(iter_contour != erode_contours.end()){
             velocityMag_detected = (*iter_contour).at(0);
             boxCenter_x = velocityMag_detected.y;
             boxCenter_y = velocityMag_detected.x;
-            double boxCenter_inDataset_x = xCoord[boxCenter_x];
-            double boxCenter_inDataset_y = yCoord[boxCenter_y];
+//            double boxCenter_inDataset_x = xCoord[boxCenter_x];
+//            double boxCenter_inDataset_y = yCoord[boxCenter_y];
 
             velocityMag_centorid.push_back(make_pair(cv::Point(boxCenter_x,boxCenter_y), 0));
 
@@ -8963,17 +8962,12 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
 
     shared_ptr <double[]> temp_coord3D(new double[3]);
     shared_ptr <double[]> temp_val(new double[9]);
-    bool rotationCheckingFailed = false;
-    double data_xLength = dataset_xLength;
-    double data_yLength = dataset_yLength;
     double search_rangeX = 21;
     double search_rangeY = search_rangeX;
     vector<double> searchData;
     cv::Point velocityMag_detected;
     int boxCenter_x;
     int boxCenter_y;
-
-    int searchRadius;
 
 
 
@@ -9016,8 +9010,16 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
             for(int j=0; j<search_rangeY;j++){
 
                 vtkIdType dataPoint_index;
-                eta_search_inDataset_x = xCoord[eta_centroid_point.x - (search_rangeX-1)/2 + i];
-                eta_search_inDataset_y = yCoord[eta_centroid_point.y - (search_rangeY-1)/2 + j];
+
+                int searchCenter_x = (eta_centroid_point.x - (search_rangeX-1)/2 + i);
+                int searchCenter_y = (eta_centroid_point.y - (search_rangeY-1)/2 + j);
+                if(searchCenter_x<0) searchCenter_x=0;
+                if(searchCenter_x>dataset_xLength-1) searchCenter_x=dataset_xLength-1;
+                if(searchCenter_y<0) searchCenter_y=0;
+                if(searchCenter_y>dataset_yLength-1) searchCenter_y=dataset_yLength-1;
+
+                eta_search_inDataset_x = xCoord[searchCenter_x];
+                eta_search_inDataset_y = yCoord[searchCenter_y];
 //                eta_centroid_inDataset_x = (eta_centroid_point.x - (search_rangeX-1)/2 + i)*1;
 //                eta_centroid_inDataset_y = (eta_centroid_point.y - (search_rangeY-1)/2 + j)*1;
 
@@ -9084,21 +9086,21 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
         iter_contour = erode_contours.begin();
 
 
-        double maxVelocityMagDiff = 0;
-        double maxVelocityAngleDiff = 0;
-        short numPositiveDirectPoints = 0;
-        short firstFailSymmetry = -1;
-        short firstFailDeadZone = -1;
-        short failureReason = -1;
-        double symmetryFailValue = 0;
-        double deadzoneFailValue = 0;
+//        double maxVelocityMagDiff = 0;
+//        double maxVelocityAngleDiff = 0;
+//        short numPositiveDirectPoints = 0;
+//        short firstFailSymmetry = -1;
+//        short firstFailDeadZone = -1;
+//        short failureReason = -1;
+//        double symmetryFailValue = 0;
+//        double deadzoneFailValue = 0;
 
         while(iter_contour != erode_contours.end()){
             velocityMag_detected = (*iter_contour).at(0);
             boxCenter_x = velocityMag_detected.y + eta_centroid_point.x - (search_rangeX-1)/2;
             boxCenter_y = velocityMag_detected.x + eta_centroid_point.y - (search_rangeY-1)/2;
-            double boxCenter_inDataset_x = xCoord[boxCenter_x];
-            double boxCenter_inDataset_y = yCoord[boxCenter_y];
+//            double boxCenter_inDataset_x = xCoord[boxCenter_x];
+//            double boxCenter_inDataset_y = yCoord[boxCenter_y];
 
             velocityMag_centorid.push_back(make_pair(cv::Point(boxCenter_x,boxCenter_y), 0));
 
@@ -9176,8 +9178,17 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
             for(int j=0; j<search_rangeY;j++){
 
                 vtkIdType dataPoint_index;
-                velocitySearch_inDataset_x = xCoord[(center_previous.x - (search_rangeX-1)/2 + i)];
-                velocitySearch_inDataset_y = yCoord[(center_previous.y - (search_rangeY-1)/2 + j)];
+
+                int searchCenter_x = (center_previous.x - (search_rangeX-1)/2 + i);
+                int searchCenter_y = (center_previous.y - (search_rangeY-1)/2 + j);
+                if(searchCenter_x<0) searchCenter_x=0;
+                if(searchCenter_x>dataset_xLength-1) searchCenter_x=dataset_xLength-1;
+                if(searchCenter_y<0) searchCenter_y=0;
+                if(searchCenter_y>dataset_yLength-1) searchCenter_y=dataset_yLength-1;
+
+
+                velocitySearch_inDataset_x = xCoord[searchCenter_x];
+                velocitySearch_inDataset_y = yCoord[searchCenter_y];
     //                eta_centroid_inDataset_x = (eta_centroid_point.x - (search_rangeX-1)/2 + i)*1;
     //                eta_centroid_inDataset_y = (eta_centroid_point.y - (search_rangeY-1)/2 + j)*1;
 
