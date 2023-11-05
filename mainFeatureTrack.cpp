@@ -9265,7 +9265,12 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
     while(rotationCheckingFailed == false){  
         boxPoints_backup = boxPoints;
         boxPoints.clear();
-        rotationCheckingFailed = circleRotationCheck(in_ds, boxCenter_x,boxCenter_y, centerZ_inDataset,searchRadius, maxVelocityMagDiff,maxVelocityAngleDiff,numPositiveDirectPoints,firstFailSymmetry,symmetryFailValue, firstFailDeadZone,deadzoneFailValue, failureReasonReturn,boxPoints,xCoord, yCoord,clockwiseFlag,testEddyFlag);
+
+        if((boxCenter_x + searchRadius)>(dataset_xLength-1) || (boxCenter_x - searchRadius)<0 ||
+                (boxCenter_y + searchRadius)>(dataset_yLength-1) || (boxCenter_y - searchRadius)<0)
+            rotationCheckingFailed = 1;
+        else
+            rotationCheckingFailed = circleRotationCheck(in_ds, boxCenter_x,boxCenter_y, centerZ_inDataset,searchRadius, maxVelocityMagDiff,maxVelocityAngleDiff,numPositiveDirectPoints,firstFailSymmetry,symmetryFailValue, firstFailDeadZone,deadzoneFailValue, failureReasonReturn,boxPoints,xCoord, yCoord,clockwiseFlag,testEddyFlag);
 
 
 
@@ -9788,10 +9793,8 @@ int main(int argc, char* argv[])
                 SingleEddy.clearData();
                 vector<pair<int,double>> failureReason;
 
-                if(i==25)
-                    i=25;
-                if(i==28)
-                    i=28;
+                if(i==2079)
+                    i=2079;
 
                 // Give a origin point
                 eddyCenter_inDepth.clear();
