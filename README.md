@@ -59,6 +59,8 @@ Installation Steps:
 # Use our software 
 ## With Singularity
 If you are using Singularity, you need to modify the path in the configuration file first and then you could run our program in one command:
+
+(This may come with warning from addressSanitizer when dealing with large dataset as the addressSanitizer can't allocate large data on heap. Pull the v2.1_without_addresssanitizer.sif)
 ```
 singularity exec (--bind <The directory of your data and output path>) <The path to your Singularity image> env ASAN_OPTIONS=allocator_may_return_null=1 /eddy_hybrid_build/FT <The path to your FreatureTrack.Conf file>
 ```
