@@ -23,8 +23,10 @@ The visualization program of the eddy is here: https://github.com/VizlabRutgers/
 ## With Singularity
 
 We recommend you to use the Singularity to avoid installation and environments configuration (especially in HPC, which might not support OpenGL/VTK). If so, you could get the image by the command below and jump to the next section.
+
+(AddressSanitizer is enabled with the image below)
 ```
-singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v1.6:latest
+singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v2.1:latest
 ```
 ## Without Singularity
 This program is a C++ program developed in linux system. We strongly recommend you to compile the code in linux system. You may need to change the CMakelist file if you're using other platforms.
