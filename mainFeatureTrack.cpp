@@ -5499,7 +5499,9 @@ bool ReadOct(string baseName,Frame& frm,int step,  vector<vector<TrackObject> > 
         fp>>objID>>vol>>mass>>cx>>cy>>cz>>Ixx>>Iyy>>Izz>>Ixy>>Iyz>>Izx \
         >>vertID>>x1>>y1>>z1>>val;
         
-        
+    	if(dataType == Tensor_data)
+	        fp>>dummyval_1>>dummyval_2>>dummyval_3>>dummyval_4>>dummyval_5;
+
         
         //cout<<time <<"   "<<numObjs<< "     "  << objID<<"     "   <<vol<<"     " <<mass<<"     " <<cx<<"     " <<cy<<"     " <<cz<<"     " <<Ixx<<"     " <<Iyy<<"     " <<Izz<<"     " <<Ixy<<"     " <<Iyz<<"     " <<Izx<<"     " <<vertID<<"     " <<x1<<"     " <<y1<<"     " <<z1<<"     " <<val<<endl;
         
@@ -5556,7 +5558,7 @@ bool ReadOct(string baseName,Frame& frm,int step,  vector<vector<TrackObject> > 
         {
             // Change it when the number of components changed
             if(dataType == Tensor_data)
-                fp>>dummyval_1>>dummyval_2>>dummyval_3>>dummyval_4>>dummyval_5>>vertID>>x1>>y1>>z1>>val;
+                fp>>vertID>>x1>>y1>>z1>>val>>dummyval_1>>dummyval_2>>dummyval_3>>dummyval_4>>dummyval_5;
             else if(dataType == Scalar_data)
                 fp>>vertID>>x1>>y1>>z1>>val;
 
