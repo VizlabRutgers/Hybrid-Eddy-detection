@@ -274,7 +274,7 @@ public:
         clockwiseFlag.push_back(clockwiseFlagDATA);
     }
 
-    void printData(FILE *fpout, const vtkNew<vtkKdTreePointLocator>& KDTree, vtkSmartPointer<vtkDataSet>& in_ds, int timeFrame, int objIdInSequence){
+    void printData(std::ofstream& fpout, const vtkNew<vtkKdTreePointLocator>& KDTree, vtkSmartPointer<vtkDataSet>& in_ds, int timeFrame, int objIdInSequence){
 
 
         for(unsigned long i=0; i<std::size(boxCenter_inDataset_x);i++){
@@ -284,11 +284,10 @@ public:
             dataPoint_index = KDTree->FindClosestPoint(pointCoord_onBoundary);
             in_ds->GetPointData()->GetTensors()->GetTuple(dataPoint_index,temp_val.get());
 
-            fprintf(fpout," %9.6f %9.6f %9.6f %9.6f %9.6f %f %f %f %f %f %f %d %d %d %d %d\n",
-                    boxCenter_inDataset_x[i],boxCenter_inDataset_y[i],
-                    pointOnBoundary_inDataset_x[i], pointOnBoundary_inDataset_y[i],centerZ_inDataset[i],
-                    (float) temp_val[0], (float)temp_val[1],(float)temp_val[2],(float)temp_val[3],(float)temp_val[4],(float)temp_val[5],
-                    0,searchRadius[i],clockwiseFlag[i],timeFrame, objIdInSequence);
+            fpout<<boxCenter_inDataset_x[i]<<' '<<boxCenter_inDataset_y[i]<<' '<<
+                    pointOnBoundary_inDataset_x[i]<<' '<<pointOnBoundary_inDataset_y[i]<<' '<<centerZ_inDataset[i]<<' '<<
+                    (float) temp_val[0]<<' '<<(float)temp_val[1]<<' '<<(float)temp_val[2]<<' '<<(float)temp_val[3]<<' '<<(float)temp_val[4]<<' '<<(float)temp_val[5]<<' '<<
+                    0<<' '<<searchRadius[i]<<' '<<clockwiseFlag[i]<<' '<<timeFrame<<' '<<objIdInSequence<<'\n';
         }
     }
 
@@ -5553,7 +5552,7 @@ bool ReadOct(string baseName,Frame& frm,int step,  vector<vector<TrackObject> > 
         if(z1<frm.zMin)
             frm.zMin=z1;
         
-	int surfCounter = 0;
+        int surfCounter = 0;
         for (j=0; j<vol-1; j++)
         {
             // Change it when the number of components changed
@@ -5565,17 +5564,17 @@ bool ReadOct(string baseName,Frame& frm,int step,  vector<vector<TrackObject> > 
 //            fp>>dummyval_1>>dummyval_2>>dummyval_3>>dummyval_4>>dummyval_5>>vertID>>x1>>y1>>z1>>val;
             frm.nodes[k].NodeID = vertID;
             frm.nodes[k].ObjID=i;
-	    frm.nodes[k].xCoord=x1;
+            frm.nodes[k].xCoord=x1;
             frm.nodes[k].yCoord=y1;
             frm.nodes[k].zCoord=z1;
-	    k++;
+            k++;
 
             if(z1==bounds[4])
                 surfCounter++;
         }
         frm.objVols[i].objSurfVol=surfCounter;
-        if(dataType == Tensor_data)
-            fp>>dummyval_1>>dummyval_2>>dummyval_3>>dummyval_4>>dummyval_5;
+//        if(dataType == Tensor_data)
+//            fp>>dummyval_1>>dummyval_2>>dummyval_3>>dummyval_4>>dummyval_5;
     }
     fp.close();
     return true;
@@ -9662,28 +9661,18 @@ int main(int argc, char* argv[])
         std::sort(eddyCenter_onSurface.begin(),eddyCenter_onSurface.end(),centroidsCompare);
         eddyCenter_onSurface.erase(std::unique(eddyCenter_onSurface.begin(),eddyCenter_onSurface.end()),eddyCenter_onSurface.end());
 
-
-        FILE *fpout3;
-        char OutOcd_2[256];
-        FILE *fpout5;
-        char OutOcd_5[256];
-        FILE *fpout_Failure;
-        char OutOcd_Failure[256];
+        std::ofstream fpout3;
+        std::ofstream fpout5;
+        std::ofstream fpout_Failure;
 
         string Output_2 = OutputOcdfile;
         Output_2 = Output_2.substr(0, Output_2.rfind("."));
         string Output_5 = Output_2 + "_3dcenter.uocd";
         Output_2 = Output_2 + "_3dcenter_real.uocd";
-        strcpy(OutOcd_2,Output_2.c_str());
-        fpout3 = fopen(OutOcd_2, "w");
 
-
-
-        strcpy(OutOcd_5,Output_5.c_str());
-        fpout5 = fopen(OutOcd_5, "w");
-        strcpy(OutOcd_Failure,failureFile.c_str());
-        fpout_Failure = fopen(OutOcd_Failure, "w");
-
+        fpout3.open(Output_2);
+        fpout5.open(Output_5);
+        fpout_Failure.open(failureFile);
 
         int doVolRender = 1;
         
@@ -9834,7 +9823,7 @@ int main(int argc, char* argv[])
                             if(eddyDepth==bounds[4]){
                                 for(int failureIndex=0; failureIndex<failureReason.size();failureIndex++){
                                     if(failureReason.at(failureIndex).first!=0 )
-                                        fprintf(fpout_Failure,"%9.6f %9.6f %9.6f %d %d %.4f %lu\n", xCoordRecord[velocityCenter_onSurface.x],yCoordRecord[velocityCenter_onSurface.y],eddyDepth,finalRadius,failureReason.at(failureIndex).first,failureReason.at(failureIndex).second,i);
+                                        fpout_Failure<<xCoordRecord[velocityCenter_onSurface.x]<<' '<<yCoordRecord[velocityCenter_onSurface.y]<<' '<<eddyDepth<<' '<<finalRadius<<' '<<failureReason.at(failureIndex).first<<' '<<failureReason.at(failureIndex).second<<' '<<i<<'\n';
                                 }
                             }
                             failureReasonSet.push_back(failureReason);
@@ -9886,8 +9875,8 @@ int main(int argc, char* argv[])
 
                         //find the closest costal position
                         closestCostalPosition(cv::Point2d(centerCoord.x,centerCoord.y),ncid,closestCostalPoint,closestDistance, xCoordRecord, yCoordRecord,variableName);
-                        fprintf(fpout3,"%9.6f %9.6f %9.6f %f %f %.3f %f\n", xCoordRecord[centerCoord.x],yCoordRecord[centerCoord.y],centerCoord.z,xCoordRecord[closestCostalPoint.x], yCoordRecord[closestCostalPoint.y], closestDistance, centerRadius);
-                        fprintf(fpout5,"%9.6f %9.6f %9.6f %f %f %f\n", centerCoord.x,centerCoord.y,centerCoord.z,closestCostalPoint.x, closestCostalPoint.y,centerRadius);
+                        fpout3<<xCoordRecord[centerCoord.x]<<' '<<yCoordRecord[centerCoord.y]<<' '<<centerCoord.z<<' '<<xCoordRecord[closestCostalPoint.x]<<' '<< yCoordRecord[closestCostalPoint.y]<<' '<<closestDistance<<' '<<centerRadius<<'\n';
+                        fpout5<<centerCoord.x<<' '<<centerCoord.y<<' '<<centerCoord.z<<' '<<closestCostalPoint.x<<' '<<closestCostalPoint.y<<' '<<centerRadius<<'\n';
                         centerIter++;
                     }
 
@@ -10015,8 +10004,7 @@ int main(int argc, char* argv[])
                     cout<<" i:["<<i<<"] & ThisObjectsMemberPointIds.size():["<<ThisObjectsMemberPointIds.size()<<"] & ThisObjectsCellIds.size()="<<ThisObjectsCellIds.size()   <<endl;
 
 
-                    FILE *fpout_statis;
-                    char OutOcd_statistic[256];
+                    std::ofstream fpout_statis;
                     string Output_statistic;
 
 
@@ -10025,15 +10013,15 @@ int main(int argc, char* argv[])
                         Output_statistic = base_GeneratedTrackFileNameOriginal +"Seperated Structures/clockwise/"+"Frame_"+(currenttimevalue) +"_eddy_"+to_string(firstobj) +"_statistic.uocd";
                     else
                         Output_statistic = base_GeneratedTrackFileNameOriginal +"Seperated Structures/counterclockwise/"+"Frame_"+(currenttimevalue) +"_eddy_"+to_string(firstobj) +"_statistic.uocd";
-                    strcpy(OutOcd_statistic,Output_statistic.c_str());
-                    if((fpout_statis = fopen(OutOcd_statistic, "w"))==NULL)
+                    fpout_statis.open(Output_statistic);
+                    if(fpout_statis.is_open()==false)
                         cout << "cannot open outAttr file to write\n";
                     SingleEddy.printData(fpout_statis,KDTree,in_ds,stoi(currenttimevalue), firstobj);
 
 
 
                     SingleEddy.clearData();
-                    fclose(fpout_statis);
+
                     unsigned long thisObjectsVolume = ThisObjectsMemberPointIds.size();
 
 
