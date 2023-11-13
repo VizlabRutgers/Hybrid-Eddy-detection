@@ -5565,6 +5565,10 @@ bool ReadOct(string baseName,Frame& frm,int step,  vector<vector<TrackObject> > 
 //            fp>>dummyval_1>>dummyval_2>>dummyval_3>>dummyval_4>>dummyval_5>>vertID>>x1>>y1>>z1>>val;
             frm.nodes[k].NodeID = vertID;
             frm.nodes[k].ObjID=i;
+	    frm.nodes[k].xCoord=x1;
+            frm.nodes[k].yCoord=y1;
+            frm.nodes[k].zCoord=z1;
+	    k++;
 
             if(z1==bounds[4])
                 surfCounter++;
