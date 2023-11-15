@@ -62,9 +62,9 @@ If you are using Singularity, you need to modify the path in the configuration f
 
 (Some version may come with warning/error from addressSanitizer when dealing with large dataset as the addressSanitizer can't allocate large data on heap. Please compile the srouce code or add runtime env if you don't want it.)
 ```
-singularity exec (--bind <The directory of your data and output path>) <The path to your Singularity image> env ASAN_OPTIONS=allocator_may_return_null=1 /eddy_hybrid_build/FT <The path to your FreatureTrack.Conf file>
+singularity exec (--bind <The directory of your data and output path>) <The path to your Singularity image> /eddy_hybrid_build/FT <The path to your FreatureTrack.Conf file>
 
-// With runtime env for addressSanitizer 
+// Example With runtime env for addressSanitizer 
 singularity exec (--bind <The directory of your data and output path>) <The path to your Singularity image> env ASAN_OPTIONS=allocator_may_return_null=1 /eddy_hybrid_build/FT <The path to your FreatureTrack.Conf file>
 ```
 
