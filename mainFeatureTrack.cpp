@@ -287,7 +287,7 @@ public:
             fpout<<boxCenter_inDataset_x[i]<<' '<<boxCenter_inDataset_y[i]<<' '<<
                     pointOnBoundary_inDataset_x[i]<<' '<<pointOnBoundary_inDataset_y[i]<<' '<<centerZ_inDataset[i]<<' '<<
                     (float) temp_val[0]<<' '<<(float)temp_val[1]<<' '<<(float)temp_val[2]<<' '<<(float)temp_val[3]<<' '<<(float)temp_val[4]<<' '<<(float)temp_val[5]<<' '<<
-                    0<<' '<<searchRadius[i]<<' '<<clockwiseFlag[i]<<' '<<timeFrame<<' '<<objIdInSequence<<'\n';
+                    0<<' '<<searchRadius[i]<<' '<<clockwiseFlag[i]<<' '<<timeFrame<<' '<<objIdInSequence<<endl;
         }
     }
 
@@ -3204,6 +3204,8 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(string FileName,int x_dim,
                 else if (currentPointVal < dummyMin )
                     dummyMin = currentPointVal;
 
+
+
                 float v[numberofComponents];
                 v[0] = (float) currentPointVal;
                 v[1] = u_vals_Vec[z][y][x];
@@ -3215,6 +3217,14 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(string FileName,int x_dim,
                 v[7] = 0;
                 v[8] = 0;
 
+//                int test= 0;
+//                double testVal = round(currentZVal*1000);
+
+
+//                if(round(currentXVal*1000000)==-84664314 && round(currentYVal*1000000)==24036472 && round(currentZVal*1000)==3336667){
+//                    test=1;
+//                }
+//                testVal = 1;
                 //
                 //if numberofComponents>1 then u need to add more values to v here...
                 //
@@ -5489,7 +5499,7 @@ bool ReadOct(string baseName,Frame& frm,int step,  vector<vector<TrackObject> > 
     unsigned long x = 0, y = 0 , z = 0,  xsize = 0, ysize = 0, zsize = 0, vertID = 0;
     float xPos = 0, yPos = 0, zPos = 0, val = 0, x1 = 0, y1 = 0, z1 = 0;
     unsigned long k = 0;
-
+//    int test = 0;
     
     
     
@@ -5552,9 +5562,18 @@ bool ReadOct(string baseName,Frame& frm,int step,  vector<vector<TrackObject> > 
         if(z1<frm.zMin)
             frm.zMin=z1;
         
+//        if(i==58)
+//            i=58;
+
+//        if(i==28)
+//            i=28;
+
         int surfCounter = 0;
         for (j=0; j<vol-1; j++)
         {
+//            if(k>frm.nodes.size())
+//                test=1;
+
             // Change it when the number of components changed
             if(dataType == Tensor_data)
                 fp>>vertID>>x1>>y1>>z1>>val>>dummyval_1>>dummyval_2>>dummyval_3>>dummyval_4>>dummyval_5;
@@ -9132,6 +9151,9 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
 bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double centerX, const double centerY,const double centerZ_inDataset, vector<pair<cv::Point3d,double>>& velocityMag_centorid, vector<pair<cv::Point2d, double>>& filledCirclePointsInLoop, const int startRadius, shared_ptr<double[]> xCoord, shared_ptr<double[]> yCoord,const string baseOutputFile,const vtkNew<vtkKdTreePointLocator>& KDTree, eddyProperty& SingleEddy, vector<pair<int,double>> (&failureReasonReturn), int& finalRadius, bool testEddyFlag){
 
 
+    // In every iteration, the start point will be centerX and centerY at current CenterZ_indataset
+    // We will search the local minimum around this start point and locate the final center of eddy
+
     // Initialization
 
 
@@ -9261,6 +9283,7 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
     double pointOnBoundary_inDataset_y = 0;
 
 
+    // Check rotation on the boundary
     vector<bool> clockwiseFlag;
     clockwiseFlag.clear();
     while(rotationCheckingFailed == false){  
@@ -9294,7 +9317,7 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
 
     if(searchRadius>startRadius+1 ){
 
-
+        //Push the data on the boundary
         velocityMag_centorid.push_back(make_pair(cv::Point3d(boxCenter_x,boxCenter_y, centerZ_inDataset), searchRadius-2));
 
         //Data on the boundary
@@ -9302,14 +9325,21 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
 
 
 
-        // Fill the hole
+        // Fill the hole && Check if there is a NAN value inside the circle
         vector<pair<int,int>>::iterator fillIterator = boxPoints_backup.begin();
         filledCirclePointsInLoop.push_back(make_pair(cv::Point2d(boxPoints_backup.at(0).first,boxPoints_backup.at(0).second),centerZ_inDataset));
         fillIterator++;
+        // extract the point inside the circle
         for(int boundaryPointsCounter = 1; boundaryPointsCounter<=(boxPoints_backup.size()/2-1);++boundaryPointsCounter){
             pair<int, int> boundaryPoints = *(fillIterator++);
             for(int xCoord = boundaryPoints.first; xCoord>=boundaryPoints.first-2*abs(boxCenter_x - boundaryPoints.first); --xCoord){
                 filledCirclePointsInLoop.push_back(make_pair(cv::Point2d(xCoord, boundaryPoints.second),centerZ_inDataset));
+                double pointCoord2[3] = {(double)xCoord, (double)boundaryPoints.second,centerZ_inDataset};
+                tempPoint_index = KDTree->FindClosestPoint(pointCoord2);
+                in_ds->GetPoint(tempPoint_index,temp_coord3D.get());
+                in_ds->GetPointData()->GetTensors()->GetTuple(tempPoint_index,temp_val.get());
+                if(isnan(temp_val[1]) || isnan(temp_val[4]))
+                    return false;
             }
         }
         filledCirclePointsInLoop.push_back(make_pair(cv::Point2d(boxPoints_backup.at(boxPoints_backup.size()/2).first,boxPoints_backup.at(boxPoints_backup.size()/2).second),centerZ_inDataset));
