@@ -9835,7 +9835,9 @@ int main(int argc, char* argv[])
 
 
                     int finalRadius=0;
+                    // only for test use
                     bool testEddyFlag(i==197 && eddyDepth==bounds[4]);
+
                     if(zCounter == 0)
                         velocityExistFlag = velocityMag_LocalMin(in_ds, velocityCenter_onSurface.x, velocityCenter_onSurface.y, eddyDepth,eddyCenter_inDepth,filledCirclePoints,circleStartRadius,xCoordRecord,yCoordRecord,base_GeneratedTrackFileNameOriginal,KDTree, SingleEddy,failureReason,finalRadius,testEddyFlag);
                     else
@@ -9848,6 +9850,7 @@ int main(int argc, char* argv[])
 
                     }
                     else{
+                        // if true, structure is only on the surface, and output the reason
                         if(eddyDepth <= zLevelData[0] && z_dim>1){
                             structureExistsFlag = false;
                             if(eddyDepth==bounds[4]){
@@ -9858,6 +9861,7 @@ int main(int argc, char* argv[])
                             }
                             failureReasonSet.push_back(failureReason);
                         }
+                        // if not, go for the further steps
                         else{
                             structureExistsFlag = true;
 
@@ -10166,6 +10170,7 @@ int main(int argc, char* argv[])
                         vtk_node_data->GetTuple(PointIdsArray1[kt1],temp_val.get());
                         nodevals[j2++] = temp_val[0];
                         in_ds->GetPoint(thisCurrentPoint,temp_coord);
+
                         for(int dim1=0; dim1<3; dim1++)
                         {
                             coords[j1++] = temp_coord[dim1];
@@ -10467,6 +10472,7 @@ int main(int argc, char* argv[])
 //                        v[8] = 0;
                         //Ocdfile<<thisCurrentPoint<<  "     "<<temp_coord[0]<< "     "<<temp_coord[1]<< "     "<<temp_coord[2]<< "     "<< temp_val[0]  <<endl;
 //                        fprintf(fpout1,"%6lld %9.6f %9.6f %9.6f  %f\n", thisCurrentPoint, (float) temp_coord[0], (float) temp_coord[1], (float) temp_coord[2], (float) temp_val[0]);
+
 
 
 
@@ -10804,9 +10810,6 @@ int main(int argc, char* argv[])
         fp.close();
         fclose(fpout4);
         fclose(fpout);
-        fclose(fpout3);
-        fclose(fpout5);
-        fclose(fpout_Failure);
         
         cout << endl << "trakfile1.c_str() : " << trakfile1.c_str() << endl;
         if( remove( trakfile1.c_str() ) != 0 )
