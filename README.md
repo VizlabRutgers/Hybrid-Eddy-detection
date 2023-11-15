@@ -24,7 +24,7 @@ The visualization program of the eddy is here: https://github.com/VizlabRutgers/
 
 We recommend you to use the Singularity to avoid installation and environments configuration (especially in HPC, which might not support OpenGL/VTK). If so, you could get the image by the command below and jump to the next section.
 
-(AddressSanitizer is enabled with the image below)
+(AddressSanitizer might be enabled with the image below)
 ```
 singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v2.4:latest
 ```
