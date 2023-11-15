@@ -26,7 +26,7 @@ We recommend you to use the Singularity to avoid installation and environments c
 
 (AddressSanitizer is enabled with the image below)
 ```
-singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v2.1:latest
+singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v2.4:latest
 ```
 ## Without Singularity
 This program is a C++ program developed in linux system. We strongly recommend you to compile the code in linux system. You may need to change the CMakelist file if you're using other platforms.
@@ -60,8 +60,11 @@ Installation Steps:
 ## With Singularity
 If you are using Singularity, you need to modify the path in the configuration file first and then you could run our program in one command:
 
-(This may come with warning from addressSanitizer when dealing with large dataset as the addressSanitizer can't allocate large data on heap. Pull the v2.1_without_addresssanitizer.sif)
+(Some version may come with warning/error from addressSanitizer when dealing with large dataset as the addressSanitizer can't allocate large data on heap. Please compile the srouce code or add runtime env if you don't want it.)
 ```
+singularity exec (--bind <The directory of your data and output path>) <The path to your Singularity image> env ASAN_OPTIONS=allocator_may_return_null=1 /eddy_hybrid_build/FT <The path to your FreatureTrack.Conf file>
+
+// With runtime env for addressSanitizer 
 singularity exec (--bind <The directory of your data and output path>) <The path to your Singularity image> env ASAN_OPTIONS=allocator_may_return_null=1 /eddy_hybrid_build/FT <The path to your FreatureTrack.Conf file>
 ```
 
