@@ -9332,14 +9332,15 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
         // extract the point inside the circle
         for(int boundaryPointsCounter = 1; boundaryPointsCounter<=(boxPoints_backup.size()/2-1);++boundaryPointsCounter){
             pair<int, int> boundaryPoints = *(fillIterator++);
-            for(int xCoord = boundaryPoints.first; xCoord>=boundaryPoints.first-2*abs(boxCenter_x - boundaryPoints.first); --xCoord){
-                filledCirclePointsInLoop.push_back(make_pair(cv::Point2d(xCoord, boundaryPoints.second),centerZ_inDataset));
-                double pointCoord2[3] = {(double)xCoord, (double)boundaryPoints.second,centerZ_inDataset};
+            for(int x_Index = boundaryPoints.first; x_Index>=boundaryPoints.first-2*abs(boxCenter_x - boundaryPoints.first); --x_Index){
+                filledCirclePointsInLoop.push_back(make_pair(cv::Point2d(x_Index, boundaryPoints.second),centerZ_inDataset));
+                double pointCoord2[3] = {xCoord[x_Index], yCoord[boundaryPoints.second],centerZ_inDataset};
                 tempPoint_index = KDTree->FindClosestPoint(pointCoord2);
                 in_ds->GetPoint(tempPoint_index,temp_coord3D.get());
                 in_ds->GetPointData()->GetTensors()->GetTuple(tempPoint_index,temp_val.get());
                 if(isnan(temp_val[1]) || isnan(temp_val[4]))
                     return false;
+
             }
         }
         filledCirclePointsInLoop.push_back(make_pair(cv::Point2d(boxPoints_backup.at(boxPoints_backup.size()/2).first,boxPoints_backup.at(boxPoints_backup.size()/2).second),centerZ_inDataset));
@@ -9648,7 +9649,7 @@ int main(int argc, char* argv[])
         vector<pair<cv::Point2d,double>> eta_centroid;
 
 //        double* zLevelData = new double[dataset_zLength];
-        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,currentTime,variableName);
+        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,temp_index,variableName);
         bool etaFlag=0;
         if(ncFilePath == "None")
             etaFlag = ReadNcData_SSH_SingleFrame(eta_centroid,file_name, x_dim,y_dim,OutputOcdfile,variableName);
@@ -10835,7 +10836,7 @@ int main(int argc, char* argv[])
         cout<<"base_GeneratedTrackFileName=["<<base_GeneratedTrackFileName << "]"<<endl;
         cout<< "Before the Tracking !! "<<endl;
         
-        cout<< "finished = "<<  finished<< " & deltaxval="<< deltaxval<<" deltayval="<<deltayval<<" deltazval="<< deltazval<<" InitialtimeStep="<<InitialtimeStep <<" currentTime="<<currentTime<<endl;
+        cout<< "finished = "<<  finished<< " & deltaxval="<< deltaxval<<" deltayval="<<deltayval<<" deltazval="<< deltazval<<" InitialtimeStep="<<InitialtimeStep <<" currentTime="<<currenttimevalue<<endl;
 
         int a = BeginFeatureTrack(base_GeneratedTrackFileName, currenttimevalue, mypolyfile1,finished,deltaxval, deltayval, deltazval,listfile,InitialtimeStep ,TimeIncrement ,currentTime, TimePrecision);
         
