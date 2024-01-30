@@ -1874,7 +1874,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(string FileName,int x_d
     int z_varid, y_varid, x_varid, u_varid, v_varid, temp_varid, salt_varid;
     //int ocean_time__varid, pm_varid, pn_varid ;
     size_t start[NDIMS], count[NDIMS];
-    size_t dataStart[] = {timeframe,0,0};
+    size_t dataStart[] = {timeframe-1,0,0};
     size_t dataCount[] = {1,y_rho,x_rho};
     double hc;
 
@@ -2600,7 +2600,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(string FileName,int x_dim,
     int z_varid, y_varid, x_varid, u_varid, v_varid, temp_varid, salt_varid;
     //int ocean_time__varid, pm_varid, pn_varid ;
     size_t start[NDIMS], count[NDIMS];
-    size_t dataStart[] = {timeframe,0,0,0};
+    size_t dataStart[] = {timeframe-1,0,0,0};
     size_t dataCount[] = {1,z_rho,y_rho,x_rho};
     double hc;
 
