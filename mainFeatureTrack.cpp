@@ -244,12 +244,13 @@ class eddyProperty{
 private:
     vector<double> boxCenter_inDataset_x;
     vector<double> boxCenter_inDataset_y;
-    vector<double> pointOnBoundary_inDataset_x;
-    vector<double> pointOnBoundary_inDataset_y;
-    vector<double> centerZ_inDataset;
+
     vector<pair<cv::Point2d,double>> boundaryPoint_current;
     vector<int> searchRadius;
     vector<int> clockwiseFlag;
+    vector<int> data_x_inPixel;
+    vector<int> data_y_inPixel;
+    vector<int> data_z_inPixel;
     unique_ptr<double[]> temp_val;
 
 protected:
@@ -263,40 +264,49 @@ public:
     };
 
 
-    void setValue(double boxCenter_inDataset_xDATA, double boxCenter_inDataset_yDATA,double pointOnBoundary_inDataset_xDATA,double pointOnBoundary_inDataset_yDATA,double centerZ_inDatasetData,pair<cv::Point2d,double> boundaryPoint_currentDATA,double searchRadiusDATA,int clockwiseFlagDATA){
+    void setValue(double boxCenter_inDataset_xDATA, double boxCenter_inDataset_yDATA,pair<cv::Point2d,double> boundaryPoint_currentDATA,double searchRadiusDATA,int clockwiseFlagDATA, int dp_x, int dp_y, int dp_z){
         boxCenter_inDataset_x.push_back(boxCenter_inDataset_xDATA);
         boxCenter_inDataset_y.push_back(boxCenter_inDataset_yDATA);
-        pointOnBoundary_inDataset_x.push_back(pointOnBoundary_inDataset_xDATA);
-        pointOnBoundary_inDataset_y.push_back(pointOnBoundary_inDataset_yDATA);
-        centerZ_inDataset.push_back(centerZ_inDatasetData);
         boundaryPoint_current.push_back(boundaryPoint_currentDATA);
         searchRadius.push_back(searchRadiusDATA);
         clockwiseFlag.push_back(clockwiseFlagDATA);
+        data_x_inPixel.push_back(dp_x);
+        data_y_inPixel.push_back(dp_y);
+        data_z_inPixel.push_back(dp_z);
     }
 
-    void printData(std::ofstream& fpout, const vtkNew<vtkKdTreePointLocator>& KDTree, vtkSmartPointer<vtkDataSet>& in_ds, int timeFrame, int objIdInSequence){
+    void printData(std::ofstream& fpout, const vtkNew<vtkKdTreePointLocator>& KDTree, vtkSmartPointer<vtkDataSet>& in_ds, int timeFrame, int objIdInSequence, const shared_ptr<double[]>& xCoord, const shared_ptr<double[]>& yCoord, const shared_ptr<double[]>& zCoord){
 
 
         for(unsigned long i=0; i<std::size(boxCenter_inDataset_x);i++){
-            pointCoord_onBoundary[0] = pointOnBoundary_inDataset_x[i];
-            pointCoord_onBoundary[1] = pointOnBoundary_inDataset_y[i];
-            pointCoord_onBoundary[2] = centerZ_inDataset[i];
+            pointCoord_onBoundary[0] = xCoord[data_x_inPixel[i]];
+            pointCoord_onBoundary[1] = yCoord[data_y_inPixel[i]];
+            pointCoord_onBoundary[2] = zCoord[data_z_inPixel[i]];
             dataPoint_index = KDTree->FindClosestPoint(pointCoord_onBoundary);
             in_ds->GetPointData()->GetTensors()->GetTuple(dataPoint_index,temp_val.get());
 
             fpout<<boxCenter_inDataset_x[i]<<' '<<boxCenter_inDataset_y[i]<<' '<<
-                    pointOnBoundary_inDataset_x[i]<<' '<<pointOnBoundary_inDataset_y[i]<<' '<<centerZ_inDataset[i]<<' '<<
+                    pointCoord_onBoundary[0]<<' '<<pointCoord_onBoundary[1]<<' '<<pointCoord_onBoundary[2]<<' '<<
                     (float) temp_val[0]<<' '<<(float)temp_val[1]<<' '<<(float)temp_val[2]<<' '<<(float)temp_val[3]<<' '<<(float)temp_val[4]<<' '<<(float)temp_val[5]<<' '<<
                     0<<' '<<searchRadius[i]<<' '<<clockwiseFlag[i]<<' '<<timeFrame<<' '<<objIdInSequence<<endl;
+        }
+    }
+
+    void printData_Pixel(std::ofstream& fpout, int timeFrame, int objIdInSequence){
+
+
+        for(unsigned long i=0; i<std::size(boxCenter_inDataset_x);i++){
+
+            fpout<<data_x_inPixel[i]<<' '<<data_y_inPixel[i]<<' '<<data_z_inPixel[i]<<' '<<timeFrame<<' '<<objIdInSequence<<'\n';
         }
     }
 
     void clearData(){
         boxCenter_inDataset_x.clear();
         boxCenter_inDataset_y.clear();
-        pointOnBoundary_inDataset_x.clear();
-        pointOnBoundary_inDataset_y.clear();
-        centerZ_inDataset.clear();
+        data_x_inPixel.clear();
+        data_y_inPixel.clear();
+        data_z_inPixel.clear();
         boundaryPoint_current.clear();
         searchRadius.clear();
         clockwiseFlag.clear();
@@ -305,9 +315,9 @@ public:
     void reserveSize(int dataSize){
         boxCenter_inDataset_x.reserve(dataSize);
         boxCenter_inDataset_y.reserve(dataSize);
-        pointOnBoundary_inDataset_x.reserve(dataSize);
-        pointOnBoundary_inDataset_y.reserve(dataSize);
-        centerZ_inDataset.reserve(dataSize);
+        data_x_inPixel.reserve(dataSize);
+        data_y_inPixel.reserve(dataSize);
+        data_z_inPixel.reserve(dataSize);
         boundaryPoint_current.reserve(dataSize);
         searchRadius.reserve(dataSize);
         clockwiseFlag.reserve(dataSize);
@@ -1818,7 +1828,6 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Singleframe(string FileName,int numbe
 
     return returnVal;
 }
-
 
 vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(string FileName,int x_dim, int y_dim, int z_dim,  int numberofComponents, unsigned long timeframe,dataVariableName& variableName)
 {
@@ -7813,7 +7822,7 @@ bool pairsCompare(const pair<pair<int, int>,double>& pair1, const pair<pair<int,
 bool createCircleBoundaryPoints(int center_x,int center_y, int radius, std::vector<pair<int,int>>& final){
 
 
-    double d=1.25-radius;
+    double d=3-2*radius;
     int x= 0;
     int y = radius;
     int cornerCoord;
@@ -7833,20 +7842,20 @@ bool createCircleBoundaryPoints(int center_x,int center_y, int radius, std::vect
 
 
 
-    oneUp.reserve(y-x);
-    oneDown.reserve(y-x);
-    twoUp.reserve(y-x);
-    twoDown.reserve(y-x);
-    threeUp.reserve(y-x);
-    threeDown.reserve(y-x);
-    fourDown.reserve(y-x);
-    fourUp.reserve(y-x);
-    final.reserve(8*fourUp.size()+4);
+//    oneUp.reserve(y-x);
+//    oneDown.reserve(y-x);
+//    twoUp.reserve(y-x);
+//    twoDown.reserve(y-x);
+//    threeUp.reserve(y-x);
+//    threeDown.reserve(y-x);
+//    fourDown.reserve(y-x);
+//    fourUp.reserve(y-x);
+//    final.reserve(8*fourUp.size()+4);
 
 
 
 
-    for(;x<y;++x){
+    for(;x<=y;++x){
 //        cout<<fourUp.capacity()<<endl;
         oneUp.push_back(make_pair(x+center_x,y+center_y));
         oneDown.push_back(make_pair(y+center_x,x+center_y));
@@ -7861,9 +7870,9 @@ bool createCircleBoundaryPoints(int center_x,int center_y, int radius, std::vect
         if(d<=0)
             d+=4*x+6;
         else{
-
-            d+=4*(x-y)+10;
             y--;
+            d+=4*(x-y)+10;
+
         }
     }
 
@@ -7873,20 +7882,20 @@ bool createCircleBoundaryPoints(int center_x,int center_y, int radius, std::vect
     std::reverse(twoDown.begin(),twoDown.end());
 
 
-    cornerCoord = round(radius/1.414214);
+//    cornerCoord = round(radius/1.414214);
 
     final.swap(fourDown);
 
-    final.push_back(make_pair(cornerCoord+center_x,-cornerCoord+center_y));
+//    final.push_back(make_pair(cornerCoord+center_x,-cornerCoord+center_y));
     final.insert(final.end(),fourUp.begin(),fourUp.end());
     final.insert(final.end(),oneDown.begin(),oneDown.end());
-    final.push_back(make_pair(cornerCoord+center_x,cornerCoord+center_y));
+//    final.push_back(make_pair(cornerCoord+center_x,cornerCoord+center_y));
     final.insert(final.end(),oneUp.begin(),oneUp.end());
     final.insert(final.end(),twoUp.begin(),twoUp.end());
-    final.push_back(make_pair(-cornerCoord+center_x,cornerCoord+center_y));
+//    final.push_back(make_pair(-cornerCoord+center_x,cornerCoord+center_y));
     final.insert(final.end(),twoDown.begin(),twoDown.end());
     final.insert(final.end(),threeUp.begin(),threeUp.end());
-    final.push_back(make_pair(-cornerCoord+center_x,-cornerCoord+center_y));
+//    final.push_back(make_pair(-cornerCoord+center_x,-cornerCoord+center_y));
     final.insert(final.end(),threeDown.begin(),threeDown.end());
     final.erase(unique(final.begin(),final.end()),final.end());
     final.pop_back();
@@ -9025,29 +9034,35 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
         double eta_search_inDataset_y;
 
 
+
+        bool data_isExist_flag = true;
         double velocityMag_dataPoint;
         for(int i = 0; i<search_rangeX; i++){
             for(int j=0; j<search_rangeY;j++){
 
                 vtkIdType dataPoint_index;
-
+                data_isExist_flag = true;
                 int searchCenter_x = (eta_centroid_point.x - (search_rangeX-1)/2 + i);
                 int searchCenter_y = (eta_centroid_point.y - (search_rangeY-1)/2 + j);
-                if(searchCenter_x<0) searchCenter_x=0;
-                if(searchCenter_x>dataset_xLength-1) searchCenter_x=dataset_xLength-1;
-                if(searchCenter_y<0) searchCenter_y=0;
-                if(searchCenter_y>dataset_yLength-1) searchCenter_y=dataset_yLength-1;
+                if(searchCenter_x<0) data_isExist_flag = false;
+                if(searchCenter_x>dataset_xLength-1) data_isExist_flag = false;
+                if(searchCenter_y<0) data_isExist_flag = false;
+                if(searchCenter_y>dataset_yLength-1) data_isExist_flag = false;
 
-                eta_search_inDataset_x = xCoord[searchCenter_x];
-                eta_search_inDataset_y = yCoord[searchCenter_y];
-//                eta_centroid_inDataset_x = (eta_centroid_point.x - (search_rangeX-1)/2 + i)*1;
-//                eta_centroid_inDataset_y = (eta_centroid_point.y - (search_rangeY-1)/2 + j)*1;
+                if(data_isExist_flag == true){
+                    eta_search_inDataset_x = xCoord[searchCenter_x];
+                    eta_search_inDataset_y = yCoord[searchCenter_y];
+    //                eta_centroid_inDataset_x = (eta_centroid_point.x - (search_rangeX-1)/2 + i)*1;
+    //                eta_centroid_inDataset_y = (eta_centroid_point.y - (search_rangeY-1)/2 + j)*1;
 
-                double pointCoord[3] = {eta_search_inDataset_x, eta_search_inDataset_y,depthOnSurface};
-                dataPoint_index = KDTree->FindClosestPoint(pointCoord);
-                in_ds->GetPointData()->GetTensors()->GetTuple(dataPoint_index,temp_val.get());
-                velocityMag_dataPoint = sqrt(pow(temp_val[1],2)+pow(temp_val[2],2));
-                searchData.push_back(velocityMag_dataPoint);
+                    double pointCoord[3] = {eta_search_inDataset_x, eta_search_inDataset_y,depthOnSurface};
+                    dataPoint_index = KDTree->FindClosestPoint(pointCoord);
+                    in_ds->GetPointData()->GetTensors()->GetTuple(dataPoint_index,temp_val.get());
+                    velocityMag_dataPoint = sqrt(pow(temp_val[1],2)+pow(temp_val[2],2));
+                    searchData.push_back(velocityMag_dataPoint);
+                }
+                else
+                    searchData.push_back(0);
 
             }
         }
@@ -9121,7 +9136,9 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
             boxCenter_y = velocityMag_detected.x + eta_centroid_point.y - (search_rangeY-1)/2;
 //            double boxCenter_inDataset_x = xCoord[boxCenter_x];
 //            double boxCenter_inDataset_y = yCoord[boxCenter_y];
-
+            int test = 0;
+            if(boxCenter_x>499)
+                test = 1;
             velocityMag_centorid.push_back(make_pair(cv::Point(boxCenter_x,boxCenter_y), 0));
 
 
@@ -9148,7 +9165,7 @@ bool velocityMag_LocalMin_onSurface(vtkSmartPointer<vtkDataSet>& in_ds, vector<p
 
 }
 
-bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double centerX, const double centerY,const double centerZ_inDataset, vector<pair<cv::Point3d,double>>& velocityMag_centorid, vector<pair<cv::Point2d, double>>& filledCirclePointsInLoop, const int startRadius, shared_ptr<double[]> xCoord, shared_ptr<double[]> yCoord,const string baseOutputFile,const vtkNew<vtkKdTreePointLocator>& KDTree, eddyProperty& SingleEddy, vector<pair<int,double>> (&failureReasonReturn), int& finalRadius, bool testEddyFlag){
+bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double centerX, const double centerY,const double centerZ_inDataset, int centerz_inPixel, vector<pair<cv::Point3d,double>>& velocityMag_centorid, vector<pair<cv::Point2d, double>>& filledCirclePointsInLoop, const int startRadius, shared_ptr<double[]> xCoord, shared_ptr<double[]> yCoord,const string baseOutputFile,const vtkNew<vtkKdTreePointLocator>& KDTree, eddyProperty& SingleEddy, vector<pair<int,double>> (&failureReasonReturn), int& finalRadius, bool testEddyFlag){
 
 
     // In every iteration, the start point will be centerX and centerY at current CenterZ_indataset
@@ -9162,10 +9179,10 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
 
 
 
-
-
     shared_ptr <double[]> temp_coord3D(new double[3]);
     shared_ptr <double[]> temp_val(new double[9]);
+
+
 
 
     bool rotationCheckingFailed = false;
@@ -9369,7 +9386,7 @@ bool velocityMag_LocalMin(vtkSmartPointer<vtkDataSet>&in_ds, const double center
 
             if(pointOnBoundary_inDataset_x==0 || pointOnBoundary_inDataset_y==0)
                 test=1;
-            SingleEddy.setValue(boxCenter_inDataset_x,boxCenter_inDataset_y,pointOnBoundary_inDataset_x, pointOnBoundary_inDataset_y,centerZ_inDataset, boundaryPoint_current,searchRadius-2,(int)clockwiseFlag[0]);
+            SingleEddy.setValue(boxCenter_inDataset_x,boxCenter_inDataset_y,boundaryPoint_current,searchRadius-2,(int)clockwiseFlag[0], boundaryPoint_current.first.x, boundaryPoint_current.first.y, centerz_inPixel);
             iter_boundaryPoint++;
         }
 
@@ -9464,6 +9481,10 @@ int dirExists(const char* const path)
 //-------------------MAIN FUNCTION----------------------
 //
 //------------------------------------------------------
+
+int __lsan_is_turned_off() {
+  return 1;
+}
 
 int main(int argc, char* argv[])
 {
@@ -9649,15 +9670,15 @@ int main(int argc, char* argv[])
         vector<pair<cv::Point2d,double>> eta_centroid;
 
 //        double* zLevelData = new double[dataset_zLength];
-        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,temp_index,variableName);
+        vtkSmartPointer<vtkDataSet>in_ds = CreateVtkDataSet(fileextension,file_name,x_dim,y_dim,z_dim,datapath,ncFilePath,x0_dim,y0_dim,z0_dim,temp_index-1,variableName);
         bool etaFlag=0;
         if(ncFilePath == "None")
             etaFlag = ReadNcData_SSH_SingleFrame(eta_centroid,file_name, x_dim,y_dim,OutputOcdfile,variableName);
         else{
             if(z_dim==1)
-                etaFlag = ReadNcData_SSH_MultiFrame_2D(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,stoi(currenttimevalue)-1,variableName);
+                etaFlag = ReadNcData_SSH_MultiFrame_2D(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,temp_index-1,variableName);
             else
-                etaFlag = ReadNcData_SSH_MultiFrame(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,stoi(currenttimevalue)-1,variableName);
+                etaFlag = ReadNcData_SSH_MultiFrame(eta_centroid,ncFilePath, x_dim,y_dim,OutputOcdfile,temp_index-1,variableName);
         }
         eta_centroid.erase(remove_if(eta_centroid.begin(),eta_centroid.end(),[](pair<cv::Point2d,double> x){return x.second == 0;}),eta_centroid.end());
 
@@ -9709,7 +9730,7 @@ int main(int argc, char* argv[])
         
         cout<<"-------- Segmentation of the objects in the "<< currenttimevalue << "th file begins now ! ---------------"<<endl;
         
-        vtkSmartPointer<vtkCellTypes> types = vtkCellTypes::New();
+        vtkNew<vtkCellTypes> types;
         in_ds->GetCellTypes(types);
         int cell_types = types->GetNumberOfTypes();
 
@@ -9805,6 +9826,7 @@ int main(int argc, char* argv[])
 
 
 
+
                 ThisObjectsMemberPointIds.clear();
                 ThisObjectsCellIds.clear();
 
@@ -9837,12 +9859,16 @@ int main(int argc, char* argv[])
 
                     int finalRadius=0;
                     // only for test use
-                    bool testEddyFlag(i==197 && eddyDepth==bounds[4]);
+                    bool testEddyFlag(i==158 && currentTime==14);
+
+                    int test = 0;
+                    if(testEddyFlag)
+                        test = 1;
 
                     if(zCounter == 0)
-                        velocityExistFlag = velocityMag_LocalMin(in_ds, velocityCenter_onSurface.x, velocityCenter_onSurface.y, eddyDepth,eddyCenter_inDepth,filledCirclePoints,circleStartRadius,xCoordRecord,yCoordRecord,base_GeneratedTrackFileNameOriginal,KDTree, SingleEddy,failureReason,finalRadius,testEddyFlag);
+                        velocityExistFlag = velocityMag_LocalMin(in_ds, velocityCenter_onSurface.x, velocityCenter_onSurface.y, eddyDepth, zCounter,eddyCenter_inDepth,filledCirclePoints,circleStartRadius,xCoordRecord,yCoordRecord,base_GeneratedTrackFileNameOriginal,KDTree, SingleEddy,failureReason,finalRadius,testEddyFlag);
                     else
-                        velocityExistFlag = velocityMag_LocalMin(in_ds, eddyCenter_inDepth[zCounter-1].first.x, eddyCenter_inDepth[zCounter-1].first.y, eddyDepth,eddyCenter_inDepth,filledCirclePoints,circleStartRadius,xCoordRecord,yCoordRecord,base_GeneratedTrackFileNameOriginal,KDTree, SingleEddy,failureReason,finalRadius,testEddyFlag);
+                        velocityExistFlag = velocityMag_LocalMin(in_ds, eddyCenter_inDepth[zCounter-1].first.x, eddyCenter_inDepth[zCounter-1].first.y, eddyDepth,zCounter,eddyCenter_inDepth,filledCirclePoints,circleStartRadius,xCoordRecord,yCoordRecord,base_GeneratedTrackFileNameOriginal,KDTree, SingleEddy,failureReason,finalRadius,testEddyFlag);
                     ++zCounter;
                     if(velocityExistFlag == true){
                         filledStructurePoints.insert(filledStructurePoints.end(),filledCirclePoints.begin(),filledCirclePoints.end());
@@ -10040,6 +10066,7 @@ int main(int argc, char* argv[])
 
 
                     std::ofstream fpout_statis;
+                    std::ofstream fpout_xyzCoords;
                     string Output_statistic;
 
 
@@ -10049,9 +10076,14 @@ int main(int argc, char* argv[])
                     else
                         Output_statistic = base_GeneratedTrackFileNameOriginal +"Seperated Structures/counterclockwise/"+"Frame_"+(currenttimevalue) +"_eddy_"+to_string(firstobj) +"_statistic.uocd";
                     fpout_statis.open(Output_statistic);
+                    fpout_xyzCoords.open(base_GeneratedTrackFileNameOriginal +"Frame_"+(currenttimevalue) +"_xyzCoords.txt", std::ios::app);
                     if(fpout_statis.is_open()==false)
                         cout << "cannot open outAttr file to write\n";
-                    SingleEddy.printData(fpout_statis,KDTree,in_ds,stoi(currenttimevalue), firstobj);
+
+
+
+                    SingleEddy.printData(fpout_statis,KDTree,in_ds,stoi(currenttimevalue), firstobj,xCoordRecord,yCoordRecord,zLevelData);
+                    SingleEddy.printData_Pixel(fpout_xyzCoords, stoi(currenttimevalue), firstobj);
 
 
 
