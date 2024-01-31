@@ -1874,7 +1874,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe_2D(string FileName,int x_d
     int z_varid, y_varid, x_varid, u_varid, v_varid, temp_varid, salt_varid;
     //int ocean_time__varid, pm_varid, pn_varid ;
     size_t start[NDIMS], count[NDIMS];
-    size_t dataStart[] = {timeframe-1,0,0};
+    size_t dataStart[] = {timeframe,0,0};
     size_t dataCount[] = {1,y_rho,x_rho};
     double hc;
 
@@ -2600,7 +2600,7 @@ vtkSmartPointer<vtkDataSet> ReadNcDataFile_Multiframe(string FileName,int x_dim,
     int z_varid, y_varid, x_varid, u_varid, v_varid, temp_varid, salt_varid;
     //int ocean_time__varid, pm_varid, pn_varid ;
     size_t start[NDIMS], count[NDIMS];
-    size_t dataStart[] = {timeframe-1,0,0,0};
+    size_t dataStart[] = {timeframe,0,0,0};
     size_t dataCount[] = {1,z_rho,y_rho,x_rho};
     double hc;
 
@@ -3877,7 +3877,8 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
     int ocean_time = 1;
     int retval;
-    double *ETA_vals = new double[x_rho*y_rho*1];
+    shared_ptr<double[]> ETA_vals(new double[x_rho*y_rho*1]);
+
     int ETA_varid;
     int ncid;
 
@@ -3895,10 +3896,10 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
         return 1;
     }
 
-    if ((retval = nc_get_vara_double(ncid, ETA_varid, dataStart, dataCount,ETA_vals)))
+    if ((retval = nc_get_vara_double(ncid, ETA_varid, dataStart, dataCount,ETA_vals.get())))
         cout<<"couldnt open 4.3 the file :[ "<<ncFileName.c_str()<<" ---- !!!"<<endl;
 
-    Mat input = Mat(x_dim, y_dim, CV_64FC1,ETA_vals,cv::Mat::AUTO_STEP);
+    Mat input = Mat(x_dim, y_dim, CV_64FC1,ETA_vals.get(),cv::Mat::AUTO_STEP);
 //    std::memcpy(input.data, ETA_vals,x_dim*y_dim*sizeof(double));
 
 //    Mat dilate_result2 = Mat::zeros(cv::Size(input.rows,input.cols),CV_8U);
@@ -4035,7 +4036,7 @@ bool ReadNcData_SSH_MultiFrame(vector<pair<cv::Point2d,double>>& eta_centorid, s
 
     }
 
-    delete[] ETA_vals;
+
     return 0;
 
 }
