@@ -3696,7 +3696,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
     int z_rho = 50;
     int ocean_time = 1;
     int retval;
-    double *ETA_vals = new double[x_rho*y_rho*1];
+    shared_ptr<double[]> ETA_vals(new double[x_rho*y_rho*1]);
     int ETA_varid;
     int ncid;
 
@@ -3709,10 +3709,10 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
         return 1;
     }
 
-    if ((retval = nc_get_var_double(ncid, ETA_varid, ETA_vals)))
+    if ((retval = nc_get_var_double(ncid, ETA_varid, ETA_vals.get())))
         cout<<"couldnt open 4.3 the file :[ "<<FileName.c_str()<<" ---- !!!"<<endl;
 
-    Mat input = Mat(x_dim, y_dim, CV_64FC1,ETA_vals,cv::Mat::AUTO_STEP);
+    Mat input = Mat(x_dim, y_dim, CV_64FC1,ETA_vals.get(),cv::Mat::AUTO_STEP);
 //    std::memcpy(input.data, ETA_vals,x_dim*y_dim*sizeof(double));
 
 //    Mat dilate_result2 = Mat::zeros(cv::Size(input.rows,input.cols),CV_8U);
@@ -3848,7 +3848,7 @@ bool ReadNcData_SSH_SingleFrame(vector<pair<cv::Point2d,double>>& eta_centorid, 
 
     }
 
-    delete[] ETA_vals;
+
     return 0;
 
 }
@@ -4065,7 +4065,7 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
 
     int ocean_time = 1;
     int retval;
-    double *ETA_vals = new double[x_rho*y_rho*1];
+    shared_ptr<double[]> ETA_vals(new double[x_rho*y_rho*1]);
     int ETA_varid;
     int ncid;
 
@@ -4083,10 +4083,10 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
         return 1;
     }
 
-    if ((retval = nc_get_vara_double(ncid, ETA_varid, dataStart, dataCount,ETA_vals)))
+    if ((retval = nc_get_vara_double(ncid, ETA_varid, dataStart, dataCount,ETA_vals.get())))
         cout<<"couldnt open 4.3 the file :[ "<<ncFileName.c_str()<<" ---- !!!"<<endl;
 
-    Mat input = Mat(y_dim, x_dim, CV_64FC1,ETA_vals,cv::Mat::AUTO_STEP);
+    Mat input = Mat(y_dim, x_dim, CV_64FC1,ETA_vals.get(),cv::Mat::AUTO_STEP);
 //    std::memcpy(input.data, ETA_vals,x_dim*y_dim*sizeof(double));
 
 //    Mat dilate_result2 = Mat::zeros(cv::Size(input.rows,input.cols),CV_8U);
@@ -4222,7 +4222,6 @@ bool ReadNcData_SSH_MultiFrame_2D(vector<pair<cv::Point2d,double>>& eta_centorid
 
     }
 
-    delete[] ETA_vals;
     return 0;
 
 }
