@@ -11,9 +11,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_BUILD_TYPE "Debug")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+#set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+#set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
@@ -97,36 +97,41 @@ endif()
 # set(CMAKE_LIBRARY_PATH /home/ardofski/netcdf_build/CMakeFiles/Export/lib)
 # set(CMAKE_INCLUDE_PATH /home/ardofski/netcdf_build/include)
 
-# Try to find a CMake-built NetCDF.
-find_package(netCDF CONFIG QUIET)
-if (netCDF_FOUND)
-  # Forward the variables in a consistent way.
-  set(NetCDF_FOUND "${netCDF_FOUND}")
-  set(NetCDF_INCLUDE_DIRS "${netCDF_INCLUDE_DIR}")
-  set(NetCDF_LIBRARIES "${netCDF_LIBRARIES}")
-  set(NetCDF_VERSION "${NetCDFVersion}")
 
-  include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(NetCDF
-    REQUIRED_VARS NetCDF_INCLUDE_DIRS NetCDF_LIBRARIES
-    VERSION_VAR NetCDF_VERSION)
+find_path(NETCDF_INCLUDE_DIR netcdf.mod DOC "NetCDF include directory (must contain netcdf.mod)")
+if(NETCDF_INCLUDE_DIR)
+  MESSAGE(STATUS "NETCDF module found in " ${NETCDF_INCLUDE_DIR})
+else()
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+endif()
 
-  if (NOT TARGET NetCDF::NetCDF)
-    add_library(NetCDF::NetCDF INTERFACE IMPORTED)
-    if (TARGET "netCDF::netcdf")
-      # 4.7.3
-      set_target_properties(NetCDF::NetCDF PROPERTIES
-        INTERFACE_LINK_LIBRARIES "netCDF::netcdf")
-    elseif (TARGET "netcdf")
-      set_target_properties(NetCDF::NetCDF PROPERTIES
-        INTERFACE_LINK_LIBRARIES "netcdf")
-    else ()
-      set_target_properties(NetCDF::NetCDF PROPERTIES
-        INTERFACE_LINK_LIBRARIES "${netCDF_LIBRARIES}")
-    endif ()
-  endif ()
-  
-endif ()
+
+find_library(NETCDF_C_LIB netcdf DOC "NetCDF C library" PATHS $ENV{NETCDF_LIB} /usr/lib /usr/lib64 $ENV{SARA_NETCDF_LIB})
+
+if(NETCDF_C_LIB)
+  set(NETCDF_LIBS ${NETCDF_C_LIB})
+  MESSAGE(STATUS "NETCDF C library: " ${NETCDF_C_LIB})
+else()
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+endif()
+
+if(NETCDF_INCLUDE_DIR)
+
+else(NETCDF_INCLUDE_DIR)
+
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+
+endif(NETCDF_INCLUDE_DIR)
+
+if(NETCDF_C_LIB)
+
+  set(NETCDF_LIBS ${NETCDF_C_LIB})
+
+else(NETCDF_C_LIB)
+
+  MESSAGE(STATUS "WARNING: No NETCDF bindings are found.")
+
+endif(NETCDF_C_LIB)
 
 
 
@@ -163,6 +168,9 @@ SET_SOURCE_FILES_PROPERTIES(${FTSrcs} PROPERTIES)
 
 ADD_EXECUTABLE( FT MACOSX_BUNDLE ${FTSrcs} ${FTResources} ${MOCSrcs} ${ResourceSrcs} )
 
+
+
+
 TARGET_LINK_LIBRARIES( FT
   ${VTK_LIBRARIES}
   #vtkRendering
@@ -173,7 +181,7 @@ TARGET_LINK_LIBRARIES( FT
   #vtkViews
   #vtkHybrid
   ${HDF5_LIBRARIES}
-  ${netCDF_LIBRARIES}
+  ${NETCDF_LIBRARIES}
   ${OpenCV_LIBS}
 )
 

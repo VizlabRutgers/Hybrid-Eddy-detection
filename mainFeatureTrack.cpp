@@ -6781,7 +6781,7 @@ int ActionDetection(int cycle,string label, vector<string> &trakTable, Frame& t2
 
 
 
-int BeginFeatureTrack(string base_GeneratedTrackFileName, string currenttimevalue, char *mypolyfile,int &finished,float thrs_delta_x,float thrs_delta_y, float thrs_delta_z, string listfile, int InitialtimeStep, int timestepincrement, int currentTime, int TimePrecision)
+int BeginFeatureTrack(string base_GeneratedTrackFileName, string currenttimevalue, char *mypolyfile,int &finished,float thrs_delta_x,float thrs_delta_y, float thrs_delta_z, string listfile, int InitialtimeStep, int timestepincrement, int currentTime, int TimePrecision, string trackingMode)
 {
     //fieldtype FieldType;
     vector<string>   time_polyfile; // seq_wr+no_init
@@ -6902,7 +6902,7 @@ int BeginFeatureTrack(string base_GeneratedTrackFileName, string currenttimevalu
         return 0;
     sort(t2.nodes.begin(),t2.nodes.end());
     
-    TrackObjects(label,TrackedFr,(InitialtimeStep + timestepincrement*currentTime),t1, t2,time_polyfile,objs); //<<<<<<<<<
+    TrackObjects(label,TrackedFr,(InitialtimeStep + timestepincrement*currentTime),t1, t2,time_polyfile,objs, trackingMode); //<<<<<<<<<
     string traktablefile = label + ".trakTable";
     vector<string> trakTable;
     
@@ -8007,7 +8007,7 @@ bool circleRotationCheck_onSurface(vtkDataSet *in_ds,const int boxCenter_x, cons
             if(angleDiff_current>M_PI)
                 angleDiff_current = angleDiff_current - (2*M_PI);
             else if(angleDiff_current<-M_PI)
-                angleDiff_current+= angleDiff_current + (2*M_PI);
+                angleDiff_current = angleDiff_current + (2*M_PI);
             velocityMag_diff = fabs(velocityMag_current - velocityMag_next)/velocityMag_current;
             maxVelocityMagDiff_inFunc = velocityMag_diff>maxVelocityMagDiff_inFunc?velocityMag_diff:maxVelocityMagDiff_inFunc;
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
@@ -8054,7 +8054,7 @@ bool circleRotationCheck_onSurface(vtkDataSet *in_ds,const int boxCenter_x, cons
             if(angleDiff_current>M_PI)
                 angleDiff_current = angleDiff_current - 2*M_PI;
             else if(angleDiff_current<-M_PI)
-                angleDiff_current+= angleDiff_current + 2*M_PI ;
+                angleDiff_current = angleDiff_current + 2*M_PI ;
             velocityMag_diff = fabs(velocityMag_current - velocityMag_next)/velocityMag_current;
             maxVelocityMagDiff_inFunc = velocityMag_diff>maxVelocityMagDiff_inFunc?velocityMag_diff:maxVelocityMagDiff_inFunc;
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
@@ -8099,7 +8099,7 @@ bool circleRotationCheck_onSurface(vtkDataSet *in_ds,const int boxCenter_x, cons
                         if(angleDiff_current>M_PI)
                             angleDiff_current = angleDiff_current - 2*M_PI;
                         else if(angleDiff_current<-M_PI)
-                            angleDiff_current+= angleDiff_current + 2*M_PI ;
+                            angleDiff_current = angleDiff_current + 2*M_PI ;
                         if(angleDiff_current*angleDiff_previous<0){
                             box_checkingFailed = false;
                             deviationFlag = 0;
@@ -8162,7 +8162,7 @@ bool circleRotationCheck_onSurface(vtkDataSet *in_ds,const int boxCenter_x, cons
             if(angleDiff_current>M_PI)
                 angleDiff_current = angleDiff_current - 2*M_PI;
             else if(angleDiff_current<-M_PI)
-                angleDiff_current+= angleDiff_current + 2*M_PI ;
+                angleDiff_current = angleDiff_current + 2*M_PI ;
             velocityMag_diff = fabs(velocityMag_current - velocityMag_next)/velocityMag_current;
             maxVelocityMagDiff_inFunc = velocityMag_diff>maxVelocityMagDiff_inFunc?velocityMag_diff:maxVelocityMagDiff_inFunc;
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
@@ -8451,7 +8451,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
             if(angleDiff_current>M_PI)
                 angleDiff_current = angleDiff_current - (2*M_PI);
             else if(angleDiff_current<-M_PI)
-                angleDiff_current+= angleDiff_current + (2*M_PI);
+                angleDiff_current = angleDiff_current + (2*M_PI);
             velocityMag_diff = fabs(velocityMag_next/velocityMag_current);
             maxVelocityMagDiff_inFunc = velocityMag_diff>maxVelocityMagDiff_inFunc?velocityMag_diff:maxVelocityMagDiff_inFunc;
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
@@ -8500,7 +8500,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
             if(angleDiff_current>M_PI)
                 angleDiff_current = angleDiff_current - 2*M_PI;
             else if(angleDiff_current<-M_PI)
-                angleDiff_current+= angleDiff_current + 2*M_PI ;
+                angleDiff_current = angleDiff_current + 2*M_PI ;
             velocityMag_diff = fabs(velocityMag_next/velocityMag_current);
             maxVelocityMagDiff_inFunc = velocityMag_diff>maxVelocityMagDiff_inFunc?velocityMag_diff:maxVelocityMagDiff_inFunc;
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
@@ -8545,7 +8545,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
                         if(angleDiff_current>M_PI)
                             angleDiff_current = angleDiff_current - 2*M_PI;
                         else if(angleDiff_current<-M_PI)
-                            angleDiff_current+= angleDiff_current + 2*M_PI ;
+                            angleDiff_current = angleDiff_current + 2*M_PI ;
                         if(angleDiff_current*angleDiff_previous<0){
                             box_checkingFailed = false;
                             deviationFlag = 0;
@@ -8608,7 +8608,7 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
             if(angleDiff_current>M_PI)
                 angleDiff_current = angleDiff_current - 2*M_PI;
             else if(angleDiff_current<-M_PI)
-                angleDiff_current+= angleDiff_current + 2*M_PI ;
+                angleDiff_current = angleDiff_current + 2*M_PI ;
             velocityMag_diff = fabs(velocityMag_next/velocityMag_current);
             maxVelocityMagDiff_inFunc = velocityMag_diff>maxVelocityMagDiff_inFunc?velocityMag_diff:maxVelocityMagDiff_inFunc;
             maxVelocityAngleDiff_inFunc = fabs(angleDiff_current)>maxVelocityAngleDiff_inFunc?fabs(angleDiff_current):maxVelocityAngleDiff_inFunc;
@@ -8776,9 +8776,9 @@ bool circleRotationCheck(vtkDataSet *in_ds,const int boxCenter_x, const int boxC
         angle_current = atan2(boxPoint_current_data[2],boxPoint_current_data[1]);
         angle_next = atan2(boxPoint_next_data[2],boxPoint_next_data[1]);
         angleDiff_current = angle_current - angle_next;
-        if(angleDiff_current>2*M_PI)
+        if(angleDiff_current>=2*M_PI)
             angleDiff_current = angleDiff_current - 2*M_PI;
-        else if(angleDiff_current<-2*M_PI)
+        else if(angleDiff_current<=-2*M_PI)
             angleDiff_current = angleDiff_current + 2*M_PI;
 
         if(((fabs(angleDiff_current)<(M_PI+symmetricAngle)) && (fabs(angleDiff_current)>(M_PI-symmetricAngle)))== false){
@@ -10870,7 +10870,8 @@ int main(int argc, char* argv[])
         
         cout<< "finished = "<<  finished<< " & deltaxval="<< deltaxval<<" deltayval="<<deltayval<<" deltazval="<< deltazval<<" InitialtimeStep="<<InitialtimeStep <<" currentTime="<<currenttimevalue<<endl;
 
-        int a = BeginFeatureTrack(base_GeneratedTrackFileName, currenttimevalue, mypolyfile1,finished,deltaxval, deltayval, deltazval,listfile,InitialtimeStep ,TimeIncrement ,currentTime, TimePrecision);
+        string TrackingMode = "3D";
+        int a = BeginFeatureTrack(base_GeneratedTrackFileName, currenttimevalue, mypolyfile1,finished,deltaxval, deltayval, deltazval,listfile,InitialtimeStep ,TimeIncrement ,currentTime, TimePrecision, TrackingMode);
         
         cout<< "After the Tracking !! "<<endl;
         

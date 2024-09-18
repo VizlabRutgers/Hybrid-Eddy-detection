@@ -10,14 +10,18 @@
 
 
 extern void OverlapTest(Frame& t1,Frame& t2,vector<vector<int> > &OverlapTable,vector<vector<int> >& ScoreBoard,vector<int>& tag1,vector<int>& tag2);
+extern void OverlapTest2D(Frame& t1,Frame& t2,vector<vector<int> > &OverlapTable,vector<vector<int> >& ScoreBoard,vector<int>& tag1,vector<int>& tag2);
 extern int ComputeScore(DIRECTION const direct,Frame& t1,Frame& t2,vector<vector<int> >& ScoreBoard,vector<vector<int> >& OverlapTable);
 extern int ComputeScore2(DIRECTION const direct,Frame& t1,Frame& t2,vector<vector<int> >& ScoreBoard,vector<vector<int> >& OverlapTable);
+extern int ComputeScore2_2D(DIRECTION const direct,Frame& t1,Frame& t2,vector<vector<int> >& ScoreBoard,vector<vector<int> >& OverlapTable);
 extern void FindOverlap(int const obj,vector<int>& Overlaps, DIRECTION const direct,Frame& t1,Frame& t2,vector<vector<int> > &OverlapTable );
 extern void GenCombination(vector<int>& comb,int i);
 extern int Intersect(vector<int> const & Comb,int const NumOvlp,vector<int> const & Overlaps,int const obj, DIRECTION const direct,vector<vector<int> > &OverlapTable);
 extern float Intersect2(int objectIndex,vector<int> const & Overlaps,int const obj, DIRECTION const direct,vector<vector<int> > &OverlapTable);
+extern float Intersect2_2D(int objectIndex,vector<int> const & Overlaps,int const obj, DIRECTION const direct,vector<vector<int> > &OverlapTable);
 extern float GeomMean(vector<int> const & Comb,int const NumOvlp,vector<int> const & Overlaps,int const obj, DIRECTION const direct, Frame& t1, Frame& t2);
 extern float GeomMean3(int objectIndex,vector<int> const & Overlaps,int const obj, DIRECTION const direct, Frame& t1, Frame& t2);
+extern float GeomMean3_2D(int objectIndex,vector<int> const & Overlaps,int const obj, DIRECTION const direct, Frame& t1, Frame& t2);
 extern float GeomMean2(int objectIndex,vector<int> const & Overlaps,int const obj, DIRECTION const direct, Frame& t1, Frame& t2);
 extern float Union(int objectIndex,vector<int> const & Overlaps,int const obj, DIRECTION const direct, Frame& t1, Frame& t2);
 extern bool RewritePolyFiles(string const trakTable, int const step,vector<string>& time_polyfile);

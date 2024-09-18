@@ -339,6 +339,6 @@ extern bool ReadList(char*  ListFileName,vector<string>& time_file, FILETYPE con
 extern bool ReadTrak(string const baseName,Frame& frm);
 extern bool ReadOct(string baseName,Frame& frm,int step,  vector<vector<TrackObject> > &objs);
 extern int  createColormapFiles(string colormapfile,string label );
-extern bool TrackObjects(string const basename,int const step,int curtime,Frame& f1,Frame& f2, vector<string>& time_polyfile,vector<vector<TrackObject> > & objs) ;
+extern bool TrackObjects(string const basename,int const step,int curtime,Frame& f1,Frame& f2, vector<string>& time_polyfile,vector<vector<TrackObject> > & objs, string trackingMOde) ;
 extern int  ReadPacketFile(string packetFName, vector<string> &previousFramePackInfo);
 #endif

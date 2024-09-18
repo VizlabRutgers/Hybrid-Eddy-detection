@@ -22,10 +22,11 @@ using namespace std;
 
 extern double bounds[6];
 
-bool TrackObjects(string const basename,int const step,int curtime,Frame& f1,Frame& f2, vector<string>& time_polyfile,vector<vector<TrackObject> > & objs) 
+bool TrackObjects(string const basename,int const step,int curtime,Frame& f1,Frame& f2, vector<string>& time_polyfile,vector<vector<TrackObject> > & objs, string trackingMode)
 { // objs are actually not used after assignment. It might be used in the future.
      vector<vector<int> > OverlapTable; // no_ext+rand_wr, init in OverlapTest()  
      vector<vector<int> > ScoreBoard; // no_ext+rand_wr, init in OverlapTest() 
+     vector<vector<int> > ScoreBoard_3D; // no_ext+rand_wr, init in OverlapTest()
      vector<int> tag1, tag2; // no_ext+rand_wr, init in OverlapTest()
   // tag1, tag2 is initialized in OverlapTest(). They are shared by TrackSplit_Merge(),TrackContinuous(),TrackNew_Dissipate()
   // They tag the elements have been handled in Frame1 and Frame2 respectively.
@@ -35,22 +36,23 @@ bool TrackObjects(string const basename,int const step,int curtime,Frame& f1,Fra
 //     if(curtime==5)
 //         test=1;
 
-     OverlapTest(f1,f2,OverlapTable,ScoreBoard,tag1,tag2);
-  // ScoreBoard must be initialized in OverlapTest(), not in ComputScore(), otherwise, it will be init twice!
-     //#cout<<"TrackObject:after OverlapTest"<<endl;
-     //#cout<<"OverlapTable:\n";
-     /*//#for(vector<vector<int> >::const_iterator it1=OverlapTable.begin();it1!=OverlapTable.end();++it1)
-     {
-          for(vector<int>::const_iterator it2=it1->begin();it2!=it1->end();++it2) 
-          {
-   	       cout<<*it2<<" ";
-   	  }
-   	       cout<<"\n";
-     }*/
-     
-     ComputeScore2(_FORWARD_,f1,f2,ScoreBoard,OverlapTable);
-     //#cout<<"TrackObject:after ComputeScore(_FORWARD_)\n";
-     ComputeScore2(_BACKWARD_,f1,f2,ScoreBoard,OverlapTable);
+
+          OverlapTest(f1,f2,OverlapTable,ScoreBoard_3D,tag1,tag2);
+          ComputeScore2(_FORWARD_,f1,f2,ScoreBoard_3D,OverlapTable);
+          //#cout<<"TrackObject:after ComputeScore(_FORWARD_)\n";
+          ComputeScore2(_BACKWARD_,f1,f2,ScoreBoard_3D,OverlapTable);
+
+
+         OverlapTest2D(f1,f2,OverlapTable,ScoreBoard,tag1,tag2);
+      // ScoreBoard must be initialized in OverlapTest(), not in ComputScore(), otherwise, it will be init twice!
+
+
+         ComputeScore2_2D(_FORWARD_,f1,f2,ScoreBoard,OverlapTable);
+         ComputeScore2_2D(_BACKWARD_,f1,f2,ScoreBoard,OverlapTable);
+
+
+
+
      //#cout<<"TrackObject:after ComputeScoreBoard(_BACKWARD_)\n";
      //#cout<<"ScoreBoard:\n";
      /*//#for(vector<vector<int> >::const_iterator it1=ScoreBoard.begin();it1!=ScoreBoard.end();++it1)
@@ -216,6 +218,96 @@ void OverlapTest(Frame& t1,Frame& t2,vector<vector<int> > &OverlapTable,vector<v
 
 }
 
+void OverlapTest2D(Frame& t1,Frame& t2,vector<vector<int> > &OverlapTable,vector<vector<int> >& ScoreBoard,vector<int>& tag1,vector<int>& tag2)
+{
+    // initialize OverlapTable[numObjs1][numObjs2]
+     int numObjs1=t1.objVols.size();
+     int numObjs2=t2.objVols.size();
+     ScoreBoard=OverlapTable = vector<vector<int> >(numObjs1, vector<int>(numObjs2, 0));
+     tag1=vector<int>(numObjs1,0);
+     tag2=vector<int>(numObjs2,0);
+     // the total volume of each frame. (volume is actually nodes number)
+     int numNodes1=t1.nodes.size();
+     int numNodes2=t2.nodes.size();
+     double shift_thresh = std::pow((t1.xMax-t1.xMin)*0.001,2)+std::pow((t1.yMax-t1.yMin)*0.001,2); //use 9 for best result so far..
+ //    int temp_shift_thresh = 0;
+     // the while loop is extemely time consuming. I use [] intead of at() when accessing vectors.
+     int i(0), j(0);
+     //#cout<<"OverlapTest:numNodes1="<<numNodes1<<" numNodes2="<<numNodes2<<endl;
+     while (i<numNodes1 || j<numNodes2)
+     {
+
+//         double test1 =  t1.nodes[j].zCoord;
+//         double test2 =  t2.nodes[j].zCoord;
+//         double test3 =  bounds[4];
+/*          if (shift_thresh > j)
+          {
+            temp_shift_thresh = (int)(j/2);
+          }
+          else
+          {
+            temp_shift_thresh = shift_thresh;
+          }
+*/
+
+// Edited by SEDAT
+
+
+          //(t1.nodes[i].NodeID == t2.nodes[j].NodeID)   /* overlap */    //     (t1.nodes[i].NodeID == t2.nodes[j].NodeID)
+
+
+         //          int tempval =  (t2.nodes[j].NodeID) - (t1.nodes[i].NodeID);
+         // Edit by Weiping Hua
+         // It's insane to use NodeID. Now we use the coordinates.
+          double tempval =  std::pow(t2.nodes[j].xCoord-t1.nodes[i].xCoord,2)+std::pow(t2.nodes[j].yCoord-t1.nodes[i].yCoord,2);
+
+
+          //          if ( tempval <= shift_thresh)
+//          if ( (tempval <= shift_thresh) && ( tempval >= 0) ) //(t1.nodes[i].NodeID == t2.nodes[j].NodeID)
+//          if (t1.nodes[i].NodeID == t2.nodes[j].NodeID)  //(t1.nodes[i].NodeID == t2.nodes[j].NodeID)
+      //if ( (tempval <= shift_thresh) && ( tempval >= 0) ) //(t1.nodes[i].NodeID == t2.nodes[j].NodeID)
+          //if (t1.nodes[i].NodeID == t2.nodes[j].NodeID)
+//          ucdNode test1;
+//          ucdNode test2;
+//          int test=0;
+//          int t1ID = t1.nodes[i].ObjID;
+//          int t2ID = t2.nodes[j].ObjID;
+//          if(t1ID ==0 && t2ID==1 && t1.nodes[i].NodeID == t2.nodes[j].NodeID){
+//              test=1;
+//              test1 = t1.nodes[i];
+//              test2 = t2.nodes[j];
+//          }
+
+
+         if ( (tempval <= shift_thresh) && ( tempval >= 0) && (t1.nodes[i].zCoord==bounds[4]) && (t2.nodes[j].zCoord==bounds[4]))
+          {
+
+               OverlapTable[t1.nodes[i++].ObjID][t2.nodes[j++].ObjID]++;
+                 //cout<<"An entry entered to the OVERLAPTABLE !!"<< endl;
+          }
+
+          else
+          {
+           if(t1.nodes[i].NodeID>t2.nodes[j].NodeID)
+           {
+                    if (j<numNodes2)
+                         j++;
+               }
+           else if (i<numNodes1)
+                    i++;
+          }
+
+          if (i==numNodes1 || j==numNodes2)
+          { /* one frame finished, then terminate search */
+           i = numNodes1;
+           j = numNodes2;
+          }
+
+     }
+
+}
+
+
 int ComputeScore(DIRECTION const direct,Frame& t1,Frame& t2,vector<vector<int> >& ScoreBoard,vector<vector<int> >& OverlapTable)
 {
   vector<int> Comb; // no_ext+rand_wr, init in GenCombination()
@@ -343,6 +435,63 @@ obj1  2  504    56      7
     return 1;
 }
 
+int ComputeScore2_2D(DIRECTION const direct,Frame& t1,Frame& t2,vector<vector<int> >& ScoreBoard,vector<vector<int> >& OverlapTable)
+{
+  vector<int> Comb; // no_ext+rand_wr, init in GenCombination()
+  vector<int> Overlaps; //no_ext+rand_wr, init in FindOverlap()
+
+
+/* Modified by Weiping Hua*/
+
+/* Overlaps looks like:
+    3 5 6 8
+   It is constructed with push_back(). Each element is the index of obj it is overlapping.
+   */
+/* OverlapTable looks like:
+          obj2
+         0      1       2
+      ___________________
+      0  20   1000    204
+      1  36    485     56
+obj1  2  504    56      7
+      3  23     3      13
+      __________________
+   Each element in this 2d array is the overlap volume (node number) of two objs.
+   OverlapTable is not symmetric.
+   */
+/* ScoreBoard looks like OverlapTable. Each element in this 2d array is the score of two objs.
+   It is not symmetric. OverlapTable[i][j]!=0 <=> ScoreBoard[i][j]. ScoreBoard is actually an overlapTable after
+   processing. An element in OverlapTable is the raw overlapping volume between two objects in different frames.
+   ScoreBoard's elements are obtained after overall considerated. A big element in OverlapTable does not mean
+   there is a corresponding big element in the ScoreBoard.
+   */
+
+    int numObjs1=t1.objVols.size();
+    int numObjs2=t2.objVols.size();
+    int numObjs=(direct==_FORWARD_) ? numObjs1:numObjs2;
+    for (int obj1 = 0; obj1<numObjs; obj1++){
+        Overlaps.clear();
+        FindOverlap(obj1, Overlaps, direct,t1,t2,OverlapTable); // store the overlapping object indexes into Overlaps vector
+        int NumOvlp(Overlaps.size());
+        int NumCom( (int) pow(2.0, NumOvlp) );
+        Comb.resize(NumOvlp);
+        for (int i=0; i<NumOvlp; i++){
+            //               GenCombination(Comb, i);
+            float cost(Intersect2(i, Overlaps, obj1, direct,OverlapTable)/GeomMean3_2D(i, Overlaps, obj1, direct,t1,t2) );
+            int Score((int)(1000*cost));
+            int obj2 = Overlaps.at(i);
+            if(direct==_FORWARD_){
+               if((Score>ScoreBoard.at(obj1).at(obj2)) && (cost>Consts::DEFAULT_TOLERANCE))
+                   ScoreBoard.at(obj1).at(obj2) = Score;
+            }
+            else{
+                if((Score>ScoreBoard.at(obj2).at(obj1)) && (cost>Consts::DEFAULT_TOLERANCE))
+                    ScoreBoard.at(obj2).at(obj1) = Score;
+            }
+        }
+    }
+    return 1;
+}
 
 /*! \fn void FindOverlap(int const obj,vector<int>& Overlaps, DIRECTION const direct,Frame& t1,Frame& t2,vector<vector<int> > &OverlapTable )
   \brief With OverlapTable, find the overlaps for an object.
@@ -487,6 +636,23 @@ float GeomMean3(int objectIndex,vector<int> const & Overlaps,int const obj, DIRE
          mean = static_cast<float>(sqrt(double(t1.objVols.at(obj).ObjVol*vol)));
     else
          mean = static_cast<float>(sqrt(double(t2.objVols.at(obj).ObjVol*vol)));
+    return mean;
+}
+
+float GeomMean3_2D(int objectIndex,vector<int> const & Overlaps,int const obj, DIRECTION const direct, Frame& t1, Frame& t2)
+{
+    long vol(0);
+
+    int obj1 = Overlaps.at(objectIndex);
+    if(direct==_FORWARD_)
+        vol += t2.objVols.at(obj1).objSurfVol;
+    else
+        vol += t1.objVols.at(obj1).objSurfVol;
+    float mean;
+    if(direct==_FORWARD_)
+         mean = static_cast<float>(sqrt(double(t1.objVols.at(obj).objSurfVol*vol)));
+    else
+         mean = static_cast<float>(sqrt(double(t2.objVols.at(obj).objSurfVol*vol)));
     return mean;
 }
 
