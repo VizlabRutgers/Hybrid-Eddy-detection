@@ -26,8 +26,10 @@ We recommend you to use the Singularity to avoid installation and environments c
 
 (AddressSanitizer might be enabled with the image below)
 ```
-singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v2.7_addresssanitizer:latest
+singularity pull --arch amd64 library://huaweiping/hybrid_eddy_env/v2.8_addresssanitizer:latest
 ```
+The Singularity has been deprecated, please refer to the [apptainer](https://github.com/apptainer/apptainer) for migration.
+
 ## Without Singularity
 This program is a C++ program developed in linux system. We strongly recommend you to compile the code in linux system. You may need to change the CMakelist file if you're using other platforms.
 
